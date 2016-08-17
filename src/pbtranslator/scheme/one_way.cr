@@ -1,22 +1,12 @@
-require "../scheme"
-
 module PBTranslator
+
   # A OneWay scheme represents some class of networks that operates on a
-  # contiguous range of *wires*.
+  # contiguous range of _wires_.
   #
   # The gates in such a network involve only those wires.
-  abstract class Scheme::OneWay < Scheme
+  abstract class Scheme::OneWay
 
-    # Performs a visit on the gates in a network corresponding to the parameter
-    # value *param*.
-    #
-    # Each gate is visited in turn to some method of *visitor*.
-    # All visited wires will be at a given *offset*.
-    abstract def visit(param, offset, visitor)
-
-    # Performs a reverse visit.
-    #
-    # See `#visit`.
-    abstract def reverse_visit(param, offset, visitor)
+    # Returns a network with a number of wires that is a power of two.
+    abstract def network(width_log2)
   end
 end
