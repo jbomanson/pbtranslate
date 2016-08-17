@@ -11,6 +11,8 @@ module PBTranslator
 
     DEFAULT_INSTANCE = MergeSort(Recursive).new
 
+    MERGE = Scheme::OEMerge::INSTANCE
+
     @sort_scheme : T
 
     # Creates a MergeSort scheme that sorts subsequences using *sort_scheme*.
@@ -29,7 +31,7 @@ module PBTranslator
       when typeof(width_log2).new(0)
         {{zero}}
       when typeof(width_log2).new(1)
-        Scheme::OEMerge::INSTANCE.{{one_call}}
+        MERGE.network(less).{{one_call}}
       else
         {{else_expr}}
       end
@@ -38,23 +40,23 @@ module PBTranslator
     def size(width_log2)
       three_cases(
         typeof(width_log2).new(0),
-        size(less),
-        @sort_scheme.size(less) * 2 + Scheme::OEMerge::INSTANCE.size(less),
+        size,
+        @sort_scheme.size(less) * 2 + MERGE.network(less).size,
       )
     end
     
     def depth(width_log2)
       three_cases(
         typeof(width_log2).new(0),
-        depth(less),
-        @sort_scheme.depth(less) + Scheme::OEMerge::INSTANCE.depth(less),
+        depth,
+        @sort_scheme.depth(less) + MERGE.network(less).depth,
       )
     end
 
     private def helper_visit(width_log2, *args) : Void
       three_cases(
         nil,
-        visit(less, *args),
+        visit(*args.reverse),
         yield less, typeof(less).new(1) << less,
       )
     end
@@ -63,13 +65,13 @@ module PBTranslator
       helper_visit(width_log2, offset, visitor) do |less, more|
         @sort_scheme.visit(less, offset, visitor)
         @sort_scheme.visit(less, offset + more, visitor)
-        Scheme::OEMerge::INSTANCE.visit(less, offset, visitor)
+        MERGE.network(less).visit(visitor, offset)
       end
     end
 
     def reverse_visit(width_log2, offset, visitor)
       helper_visit(width_log2, offset, visitor) do |less, more|
-        Scheme::OEMerge::INSTANCE.reverse_visit(less, offset, visitor)
+        MERGE.network(less).reverse_visit(visitor, offset)
         @sort_scheme.reverse_visit(less, offset + more, visitor)
         @sort_scheme.reverse_visit(less, offset, visitor)
       end
