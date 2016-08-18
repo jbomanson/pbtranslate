@@ -16,7 +16,7 @@ struct DepthCounter
   def initialize(size : Int)
     @array = Array(UInt32).new(size, 0_u32)
   end
-  
+
   def visit(gate) : Void
     depth = @array.values_at(*gate.input_wires).max + 1
     gate.output_wires.each do |index|
