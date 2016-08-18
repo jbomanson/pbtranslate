@@ -28,6 +28,27 @@ describe PBTranslator::Scheme::MergeSort do
     end
   end
 
+  it "represents matching numbers of gates going forward and backward" do
+    (0..WIDTH_LOG2_MAX).each do |width_log2|
+      network = scheme.network(width_log2)
+      a, x =
+        begin
+          visitor = MethodCallCounter.new
+          network.visit(visitor)
+          {visitor[:visit], visitor[:reverse_visit]}
+        end
+      b, y =
+        begin
+          visitor = MethodCallCounter.new
+          network.reverse_visit(visitor)
+          {visitor[:reverse_visit], visitor[:visit]}
+        end
+      x.should eq(0)
+      y.should eq(0)
+      a.should eq(b)
+    end
+  end
+
   it "returns consistent depths" do
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       network = scheme.network(width_log2)
