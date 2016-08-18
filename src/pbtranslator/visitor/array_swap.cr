@@ -1,6 +1,7 @@
 module PBTranslator
   record Visitor::ArraySwap(T), array : Array(T) do
-    def visit_comparator(i, j) : Void
+    def visit(comparator) : Void
+      i, j = comparator.wires
       a = @array[i]
       b = @array[j]
       c = a < b

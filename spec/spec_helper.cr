@@ -17,9 +17,9 @@ struct DepthCounter
     @array = Array(UInt32).new(size, 0_u32)
   end
   
-  def visit_comparator(i, j) : Void
-    depth = @array.values_at(i, j).max + 1
-    {i, j}.each do |index|
+  def visit(gate) : Void
+    depth = @array.values_at(*gate.input_wires).max + 1
+    gate.output_wires.each do |index|
       @array[index] = depth
     end
   end

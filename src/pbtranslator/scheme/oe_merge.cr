@@ -5,8 +5,7 @@ module PBTranslator
   # An OEMerge scheme represents Batcher's odd-even merging networks.
   #
   # They are a class of _comparator networks_.
-  # The gates in these networks are sometimes called comparators.
-  # A comparator is essentially a sorter of two elements.
+  # The gates in these networks are `Comparators`.
   #
   # The networks produced by this implementation merge pairs of consecutive
   # sequences.
@@ -38,7 +37,9 @@ module PBTranslator
           {{each_expr}} do |wire_index|
             partner_index = partner(half_width_log2, layer_index, wire_index)
             next unless wire_index < partner_index
-            visitor.visit_comparator(offset + wire_index, offset + partner_index)
+            comparator = Comparator.new(wire_index, partner_index)
+            comparator = comparator.shifted by: offset
+            visitor.visit(comparator)
           end
         end
 

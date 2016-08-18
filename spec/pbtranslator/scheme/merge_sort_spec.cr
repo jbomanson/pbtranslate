@@ -25,7 +25,7 @@ describe PBTranslator::Scheme::MergeSort do
       a = network.size
       visitor = MethodCallCounter.new
       network.visit(visitor)
-      b = visitor[:visit_comparator]
+      b = visitor[:visit]
       a.should eq(b)
     end
   end
