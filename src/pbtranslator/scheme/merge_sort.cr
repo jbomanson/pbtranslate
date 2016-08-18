@@ -54,6 +54,14 @@ module PBTranslator
         )
       end
 
+      private def reverse_helper_visit(*args) : Void
+        three_cases(
+          nil,
+          reverse_visit(*args),
+          yield less, I.new(1) << less, sort_scheme.network(less)
+        )
+      end
+
       def visit(visitor, offset = I.new(0))
         helper_visit(visitor, offset) do |less, more, sort_network|
           sort_network.visit(visitor, offset)
@@ -63,7 +71,7 @@ module PBTranslator
       end
 
       def reverse_visit(visitor, offset = I.new(0))
-        helper_visit(visitor, offset) do |less, more|
+        reverse_helper_visit(visitor, offset) do |less, more, sort_network|
           MERGE_SCHEME.network(less).reverse_visit(visitor, offset)
           sort_network.reverse_visit(visitor, offset + more)
           sort_network.reverse_visit(visitor, offset)
