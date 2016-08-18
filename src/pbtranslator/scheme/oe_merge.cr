@@ -39,7 +39,7 @@ module PBTranslator
             next unless wire_index < partner_index
             comparator = Comparator.new(wire_index, partner_index)
             comparator = comparator.shifted by: offset
-            visitor.visit(comparator)
+            visitor.{{prefix.id}}visit(comparator)
           end
         end
 
