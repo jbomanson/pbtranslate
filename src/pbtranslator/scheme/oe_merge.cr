@@ -4,27 +4,34 @@ module PBTranslator
 
   # An OEMerge scheme represents Batcher's odd-even merging networks.
   #
-  # They are a class of _comparator networks_.
-  # The gates in these networks are `Comparators`.
-  #
-  # The networks produced by this implementation merge pairs of consecutive
-  # sequences.
-  # Both sequences must have the same width and it must be a power of two.
+  # They are _comparator networks_.
+  # The gates in these networks are `Comparator`s.
+  # Instances of these networks are obtained via `#network`.
   class Scheme::OEMerge
 
-    record Network(I), half_width_log2 : I do
+    # See `OEMerge`.
+    struct Network(I)
 
+      # The binary logarithm of the width of the input halves of this network.
+      getter half_width_log2
+
+      # See `OEMerge#network`.
+      def initialize(@half_width_log2 : I)
+      end
+
+      # Returns the number of comparators in the network.
       def size
         (I.new(1) << half_width_log2) * half_width_log2 + 1
       end
 
+      # Returns the number of comparators on the longest path from an input to
+      # an output.
       def depth
         half_width_log2 + 1
       end
 
       # :nodoc:
       macro define_visit(prefix, each_expr)
-
         def {{prefix.id}}visit(visitor, offset = I.new(0))
           a, b = {I.new(0), half_width_log2}
           {{each_expr}} do |layer_index|
@@ -42,17 +49,15 @@ module PBTranslator
             visitor.{{prefix.id}}visit(comparator)
           end
         end
-
       end
 
-      # Performs a visit over the comparators in a network for merging two
-      # consecutive sequences of widths `1 << half_width_log2` that are placed at
-      # an *offset*.
+      # Performs a visit over the comparators in this network placed at an
+      # *offset*.
       #
-      # For each visited comparator, `visitor.visit_comparator(a, b)` is called.
+      # The visit method of *visitor* is called for each comparator.
       define_visit "", a.upto(b)
 
-      # Like `#visit` but in reverse order.
+      # Like `#visit` but in reverse order and calling reverse_visit instead.
       define_visit reverse_, b.downto(a)
 
       private def partner(half_width_log2, layer_index, wire_index)
@@ -72,8 +77,16 @@ module PBTranslator
 
     end
 
+    # The only instance of the OEMerge scheme that needs to be used.
+    #
+    # To obtain instances of OEMerge `Network`s, use `#network`.
     INSTANCE = self.new
 
+    # Returns a `Network` instance for merging pairs of consecutive sequences of
+    # of the same width that is a power of two.
+    #
+    # The binary logarithm of the width of both of these halves is
+    # *half_width_log2*.
     def network(half_width_log2)
       Network.new(half_width_log2)
     end
