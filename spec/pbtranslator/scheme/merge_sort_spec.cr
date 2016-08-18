@@ -1,7 +1,5 @@
 require "../../spec_helper"
 
-WIDTH_LOG2_MAX = 10
-
 scheme = PBTranslator::Scheme::MergeSort::DEFAULT_INSTANCE
 
 describe PBTranslator::Scheme::MergeSort do
