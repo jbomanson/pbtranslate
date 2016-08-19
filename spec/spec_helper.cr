@@ -2,6 +2,7 @@ require "spec"
 require "../src/pbtranslator"
 
 WIDTH_LOG2_MAX = 10
+SEED = 482382392
 
 # An object that counts the number of times any of its methods is called.
 class MethodCallCounter

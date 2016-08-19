@@ -48,8 +48,7 @@ end
 
 describe PBTranslator::Cone do
   it "works with universally unwanted outputs and merge sorting networks" do
-    seed = 482382392
-    random = Random.new(seed)
+    random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, false)
@@ -62,8 +61,7 @@ describe PBTranslator::Cone do
   end
 
   it "works with universally wanted outputs and merge sorting networks" do
-    seed = 482382392
-    random = Random.new(seed)
+    random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, true)
@@ -73,8 +71,7 @@ describe PBTranslator::Cone do
   end
 
   it "works with single outputs and merge sorting networks" do
-    seed = 482382392
-    random = Random.new(seed)
+    random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width)

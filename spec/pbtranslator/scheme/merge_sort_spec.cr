@@ -4,8 +4,7 @@ scheme = PBTranslator::Scheme::MergeSort::DEFAULT_INSTANCE
 
 describe PBTranslator::Scheme::MergeSort do
   it "represents some networks that sort" do
-    seed = 482382392
-    random = Random.new(seed)
+    random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       a = Array.new(width) { random.rand }
