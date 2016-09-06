@@ -5,7 +5,7 @@ module PBTranslator
   # An OEMerge scheme represents Batcher's odd-even merging networks.
   #
   # They are _comparator networks_.
-  # The gates in these networks are `Comparator`s.
+  # The gates in these networks are `Gate::Comparator`s.
   # Instances of these networks are obtained via `#network`.
   class Scheme::OEMerge
 

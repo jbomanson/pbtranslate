@@ -1,6 +1,6 @@
 module PBTranslator
   # A comparator is a gate representing a sorter of two elements.
-  struct Comparator(T)
+  struct Gate::Comparator(T)
     getter wires
     @wires : {T, T}
     def initialize(i : T, j : T)
