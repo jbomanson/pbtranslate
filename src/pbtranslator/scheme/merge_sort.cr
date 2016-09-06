@@ -8,8 +8,12 @@ module PBTranslator
   # them.
   class Scheme::MergeSort(S) < Scheme::OneWay
 
+    # A MergeSort scheme for sorting via recursive merging.
+    #
+    # See `DEFAULT_INSTANCE`.
     alias Recursive = MergeSort(Recursive)
 
+    # A `Recursive` scheme instance.
     DEFAULT_INSTANCE = MergeSort(Recursive).new
 
     @sort_scheme : S
