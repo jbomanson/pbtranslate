@@ -1,5 +1,3 @@
-require "./one_way"
-
 module PBTranslator
 
   # An OEMerge scheme represents Batcher's odd-even merging networks.
