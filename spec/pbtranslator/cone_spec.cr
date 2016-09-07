@@ -23,7 +23,10 @@ record ArrayConeNot do
   end
 end
 
-scheme = PBTranslator::Scheme::MergeSort::DEFAULT_INSTANCE
+scheme =
+  PBTranslator::Scheme::MergeSort::Recursive.new(
+    PBTranslator::Scheme::OEMerge::INSTANCE
+  )
 
 # Returns a tuple of computed and a tuple of correct wanted outputs.
 private def compute(scheme, random, width_log2, wanted)

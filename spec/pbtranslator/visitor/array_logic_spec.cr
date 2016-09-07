@@ -1,6 +1,9 @@
 require "../../spec_helper"
 
-scheme = PBTranslator::Scheme::MergeSort::DEFAULT_INSTANCE
+scheme =
+  PBTranslator::Scheme::MergeSort::Recursive.new(
+    PBTranslator::Scheme::OEMerge::INSTANCE
+  )
 
 describe PBTranslator::Visitor::ArrayLogic do
   it "sorts booleans with merge sorting networks" do
