@@ -1,3 +1,5 @@
+require "./gate"
+
 # A module for computing and making use of "cones of influence".
 #
 # Given a subset of the output wires of a network, we may determine which
@@ -25,10 +27,14 @@ module PBTranslator::Cone
 
     # Propagates a cone through a gate backwards from its output to input
     # wires.
-    def reverse_visit(gate) : Void
+    def reverse_visit(
+      gate : PBTranslator::Gate(F, PBTranslator::Gate::InPlace, T)) : Void
+
       @reverse_index += 1
-      return if gate.output_wires.none? {|wire| @levels[wire]}
-      gate.input_wires.each do |wire|
+      output_wires = gate.wires
+      return if output_wires.none? {|wire| @levels[wire]}
+      input_wires = gate.wires
+      input_wires.each do |wire|
         @levels[wire] ||= @reverse_index
       end
     end
@@ -79,8 +85,9 @@ module PBTranslator::Cone
     end
 
     def visit(gate) : Void
+      output_wires = gate.wires
       output_cone =
-        @levels.values_at(*gate.output_wires).map do |wire|
+        @levels.values_at(*output_wires).map do |wire|
           wire ? @index < wire : false
         end
       @sub_visitor.visit(Gate.new(gate, output_cone))
