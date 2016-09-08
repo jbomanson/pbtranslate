@@ -22,10 +22,10 @@ struct DepthCounter
     @array = Array(UInt32).new(size, 0_u32)
   end
 
-  def visit(f, s : InPlace.class, wires) : Void
-    input_wires = wires
+  def visit(gate : PBTranslator::Gate(_, InPlace, _)) : Void
+    input_wires = gate.wires
     depth = @array.values_at(*input_wires).max + 1
-    output_wires = wires
+    output_wires = gate.wires
     output_wires.each do |index|
       @array[index] = depth
     end

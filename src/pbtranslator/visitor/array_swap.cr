@@ -4,8 +4,8 @@ module PBTranslator
   record Visitor::ArraySwap(T), array : Array(T) do
     include Gate::Restriction
 
-    def visit(f : Comparator.class, s : InPlace.class, wires) : Void
-      i, j = wires
+    def visit(gate : Gate(Comparator, InPlace, _)) : Void
+      i, j = gate.wires
       a = @array[i]
       b = @array[j]
       c = a < b

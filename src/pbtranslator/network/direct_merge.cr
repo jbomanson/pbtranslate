@@ -38,26 +38,25 @@ module PBTranslator
         layer_visitor, base, out_value, half_width)
 
         wire = out_value + base
-        layer_visitor.
-          {{prefix.id}}visit(Or, Output, {wire}) do |or_visitor|
-            a = {I.new(0), out_value - half_width}.max
-            b = {half_width, out_value}.min
-            {{visit_expr}} do |left_value|
-              {{prefix.id}}visit_and(or_visitor, base, out_value, left_value)
-            end
+        layer_visitor.{{prefix.id}}visit(Gate.or_as(wire)) do |or_visitor|
+          a = {I.new(0), out_value - half_width}.max
+          b = {half_width, out_value}.min
+          {{visit_expr}} do |left_value|
+            {{prefix.id}}visit_and(or_visitor, base, out_value, left_value)
           end
+        end
       end
 
       # Arranges a visit to an AND gate connected to an OR gate.
       private def {{prefix.id}}visit_and(or_visitor, base, out_value, left_value)
         right_value = out_value - left_value
-        wires = and_input_wires(base, left_value, right_value)
-        or_visitor.{{prefix.id}}visit(And, Input, wires)
+        gate = and_input_gate(base, left_value, right_value)
+        or_visitor.{{prefix.id}}visit(gate)
       end
 
     end
 
-    private def and_input_wires(base, left_value, right_value)
+    private def and_input_gate(base, left_value, right_value)
       wires =
         if 1 <= left_value
           if 1 <= right_value
@@ -68,7 +67,7 @@ module PBTranslator
         else
           {left_value}
         end
-      Gate.shift(wires, by: base)
+      Gate.and_of(tuple: wires).shifted_by(base)
     end
 
     # Arranges a visit over the AND and OR gates in this network placed at an

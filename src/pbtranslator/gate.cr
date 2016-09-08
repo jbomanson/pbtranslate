@@ -1,31 +1,49 @@
 module PBTranslator
 
-  module Gate::Restriction
+  struct Gate(F, S, T)
 
-      struct OOPLayer end
+    module Restriction
 
-      struct Plain end
-      struct And end
-      struct Or end
-      struct Comparator end
+        struct OOPLayer end
 
-      struct InPlace end
-      struct Input end
-      struct Output end
+        struct And end
+        struct Or end
+        struct Comparator end
 
-  end
+        struct InPlace end
+        struct Input end
+        struct Output end
 
-  module Gate
-    extend self
+    end
+
     include Restriction
 
-    def shift(f, s, wires, by amount)
-      {f, s, shift(wires, by: amount)}
+    def self.comparator_between(*wires)
+      Gate(Comparator, InPlace, typeof(wires)).new(wires)
     end
 
-    def shift(wires, by amount)
-      wires.map &.+ amount
+    def self.and_of(*, tuple wires)
+      Gate(And, Input, typeof(wires)).new(wires)
     end
+
+    def self.and_of(*wires)
+      and_of(tuple: wires)
+    end
+
+    def self.or_as(*wires)
+      Gate(Or, Output, typeof(wires)).new(wires)
+    end
+
+    getter wires
+
+    def initialize(@wires : T)
+    end
+
+    def shifted_by(amount)
+      self.class.new(wires.map &.+ amount)
+    end
+
+    forward_missing_to wires
 
   end
 

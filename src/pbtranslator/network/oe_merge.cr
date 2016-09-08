@@ -4,7 +4,6 @@ module PBTranslator
 
   # See `Scheme::OEMerge`.
   class Network::OEMerge(I)
-    include Gate::Restriction
 
     # The binary logarithm of the width of the input halves of this network.
     getter half_width_log2
@@ -39,9 +38,9 @@ module PBTranslator
           partner_index = partner(half_width_log2, layer_index, wire_index)
           next unless wire_index < partner_index
           visitor.{{prefix.id}}visit(
-            Comparator,
-            InPlace,
-            Gate.shift({wire_index, partner_index}, by: offset),
+            Gate.
+            comparator_between(wire_index, partner_index).
+            shifted_by(offset)
           )
         end
       end
