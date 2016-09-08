@@ -3,9 +3,11 @@ require "bit_array"
 require "../spec_helper"
 
 record ArrayConeSwap(T), array : Array(T) do
-  def visit(comparator) : Void
-    i, j = comparator.wires
-    x, y = comparator.output_cone
+  include PBTranslator::Gate::Restriction
+
+  def visit(f : Comparator.class, s : InPlace.class, wires) : Void
+    i, j = wires
+    x, y = wires.output_cone
     a = @array[i]
     b = @array[j]
     c = a < b
@@ -15,8 +17,10 @@ record ArrayConeSwap(T), array : Array(T) do
 end
 
 record ArrayConeNot do
-  def visit(comparator) : Void
-    x, y = comparator.output_cone
+  include PBTranslator::Gate::Restriction
+
+  def visit(f : Comparator.class, s : InPlace.class, wires) : Void
+    x, y = wires.output_cone
     if x || y
       raise "Expected two false booleans, got #{{x, y}}"
     end

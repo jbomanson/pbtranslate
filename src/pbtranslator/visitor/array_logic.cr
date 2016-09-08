@@ -1,10 +1,12 @@
+require "../gate"
 require "../lag_array"
 
 module PBTranslator
 
   struct Visitor::ArrayLogic(T)
+    include Gate::Restriction
 
-    struct OOPLayerVisitor
+    struct OOPLayerVisitor(T)
 
       struct OrVisitor(T)
 
@@ -13,9 +15,8 @@ module PBTranslator
         def initialize(@array : Array(T), @value : T)
         end
 
-        def visit(and_input : Gate(Gate::And, Gate::Input, T)) : Void
+        def visit(f : And.class, s : Input.class, wires) : Void
           @value |=
-            and_input.
             wires.
             map do |wire|
               @array[wire]
@@ -27,13 +28,13 @@ module PBTranslator
 
       end
 
-      def initialize(@lagged : LagArray::Lagged(T))
+      def initialize(@lagged : LagArray::Lagged(T), @zero : T)
       end
 
-      def visit(or_output : Gate(Gate::Or, Gate::Output, {I})) : Void
-        or_visitor = OrVisitor.new(@lagged.array)
+      def visit(f : Or.class, s : Output.class, wires) : Void
+        or_visitor = OrVisitor.new(@lagged.array, @zero)
         yield or_visitor
-        index = or_output.wires.first
+        index = wires.first
         value = or_visitor.value
         @lagged[index] = value
       end
@@ -44,17 +45,17 @@ module PBTranslator
       @array = LagArray(T).new(array)
     end
 
-    def visit(comparator : Gate(Gate::Comparator, Gate::InPlace, {I, I})) : Void
-      i, j = comparator.wires
+    def visit(f : Comparator.class, s : InPlace.class, wires) : Void
+      i, j = wires
       a = @array[i]
       b = @array[j]
       @array[i] = a & b
       @array[j] = a | b
     end
 
-    def visit(ooplayer : Gate::OOPLayer) : Void
+    def visit(f : OOPLayer.class) : Void
       @array.lag do |lagged|
-        layer_visitor = OOPLayerVisitor.new(lagged)
+        layer_visitor = OOPLayerVisitor.new(lagged, @zero)
         yield layer_visitor
       end
     end

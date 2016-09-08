@@ -44,7 +44,7 @@ module PBTranslator
     #     end
     #     a.array # => [:b, :a]
     def lag : Void
-      lagged = Lagged.new(@updates)
+      lagged = Lagged.new(self)
       yield lagged
       @updates.each do |index, value|
         @array[index] = value

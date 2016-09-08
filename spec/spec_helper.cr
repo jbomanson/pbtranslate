@@ -16,14 +16,16 @@ class MethodCallCounter
 end
 
 struct DepthCounter
+  include PBTranslator::Gate::Restriction
+
   def initialize(size : Int)
     @array = Array(UInt32).new(size, 0_u32)
   end
 
-  def visit(gate : PBTranslator::Gate(F, PBTranslator::Gate::InPlace, T)) : Void
-    input_wires = gate.wires
+  def visit(f, s : InPlace.class, wires) : Void
+    input_wires = wires
     depth = @array.values_at(*input_wires).max + 1
-    output_wires = gate.wires
+    output_wires = wires
     output_wires.each do |index|
       @array[index] = depth
     end

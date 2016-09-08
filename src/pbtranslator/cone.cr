@@ -11,6 +11,8 @@ module PBTranslator::Cone
 
   # :nodoc:
   class BackwardVisitor(I)
+    include Gate::Restriction
+
     # A visitor for determining which gate outputs are _wanted_ based on
     # which network outputs are wanted.
     #
@@ -27,13 +29,11 @@ module PBTranslator::Cone
 
     # Propagates a cone through a gate backwards from its output to input
     # wires.
-    def reverse_visit(
-      gate : PBTranslator::Gate(F, PBTranslator::Gate::InPlace, T)) : Void
-
+    def reverse_visit(f, s : InPlace.class, wires) : Void
       @reverse_index += 1
-      output_wires = gate.wires
+      output_wires = wires
       return if output_wires.none? {|wire| @levels[wire]}
-      input_wires = gate.wires
+      input_wires = wires
       input_wires.each do |wire|
         @levels[wire] ||= @reverse_index
       end
@@ -52,19 +52,19 @@ module PBTranslator::Cone
 
   end
 
-  # A gate enhanced with an `#output_cone` method.
-  struct Gate(T, W)
+  # A tuple of wires enhanced with an `#output_cone` method.
+  struct Wires(T, W)
 
     # A tuple of booleans telling which output wires are wanted and which are
     # not.
     # This is computed based on `#output_wires`.
     getter output_cone
 
-    protected def initialize(@sub_gate : T, @output_cone : W)
+    protected def initialize(@sub_wires : T, @output_cone : W)
     end
 
-    # Forwards all calls to the wrapped gate.
-    forward_missing_to @sub_gate
+    # Forwards all calls to the wrapped wires.
+    forward_missing_to @sub_wires
 
     # NOTE: This struct could alternatively be implemented by wrapping the
     # @levels and @index of ForwardVisitor and computing the cone here.
@@ -74,6 +74,8 @@ module PBTranslator::Cone
 
   # :nodoc:
   struct ForwardVisitor(V, I)
+    include Gate::Restriction
+
     # A visitor for wrapping another visitor and providing it with information
     # on which gate outputs are wanted.
     #
@@ -84,13 +86,13 @@ module PBTranslator::Cone
     def initialize(@sub_visitor : V, @levels : Array(I?))
     end
 
-    def visit(gate) : Void
-      output_wires = gate.wires
+    def visit(f, s : Output.class | InPlace.class, wires) : Void
+      output_wires = wires
       output_cone =
         @levels.values_at(*output_wires).map do |wire|
           wire ? @index < wire : false
         end
-      @sub_visitor.visit(Gate.new(gate, output_cone))
+      @sub_visitor.visit(f, s, Wires.new(wires, output_cone))
       @index += 1
     end
 
@@ -102,8 +104,7 @@ module PBTranslator::Cone
   # The wanted gate outputs are determined based on given *wanted* output
   # wires.
   #
-  # The method visitor.visit is called with a gate argument of type
-  # `Gate`.
+  # The method visitor.visit is called with a `wires` argument of type `Wires`.
   def self.visit(*, network, visitor, wanted)
     backward_visitor = BackwardVisitor(Int32).new(wanted)
     network.reverse_visit(backward_visitor)
