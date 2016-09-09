@@ -50,8 +50,8 @@ module PBTranslator
       i, j = gate.wires
       a = @array[i]
       b = @array[j]
-      @array[i] = a & b
-      @array[j] = a | b
+      @array[i] = a | b
+      @array[j] = a & b
     end
 
     def visit(f : OOPLayer.class) : Void
