@@ -8,7 +8,7 @@ module PBTranslator
 
     struct OOPLayerVisitor(T)
 
-      struct OrVisitor(T)
+      class OrVisitor(T)
 
         protected getter value
 

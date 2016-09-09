@@ -1,8 +1,7 @@
 require "../../spec_helper"
 
-# TODO: Enumerate different values of N.
-
-N = 2
+L = 1
+N = 1 << L
 
 scheme = PBTranslator::Scheme::DirectMerge::INSTANCE
 
@@ -12,16 +11,17 @@ describe typeof(scheme) do
     x =
       Array.new(N + 1) do |i|
         Array.new(N) do |j|
-          i <= j
+          !(i <= j)
         end
       end
     # Enumerate pairs of sorted pairs.
     x.product(x) do |u, v|
       a = u + v
       b = a.clone
-      c = a.sort_by {|w| w ? 1 : 0}
+      c = a.sort_by {|w| w ? 0 : 1}
       visitor = PBTranslator::Visitor::ArrayLogic.new(b, false)
-      scheme.network(1).visit(visitor)
+      scheme.network(L).visit(visitor)
+      b.should eq(c)
     end
   end
 end
