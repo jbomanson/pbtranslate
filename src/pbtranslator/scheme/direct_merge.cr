@@ -10,7 +10,7 @@ module PBTranslator
   # width of the produced networks.
   class Scheme::DirectMerge
 
-    INSTANCE = self.new
+    INSTANCE = new
 
     def network(half_width_log2)
       Network::DirectMerge.new(half_width_log2)

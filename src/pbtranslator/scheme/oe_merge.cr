@@ -12,7 +12,7 @@ module PBTranslator
     # The only instance of the OEMerge scheme that needs to be used.
     #
     # To obtain instances of networks, use `#network`.
-    INSTANCE = self.new
+    INSTANCE = new
 
     # Returns a `Network::OEMerge` instance for merging pairs of consecutive
     # sequences of of the same width that is a power of two.
