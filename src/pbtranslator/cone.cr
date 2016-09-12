@@ -80,9 +80,8 @@ module PBTranslator::Cone
     #
     # The information is expected to have been gathered with `BackwardVisitor`.
 
-    @index = I.new(0)
-
     def initialize(@sub_visitor : V, @levels : Array(I?))
+      @index = I.new(0)
     end
 
     def visit(gate) : Void
