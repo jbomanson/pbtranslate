@@ -1,7 +1,6 @@
 require "../spec_helper"
 
 describe PBTranslator::LagArray do
-
   it "can swap a pair in the middle of an array" do
     a = [:a, :b, :c, :d]
     g = PBTranslator::LagArray.new(a)
@@ -11,5 +10,4 @@ describe PBTranslator::LagArray do
     end
     a.should eq([:a, :c, :b, :d])
   end
-
 end

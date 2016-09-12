@@ -1,7 +1,6 @@
 require "../gate"
 
 module PBTranslator
-
   class Network::DirectMerge(I)
     include Gate::Restriction
 
@@ -79,7 +78,5 @@ module PBTranslator
 
     # Like `#visit` but in reverse order and calling reverse_visit instead.
     visitors reverse_, b.downto(a)
-
   end
-
 end

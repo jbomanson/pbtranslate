@@ -2,14 +2,11 @@ require "../gate"
 require "../lag_array"
 
 module PBTranslator
-
   struct Visitor::ArrayLogic(T)
     include Gate::Restriction
 
     struct OOPLayerVisitor(T)
-
       class OrVisitor(T)
-
         protected getter value
 
         def initialize(@array : Array(T), @value : T)
@@ -17,16 +14,15 @@ module PBTranslator
 
         def visit(gate : Gate(And, Input, _)) : Void
           @value |=
-            gate.
-            wires.
-            map do |wire|
+            gate
+              .wires
+              .map do |wire|
               @array[wire]
-            end.
-            reduce do |memo, input|
+            end
+              .reduce do |memo, input|
               memo & input
             end
         end
-
       end
 
       def initialize(@lagged : LagArray::Lagged(T), @zero : T)
@@ -39,7 +35,6 @@ module PBTranslator
         value = or_visitor.value
         @lagged[index] = value
       end
-
     end
 
     def initialize(array : Array(T), @zero : T)
@@ -60,7 +55,5 @@ module PBTranslator
         yield layer_visitor
       end
     end
-
   end
-
 end

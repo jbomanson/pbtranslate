@@ -41,7 +41,7 @@ private def compute(scheme, random, width_log2, wanted)
   PBTranslator::Cone.visit(
     network: scheme.network(width_log2),
     visitor: ArrayConeSwap.new(b),
-    wanted:  wanted,
+    wanted: wanted,
   )
   {b, c}.map do |array|
     index = 0
@@ -62,7 +62,7 @@ describe PBTranslator::Cone do
       PBTranslator::Cone.visit(
         network: scheme.network(width_log2),
         visitor: ArrayConeNot.new,
-        wanted:  wanted,
+        wanted: wanted,
       )
     end
   end

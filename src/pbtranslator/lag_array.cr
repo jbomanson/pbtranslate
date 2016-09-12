@@ -1,10 +1,7 @@
 module PBTranslator
-
   struct LagArray(T)
-
     # A wrapper over a `LagArray(T)` through which all writes are delayed.
     struct Lagged(T)
-
       protected def initialize(@update_array : LagArray(T))
       end
 
@@ -18,7 +15,6 @@ module PBTranslator
       def []=(index : Int32, value : T)
         @update_array.updates << {index, value}
       end
-
     end
 
     # The underlying `Array`.
@@ -51,7 +47,5 @@ module PBTranslator
       end
       @updates.clear
     end
-
   end
-
 end

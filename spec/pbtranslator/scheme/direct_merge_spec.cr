@@ -20,7 +20,7 @@ describe typeof(scheme) do
       x.product(x) do |u, v|
         a = u + v
         b = a.clone
-        c = a.sort_by {|w| w ? 0 : 1}
+        c = a.sort_by { |w| w ? 0 : 1 }
         visitor = PBTranslator::Visitor::ArrayLogic.new(b, false)
         scheme.network(half_width_log2).visit(visitor)
         b.should eq(c)

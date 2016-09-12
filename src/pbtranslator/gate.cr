@@ -1,19 +1,26 @@
 module PBTranslator
-
   struct Gate(F, S, T)
-
     module Restriction
+      struct OOPLayer
+      end
 
-        struct OOPLayer end
+      struct And
+      end
 
-        struct And end
-        struct Or end
-        struct Comparator end
+      struct Or
+      end
 
-        struct InPlace end
-        struct Input end
-        struct Output end
+      struct Comparator
+      end
 
+      struct InPlace
+      end
+
+      struct Input
+      end
+
+      struct Output
+      end
     end
 
     include Restriction
@@ -44,7 +51,5 @@ module PBTranslator
     end
 
     forward_missing_to wires
-
   end
-
 end

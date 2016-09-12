@@ -8,7 +8,6 @@ require "./gate"
 #
 # A module method `.visit` computes this cone.
 module PBTranslator::Cone
-
   # :nodoc:
   class BackwardVisitor(I)
     include Gate::Restriction
@@ -24,7 +23,7 @@ module PBTranslator::Cone
 
     # Creates a visitor to propagate given *wanted* network outputs backward.
     def initialize(wanted)
-      initialize(wanted.map {|b| b ? I.new(0) : nil})
+      initialize(wanted.map { |b| b ? I.new(0) : nil })
     end
 
     # Propagates a cone through a gate backwards from its output to input
@@ -32,7 +31,7 @@ module PBTranslator::Cone
     def reverse_visit(gate : Gate(_, InPlace, _)) : Void
       @reverse_index += 1
       output_wires = gate.wires
-      return if output_wires.none? {|wire| @levels[wire]}
+      return if output_wires.none? { |wire| @levels[wire] }
       input_wires = gate.wires
       input_wires.each do |wire|
         @levels[wire] ||= @reverse_index
@@ -49,12 +48,10 @@ module PBTranslator::Cone
     def turn_around(sub_visitor)
       ForwardVisitor.new(sub_visitor, finish)
     end
-
   end
 
   # A wire tuple enhanced with an `#output_cone` method.
   struct Wires(T, C)
-
     def self.wrap(gate : Gate(F, S, T), output_cone)
       Gate(F, S, Wires(T, typeof(output_cone))).new(Wires.new(gate.wires, output_cone))
     end
@@ -78,7 +75,6 @@ module PBTranslator::Cone
 
   # :nodoc:
   struct ForwardVisitor(V, I)
-
     # A visitor for wrapping another visitor and providing it with information
     # on which gate outputs are wanted.
     #
@@ -98,7 +94,6 @@ module PBTranslator::Cone
       @sub_visitor.visit(Wires.wrap(gate, output_cone))
       @index += 1
     end
-
   end
 
   # Visits a *network* with *visitor* while indicating which gate
@@ -115,5 +110,4 @@ module PBTranslator::Cone
     forward_visitor = backward_visitor.turn_around(visitor)
     network.visit(forward_visitor)
   end
-
 end

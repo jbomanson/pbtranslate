@@ -1,10 +1,8 @@
 require "../gate"
 
 module PBTranslator
-
   # See `Scheme::OEMerge`.
   class Network::OEMerge(I)
-
     # The binary logarithm of the width of the input halves of this network.
     getter half_width_log2
 
@@ -69,7 +67,5 @@ module PBTranslator
         end
       end
     end
-
   end
-
 end

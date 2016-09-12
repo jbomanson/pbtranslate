@@ -2,9 +2,7 @@ require "../scheme/merge_sort"
 require "../scheme/oe_merge"
 
 module PBTranslator
-
   class Network::MergeSort(S, M, I)
-
     def initialize(@sort_scheme : S, @merge_scheme : M, @width_log2 : I)
     end
 
@@ -68,7 +66,5 @@ module PBTranslator
         sort_network.reverse_visit(visitor, offset)
       end
     end
-
   end
-
 end
