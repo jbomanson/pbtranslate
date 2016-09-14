@@ -6,10 +6,10 @@ module PBTranslator
       end
 
       # The underlying `Array`.
-      delegate array, to: @update_array
+      delegate to_a, to: @update_array
 
       # Return a value assigned before the creation of this lagged object.
-      delegate :[], to: array
+      delegate :[], to: to_a
 
       # Schedule an assignment to be done at a later moment.
       def []=(index : Int32, value : T)
@@ -18,7 +18,9 @@ module PBTranslator
     end
 
     # The underlying `Array`.
-    getter array
+    def to_a
+      @array
+    end
 
     protected getter updates
 
@@ -27,8 +29,8 @@ module PBTranslator
       @updates = Array({Int32, T}).new
     end
 
-    # Delegated to `#array`.
-    delegate :[], :[]=, to: array
+    # Delegated to `#to_a`.
+    delegate :[], :[]=, to: to_a
 
     # Yields a `Lagged` object for accessing this array so that all assignments
     # via the object are applied only once the block returns.
@@ -38,7 +40,7 @@ module PBTranslator
     #       lagged[0] = lagged[1]
     #       lagged[1] = lagged[0]
     #     end
-    #     a.array # => [:b, :a]
+    #     a.to_a # => [:b, :a]
     def lag : Void
       lagged = Lagged.new(self)
       yield lagged

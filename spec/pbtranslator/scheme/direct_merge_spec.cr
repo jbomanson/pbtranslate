@@ -21,7 +21,7 @@ describe typeof(scheme) do
         a = u + v
         b = a.clone
         c = a.sort_by { |w| w ? 0 : 1 }
-        visitor = PBTranslator::Visitor::ArrayLogic.new(b, false)
+        visitor = PBTranslator::Visitor::ArrayLogic.new(b)
         scheme.network(half_width_log2).visit(visitor)
         b.should eq(c)
       end

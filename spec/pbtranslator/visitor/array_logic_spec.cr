@@ -13,7 +13,7 @@ describe PBTranslator::Visitor::ArrayLogic do
       a = Array.new(width) { random.next_bool }
       b = a.clone
       c = a.sort_by { |w| w ? 0 : 1 }
-      visitor = PBTranslator::Visitor::ArrayLogic.new(b, false)
+      visitor = PBTranslator::Visitor::ArrayLogic.new(b)
       scheme.network(width_log2).visit(visitor)
       b.should eq(c)
     end
