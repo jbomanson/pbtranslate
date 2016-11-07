@@ -1,11 +1,10 @@
-require "./one_way"
 require "../network/merge_sort"
 
 module PBTranslator
   # A MergeSort scheme implements traditional merge sorting using a scheme of
   # type *S* for sorting subsequences and a scheme of type *M* for merging
   # them.
-  class Scheme::MergeSort(S, M) < Scheme::OneWay
+  class Scheme::MergeSort(S, M)
     # A MergeSort scheme for sorting via recursive merging.
     struct Recursive(M)
       # Creates a MergeSort scheme that sorts subsequences by recursively

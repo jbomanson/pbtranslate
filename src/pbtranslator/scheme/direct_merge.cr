@@ -1,4 +1,3 @@
-require "./one_way"
 require "../network/direct_merge"
 
 module PBTranslator
