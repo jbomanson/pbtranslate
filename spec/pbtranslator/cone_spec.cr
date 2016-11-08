@@ -5,7 +5,7 @@ require "../spec_helper"
 record ArrayConeSwap(T), array : Array(T) do
   include PBTranslator::Gate::Restriction
 
-  def visit(gate : PBTranslator::Gate(Comparator, InPlace, _)) : Void
+  def visit(gate : PBTranslator::Gate(Comparator, InPlace, _), way : PBTranslator::Forward) : Void
     i, j = gate.wires
     x, y = gate.wires.output_cone
     a = @array[i]
@@ -19,7 +19,7 @@ end
 record ArrayConeNot do
   include PBTranslator::Gate::Restriction
 
-  def visit(gate : PBTranslator::Gate(Comparator, InPlace, _)) : Void
+  def visit(gate : PBTranslator::Gate(Comparator, InPlace, _), way : PBTranslator::Forward) : Void
     x, y = gate.wires.output_cone
     if x || y
       raise "Expected two false booleans, got #{{x, y}}"

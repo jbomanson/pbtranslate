@@ -14,7 +14,7 @@ describe PBTranslator::Scheme::MergeSort do
       b = a.clone
       c = a.sort
       visitor = PBTranslator::Visitor::ArraySwap.new(b)
-      scheme.network(width_log2).visit(visitor)
+      scheme.network(width_log2).visit(visitor, PBTranslator::FORWARD)
       b.should eq(c)
     end
   end
@@ -23,9 +23,9 @@ describe PBTranslator::Scheme::MergeSort do
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       network = scheme.network(width_log2)
       a = network.size
-      visitor = MethodCallCounter.new
-      network.visit(visitor)
-      b = visitor[:visit]
+      visitor = VisitCallCounter.new
+      network.visit(visitor, PBTranslator::FORWARD)
+      b = visitor.count(PBTranslator::FORWARD)
       a.should eq(b)
     end
   end
@@ -33,21 +33,20 @@ describe PBTranslator::Scheme::MergeSort do
   it "represents matching numbers of gates going forward and backward" do
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       network = scheme.network(width_log2)
-      a, x =
-        begin
-          visitor = MethodCallCounter.new
-          network.visit(visitor)
-          {visitor[:visit], visitor[:reverse_visit]}
-        end
-      b, y =
-        begin
-          visitor = MethodCallCounter.new
-          network.reverse_visit(visitor)
-          {visitor[:reverse_visit], visitor[:visit]}
-        end
-      x.should eq(0)
-      y.should eq(0)
-      a.should eq(b)
+
+      vf, vb = Array.new(2) { VisitCallCounter.new }
+      wf, wb = {PBTranslator::FORWARD, PBTranslator::BACKWARD}
+      
+      network.visit(vf, wf)
+      network.visit(vb, wb)
+
+      ff, fb = {wf, wb}.map {|w| vf.count(w)}
+      bf, bb = {wf, wb}.map {|w| vb.count(w)}
+
+      fb.should eq(0)
+      bf.should eq(0)
+      (ff + fb).should eq(bf + bb)
+      ff.should eq(bb)
     end
   end
 
@@ -57,7 +56,7 @@ describe PBTranslator::Scheme::MergeSort do
       a = network.depth
       width = 1 << width_log2
       visitor = DepthCounter.new(width)
-      network.visit(visitor)
+      network.visit(visitor, PBTranslator::FORWARD)
       b = visitor.depth
       a.should eq(b)
     end

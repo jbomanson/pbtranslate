@@ -28,7 +28,7 @@ module PBTranslator::Cone
 
     # Propagates a cone through a gate backwards from its output to input
     # wires.
-    def reverse_visit(gate : Gate(_, InPlace, _)) : Void
+    def visit(gate : Gate(_, InPlace, _), way : Backward) : Void
       @reverse_index += 1
       output_wires = gate.wires
       return if output_wires.none? { |wire| @levels[wire] }
@@ -84,13 +84,13 @@ module PBTranslator::Cone
       @index = I.new(0)
     end
 
-    def visit(gate) : Void
+    def visit(gate, way : Forward) : Void
       output_wires = gate.wires
       output_cone =
         @levels.values_at(*output_wires).map do |wire|
           wire ? @index < wire : false
         end
-      @sub_visitor.visit(Wires.wrap(gate, output_cone))
+      @sub_visitor.visit(Wires.wrap(gate, output_cone), way)
       @index += 1
     end
   end
@@ -105,8 +105,8 @@ module PBTranslator::Cone
   # `Wires`.
   def self.visit(*, network, visitor, wanted)
     backward_visitor = BackwardVisitor(Int32).new(wanted)
-    network.reverse_visit(backward_visitor)
+    network.visit(backward_visitor, BACKWARD)
     forward_visitor = backward_visitor.turn_around(visitor)
-    network.visit(forward_visitor)
+    network.visit(forward_visitor, FORWARD)
   end
 end

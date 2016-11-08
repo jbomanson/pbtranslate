@@ -17,19 +17,19 @@ module PBTranslator
   record WidthCheckingVisitor(I), width : I do
     include Gate::Restriction
 
-    def visit(gate : Gate) : Void
+    def visit(gate : Gate, *args, **options) : Void
       wires = gate.wires
       unless wires.all? &.<(width)
         raise "Expected wires less than #{width}, got #{wires}"
       end
     end
 
-    def visit(gate : Gate) : Void
-      visit(gate)
+    def visit(gate : Gate, *args, **options) : Void
+      visit(gate, *args, **options)
       yield self
     end
 
-    def visit(layer : OOPLayer.class) : Void
+    def visit(layer : OOPLayer.class, *args, **options) : Void
       yield self
     end
   end
@@ -57,7 +57,7 @@ module PBTranslator
     random = Random.new(SEED)
     each_sample_size(random) do |width|
       visitor = WidthCheckingVisitor.new(width)
-      scheme.network(width).visit(visitor)
+      scheme.network(width).visit(visitor, FORWARD)
     end
   end
 
@@ -69,7 +69,7 @@ module PBTranslator
       b = a.clone
       c = sort(a)
       visitor = visitor_factory.new(b)
-      scheme.network(width).visit(visitor)
+      scheme.network(width).visit(visitor, FORWARD)
       b.should eq(c)
     end
   end

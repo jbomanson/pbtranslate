@@ -21,37 +21,29 @@ module PBTranslator
       half_width_log2 + 1
     end
 
-    # :nodoc:
-    macro define_visit(prefix, each_expr)
-      def {{prefix.id}}visit(visitor, offset = I.new(0))
-        a, b = {I.new(0), half_width_log2}
-        {{each_expr}} do |layer_index|
-          {{prefix.id}}layer_visit(visitor, offset, layer_index)
-        end
-      end
-
-      private def {{prefix.id}}layer_visit(visitor, offset, layer_index)
-        a, b = {I.new(0), (I.new(1) << (half_width_log2 + 1)) - 1}
-        {{each_expr}} do |wire_index|
-          partner_index = partner(half_width_log2, layer_index, wire_index)
-          next unless wire_index < partner_index
-          visitor.{{prefix.id}}visit(
-            Gate.
-            comparator_between(wire_index, partner_index).
-            shifted_by(offset)
-          )
-        end
-      end
-    end
-
     # Performs a visit over the comparators in this network placed at an
     # *offset*.
     #
     # The visit method of *visitor* is called for each comparator.
-    define_visit "", a.upto(b)
+    def visit(visitor, way : Way, at offset = I.new(0))
+      a, b = {I.new(0), half_width_log2}
+      way.each_between(a, b) do |layer_index|
+        layer_visit(visitor, way, offset, layer_index)
+      end
+    end
 
-    # Like `#visit` but in reverse order and calling reverse_visit instead.
-    define_visit reverse_, b.downto(a)
+    private def layer_visit(visitor, way, at offset, layer_index)
+      a, b = {I.new(0), (I.new(1) << (half_width_log2 + 1)) - 1}
+      way.each_between(a, b) do |wire_index|
+        partner_index = partner(half_width_log2, layer_index, wire_index)
+        next unless wire_index < partner_index
+        gate =
+          Gate
+          .comparator_between(wire_index, partner_index)
+          .shifted_by(offset)
+        visitor.visit(gate, way)
+      end
+    end
 
     private def partner(half_width_log2, layer_index, wire_index)
       if I.new(0) == layer_index

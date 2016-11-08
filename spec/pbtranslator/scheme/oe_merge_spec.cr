@@ -14,7 +14,7 @@ describe PBTranslator::Scheme::OEMerge do
       b = a.clone
       c = a.sort
       visitor = PBTranslator::Visitor::ArraySwap.new(b)
-      scheme.network(1).visit(visitor)
+      scheme.network(1).visit(visitor, PBTranslator::FORWARD)
       b.should eq(c)
     end
   end

@@ -18,7 +18,7 @@ module PBTranslator
       @factory = AccumulatingVisitorFactory(T).new
     end
 
-    def visit(gate : Gate(Comparator, InPlace, _)) : Void
+    def visit(gate : Gate(Comparator, InPlace, _), way : Forward) : Void
       i, j = gate.wires
       a = @array[i]
       b = @array[j]
@@ -26,7 +26,7 @@ module PBTranslator
       @array[j] = @context.operate(And, {a, b})
     end
 
-    def visit(f : OOPLayer.class) : Void
+    def visit(f : OOPLayer.class, way : Way) : Void
       @array.lag do |lagged|
         layer_visitor = Layer.new(lagged, @context, @factory)
         yield layer_visitor
@@ -52,7 +52,7 @@ module PBTranslator
         @factory : AccumulatingVisitorFactory(T))
       end
 
-      def visit(gate : Gate(F, Output, _)) : Void
+      def visit(gate : Gate(F, Output, _), way : Forward) : Void
         index = gate.wires.first
         value =
           @factory.visit(F, @array.to_a, @context) do |output_visitor|
@@ -93,7 +93,7 @@ module PBTranslator
         @storage : Array(T))
       end
 
-      def visit(gate : Gate(F, Input, _)) : Void
+      def visit(gate : Gate(F, Input, _), way : Forward) : Void
         operands = gate.wires.map { |wire| @array[wire] }
         visit(@context.operate(F, operands))
       end

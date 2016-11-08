@@ -4,16 +4,18 @@ require "../src/pbtranslator"
 WIDTH_LOG2_MAX =        10
 SEED           = 482382392
 
-# An object that counts the number of times any of its methods is called.
-class MethodCallCounter
-  delegate "[]", to: @h
-
+# An object that counts the number of times its visit forward and backward.
+class VisitCallCounter
   def initialize
-    @h = Hash(Symbol, UInt32).new(0_u32)
+    @h = Hash(String, UInt32).new(0_u32)
   end
 
-  macro method_missing(call)
-    @h[:{{call.name.id.stringify}}] += 1
+  def visit(location, way : PBTranslator::Way) : Void #, *args, **options) : Void
+    @h[way.to_s] += 1
+  end
+
+  def count(way : PBTranslator::Way)
+    @h[way.to_s]
   end
 end
 
@@ -24,7 +26,7 @@ struct DepthCounter
     @array = Array(UInt32).new(size, 0_u32)
   end
 
-  def visit(gate : PBTranslator::Gate(_, InPlace, _)) : Void
+  def visit(gate : PBTranslator::Gate(_, InPlace, _), *args, **options) : Void
     input_wires = gate.wires
     depth = @array.values_at(*input_wires).max + 1
     output_wires = gate.wires
