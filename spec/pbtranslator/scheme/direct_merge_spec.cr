@@ -24,7 +24,7 @@ describe typeof(scheme) do
         b = a.clone
         c = a.sort_by { |w| w ? 0 : 1 }
         visitor = Visitor::ArrayLogic.new(b)
-        scheme.network(half_width_log2).visit(visitor, FORWARD)
+        scheme.network(half_width_log2).host(visitor, FORWARD)
         b.should eq(c)
       end
     end

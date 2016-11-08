@@ -19,20 +19,20 @@ module PBTranslator
 
     # Arranges a visit over the AND and OR gates in this network placed at an
     # *offset*.
-    def visit(visitor, way : Way, at offset = I.new(0))
+    def host(visitor, way : Way, at offset = I.new(0))
       visitor.visit(OOPLayer, way) do |layer_visitor|
         base = offset - 1
         half_width = I.new(1) << @half_width_log2
         a = I.new(1)
         b = half_width << 1
         way.each_between(a, b) do |out_value| # This is one indexed.
-          visit_or(layer_visitor, way, base, half_width, out_value)
+          or_host(layer_visitor, way, base, half_width, out_value)
         end
       end
     end
 
     # Arranges a visit to an OR gate in a layer.
-    private def visit_or(
+    private def or_host(
       layer_visitor, way, base, half_width, out_value)
 
       wire = out_value + base
@@ -40,7 +40,7 @@ module PBTranslator
         a = {I.new(0), out_value - half_width}.max
         b = {half_width, out_value}.min
         way.each_between(a, b) do |left_value|
-          visit_and(
+          and_host(
             or_visitor,
             way,
             base,
@@ -52,7 +52,7 @@ module PBTranslator
     end
 
     # Arranges a visit to an AND gate connected to an OR gate.
-    private def visit_and(
+    private def and_host(
       or_visitor, way, base, half_width, out_value, left_value)
 
       right_value = out_value - left_value

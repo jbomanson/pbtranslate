@@ -57,7 +57,7 @@ def self.test_limits_with_sub_scheme(sub_scheme)
   random = Random.new(SEED)
   each_sample_size(random) do |width|
     visitor = WidthCheckingVisitor.new(width)
-    scheme.network(width).visit(visitor, FORWARD)
+    scheme.network(width).host(visitor, FORWARD)
   end
 end
 
@@ -69,7 +69,7 @@ def self.test_sorting_with_sub_scheme(sub_scheme, visitor_factory)
     b = a.clone
     c = sort(a)
     visitor = visitor_factory.new(b)
-    scheme.network(width).visit(visitor, FORWARD)
+    scheme.network(width).host(visitor, FORWARD)
     b.should eq(c)
   end
 end

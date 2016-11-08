@@ -21,18 +21,18 @@ module PBTranslator
       half_width_log2 + 1
     end
 
-    # Performs a visit over the comparators in this network placed at an
+    # Hosts a visit over the comparators in this network placed at an
     # *offset*.
     #
     # The visit method of *visitor* is called for each comparator.
-    def visit(visitor, way : Way, at offset = I.new(0))
+    def host(visitor, way : Way, at offset = I.new(0))
       a, b = {I.new(0), half_width_log2}
       way.each_between(a, b) do |layer_index|
-        layer_visit(visitor, way, offset, layer_index)
+        layer_host(visitor, way, offset, layer_index)
       end
     end
 
-    private def layer_visit(visitor, way, at offset, layer_index)
+    private def layer_host(visitor, way, at offset, layer_index)
       a, b = {I.new(0), (I.new(1) << (half_width_log2 + 1)) - 1}
       way.each_between(a, b) do |wire_index|
         partner_index = partner(half_width_log2, layer_index, wire_index)

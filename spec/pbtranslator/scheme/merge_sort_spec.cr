@@ -16,7 +16,7 @@ describe Scheme::MergeSort do
       b = a.clone
       c = a.sort
       visitor = Visitor::ArraySwap.new(b)
-      scheme.network(width_log2).visit(visitor, FORWARD)
+      scheme.network(width_log2).host(visitor, FORWARD)
       b.should eq(c)
     end
   end
@@ -26,7 +26,7 @@ describe Scheme::MergeSort do
       network = scheme.network(width_log2)
       a = network.size
       visitor = VisitCallCounter.new
-      network.visit(visitor, FORWARD)
+      network.host(visitor, FORWARD)
       b = visitor.count(FORWARD)
       a.should eq(b)
     end
@@ -39,8 +39,8 @@ describe Scheme::MergeSort do
       vf, vb = Array.new(2) { VisitCallCounter.new }
       wf, wb = {FORWARD, BACKWARD}
       
-      network.visit(vf, wf)
-      network.visit(vb, wb)
+      network.host(vf, wf)
+      network.host(vb, wb)
 
       ff, fb = {wf, wb}.map {|w| vf.count(w)}
       bf, bb = {wf, wb}.map {|w| vb.count(w)}
@@ -58,7 +58,7 @@ describe Scheme::MergeSort do
       a = network.depth
       width = 1 << width_log2
       visitor = DepthCounter.new(width)
-      network.visit(visitor, FORWARD)
+      network.host(visitor, FORWARD)
       b = visitor.depth
       a.should eq(b)
     end

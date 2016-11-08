@@ -6,7 +6,7 @@ require "./gate"
 # output wires of gates do they depend on.
 #  We call the part of the network determined in this way a cone of influence.
 #
-# A module method `.visit` computes this cone.
+# A module method `.arrange_visit` computes this cone.
 module PBTranslator::Cone
   # :nodoc:
   class BackwardVisitor(I)
@@ -95,7 +95,7 @@ module PBTranslator::Cone
     end
   end
 
-  # Visits a *network* with *visitor* while indicating which gate
+  # Arranges a visit to a *network* for *visitor* while indicating which gate
   # outputs are wanted and which are not.
   #
   # The wanted gate outputs are determined based on given *wanted* output
@@ -103,10 +103,10 @@ module PBTranslator::Cone
   #
   # The method visitor.visit is called with a `wires` argument of type
   # `Wires`.
-  def self.visit(*, network, visitor, wanted)
+  def self.arrange_visit(*, network, visitor, wanted)
     backward_visitor = BackwardVisitor(Int32).new(wanted)
-    network.visit(backward_visitor, BACKWARD)
+    network.host(backward_visitor, BACKWARD)
     forward_visitor = backward_visitor.turn_around(visitor)
-    network.visit(forward_visitor, FORWARD)
+    network.host(forward_visitor, FORWARD)
   end
 end

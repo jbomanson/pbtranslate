@@ -35,27 +35,27 @@ module PBTranslator
       )
     end
 
-    private def helper_visit(*args, **options) : Void
+    private def helper_host(*args, **options) : Void
       three_cases(
         nil,
-        visit(*args, **options),
+        host(*args, **options),
         yield less, I.new(1) << less, @sort_scheme.network(less)
       )
     end
 
-    def visit(visitor, way : Forward, at offset = I.new(0))
-      helper_visit(visitor, way, offset) do |less, more, sort_network|
-        sort_network.visit(visitor, way, offset)
-        sort_network.visit(visitor, way, offset + more)
-        @merge_scheme.network(less).visit(visitor, way, offset)
+    def host(visitor, way : Forward, at offset = I.new(0))
+      helper_host(visitor, way, offset) do |less, more, sort_network|
+        sort_network.host(visitor, way, offset)
+        sort_network.host(visitor, way, offset + more)
+        @merge_scheme.network(less).host(visitor, way, offset)
       end
     end
 
-    def visit(visitor, way : Backward, at offset = I.new(0))
-      helper_visit(visitor, way, offset) do |less, more, sort_network|
-        @merge_scheme.network(less).visit(visitor, way, offset)
-        sort_network.visit(visitor, way, offset + more)
-        sort_network.visit(visitor, way, offset)
+    def host(visitor, way : Backward, at offset = I.new(0))
+      helper_host(visitor, way, offset) do |less, more, sort_network|
+        @merge_scheme.network(less).host(visitor, way, offset)
+        sort_network.host(visitor, way, offset + more)
+        sort_network.host(visitor, way, offset)
       end
     end
   end
