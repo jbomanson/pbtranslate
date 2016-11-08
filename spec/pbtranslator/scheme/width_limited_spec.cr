@@ -2,7 +2,6 @@ require "../../spec_helper"
 
 include PBTranslator
 
-WL_WIDTH_MAX = 1 << WIDTH_LOG2_MAX
 WL_NETWORK_COUNT = 10
 
 oe_scheme =
