@@ -2,10 +2,12 @@ require "bit_array"
 
 require "../spec_helper"
 
-record ArrayConeSwap(T), array : Array(T) do
-  include PBTranslator::Gate::Restriction
+include PBTranslator
 
-  def visit(gate : PBTranslator::Gate(Comparator, InPlace, _), way : PBTranslator::Forward) : Void
+record ArrayConeSwap(T), array : Array(T) do
+  include Gate::Restriction
+
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward) : Void
     i, j = gate.wires
     x, y = gate.wires.output_cone
     a = @array[i]
@@ -17,9 +19,9 @@ record ArrayConeSwap(T), array : Array(T) do
 end
 
 record ArrayConeNot do
-  include PBTranslator::Gate::Restriction
+  include Gate::Restriction
 
-  def visit(gate : PBTranslator::Gate(Comparator, InPlace, _), way : PBTranslator::Forward) : Void
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward) : Void
     x, y = gate.wires.output_cone
     if x || y
       raise "Expected two false booleans, got #{{x, y}}"
@@ -28,8 +30,8 @@ record ArrayConeNot do
 end
 
 scheme =
-  PBTranslator::Scheme::MergeSort::Recursive.new(
-    PBTranslator::Scheme::OEMerge::INSTANCE
+  Scheme::MergeSort::Recursive.new(
+    Scheme::OEMerge::INSTANCE
   )
 
 # Returns a tuple of computed and a tuple of correct wanted outputs.
@@ -38,7 +40,7 @@ private def compute(scheme, random, width_log2, wanted)
   a = Array.new(width) { random.rand }
   b = a.clone
   c = a.sort
-  PBTranslator::Cone.visit(
+  Cone.visit(
     network: scheme.network(width_log2),
     visitor: ArrayConeSwap.new(b),
     wanted: wanted,
@@ -53,13 +55,13 @@ private def compute(scheme, random, width_log2, wanted)
   end
 end
 
-describe PBTranslator::Cone do
+describe Cone do
   it "works with universally unwanted outputs and merge sorting networks" do
     random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, false)
-      PBTranslator::Cone.visit(
+      Cone.visit(
         network: scheme.network(width_log2),
         visitor: ArrayConeNot.new,
         wanted: wanted,

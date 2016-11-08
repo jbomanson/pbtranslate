@@ -1,11 +1,13 @@
 require "../../spec_helper"
 
+include PBTranslator
+
 scheme =
-  PBTranslator::Scheme::MergeSort::Recursive.new(
-    PBTranslator::Scheme::OEMerge::INSTANCE
+  Scheme::MergeSort::Recursive.new(
+    Scheme::OEMerge::INSTANCE
   )
 
-describe PBTranslator::Scheme::MergeSort do
+describe Scheme::MergeSort do
   it "represents some networks that sort" do
     random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
@@ -13,8 +15,8 @@ describe PBTranslator::Scheme::MergeSort do
       a = Array.new(width) { random.rand }
       b = a.clone
       c = a.sort
-      visitor = PBTranslator::Visitor::ArraySwap.new(b)
-      scheme.network(width_log2).visit(visitor, PBTranslator::FORWARD)
+      visitor = Visitor::ArraySwap.new(b)
+      scheme.network(width_log2).visit(visitor, FORWARD)
       b.should eq(c)
     end
   end
@@ -24,8 +26,8 @@ describe PBTranslator::Scheme::MergeSort do
       network = scheme.network(width_log2)
       a = network.size
       visitor = VisitCallCounter.new
-      network.visit(visitor, PBTranslator::FORWARD)
-      b = visitor.count(PBTranslator::FORWARD)
+      network.visit(visitor, FORWARD)
+      b = visitor.count(FORWARD)
       a.should eq(b)
     end
   end
@@ -35,7 +37,7 @@ describe PBTranslator::Scheme::MergeSort do
       network = scheme.network(width_log2)
 
       vf, vb = Array.new(2) { VisitCallCounter.new }
-      wf, wb = {PBTranslator::FORWARD, PBTranslator::BACKWARD}
+      wf, wb = {FORWARD, BACKWARD}
       
       network.visit(vf, wf)
       network.visit(vb, wb)
@@ -56,7 +58,7 @@ describe PBTranslator::Scheme::MergeSort do
       a = network.depth
       width = 1 << width_log2
       visitor = DepthCounter.new(width)
-      network.visit(visitor, PBTranslator::FORWARD)
+      network.visit(visitor, FORWARD)
       b = visitor.depth
       a.should eq(b)
     end

@@ -1,6 +1,8 @@
 require "spec"
 require "../src/pbtranslator"
 
+include PBTranslator
+
 WIDTH_LOG2_MAX =        10
 SEED           = 482382392
 
@@ -10,23 +12,23 @@ class VisitCallCounter
     @h = Hash(String, UInt32).new(0_u32)
   end
 
-  def visit(location, way : PBTranslator::Way) : Void #, *args, **options) : Void
+  def visit(location, way : Way) : Void #, *args, **options) : Void
     @h[way.to_s] += 1
   end
 
-  def count(way : PBTranslator::Way)
+  def count(way : Way)
     @h[way.to_s]
   end
 end
 
 struct DepthCounter
-  include PBTranslator::Gate::Restriction
+  include Gate::Restriction
 
   def initialize(size : Int)
     @array = Array(UInt32).new(size, 0_u32)
   end
 
-  def visit(gate : PBTranslator::Gate(_, InPlace, _), *args, **options) : Void
+  def visit(gate : Gate(_, InPlace, _), *args, **options) : Void
     input_wires = gate.wires
     depth = @array.values_at(*input_wires).max + 1
     output_wires = gate.wires

@@ -1,9 +1,11 @@
 require "../../spec_helper"
 
+include PBTranslator
+
 half_width_log2_max = 3
 half_width_max = 1 << half_width_log2_max
 
-scheme = PBTranslator::Scheme::DirectMerge::INSTANCE
+scheme = Scheme::DirectMerge::INSTANCE
 
 describe typeof(scheme) do
   it "represents a network that merges up to #{half_width_max}^2 booleans" do
@@ -21,8 +23,8 @@ describe typeof(scheme) do
         a = u + v
         b = a.clone
         c = a.sort_by { |w| w ? 0 : 1 }
-        visitor = PBTranslator::Visitor::ArrayLogic.new(b)
-        scheme.network(half_width_log2).visit(visitor, PBTranslator::FORWARD)
+        visitor = Visitor::ArrayLogic.new(b)
+        scheme.network(half_width_log2).visit(visitor, FORWARD)
         b.should eq(c)
       end
     end

@@ -1,8 +1,10 @@
 require "../../spec_helper"
 
-scheme = PBTranslator::Scheme::OEMerge::INSTANCE
+include PBTranslator
 
-describe PBTranslator::Scheme::OEMerge do
+scheme = Scheme::OEMerge::INSTANCE
+
+describe Scheme::OEMerge do
   it "represents a network that merges 2 and 2 wires" do
     # Collect all sorted pairs of values in [0, ..., 3].
     x = Array.new(4, &.itself).permutations(2)
@@ -13,8 +15,8 @@ describe PBTranslator::Scheme::OEMerge do
       a = u + v
       b = a.clone
       c = a.sort
-      visitor = PBTranslator::Visitor::ArraySwap.new(b)
-      scheme.network(1).visit(visitor, PBTranslator::FORWARD)
+      visitor = Visitor::ArraySwap.new(b)
+      scheme.network(1).visit(visitor, FORWARD)
       b.should eq(c)
     end
   end
