@@ -57,7 +57,7 @@ describe Scheme::MergeSort do
       network = scheme.network(width_log2)
       a = network.depth
       width = 1 << width_log2
-      visitor = DepthCounter.new(width)
+      visitor = Visitor::ArrayDepth.new(width: width)
       network.host(visitor, FORWARD)
       b = visitor.depth
       a.should eq(b)

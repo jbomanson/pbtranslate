@@ -20,24 +20,3 @@ class VisitCallCounter
     @h[way.to_s]
   end
 end
-
-struct DepthCounter
-  include Gate::Restriction
-
-  def initialize(size : Int)
-    @array = Array(UInt32).new(size, 0_u32)
-  end
-
-  def visit(gate : Gate(_, InPlace, _), *args, **options) : Void
-    input_wires = gate.wires
-    depth = @array.values_at(*input_wires).max + 1
-    output_wires = gate.wires
-    output_wires.each do |index|
-      @array[index] = depth
-    end
-  end
-
-  def depth
-    @array.max
-  end
-end
