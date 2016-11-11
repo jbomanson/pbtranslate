@@ -1,8 +1,8 @@
 require "../../spec_helper"
 
-include PBTranslator
+include SpecHelper
 
-WL_NETWORK_COUNT = 10
+network_count = 10
 
 oe_scheme =
   Scheme::MergeSort::Recursive.new(
@@ -34,37 +34,19 @@ record WidthCheckingVisitor(I), width : I do
   end
 end
 
-def self.sort(a : Array(Bool))
-  a.sort_by { |w| w ? 0 : 1 }
-end
-
-def self.sort(a)
-  a.sort
-end
-
-def self.each_sample_size(random)
-  a =
-    Array.new(WL_NETWORK_COUNT) do
-      (2 ** (random.next_float * WIDTH_LOG2_MAX)).to_i
-    end
-  a.sort.each do |size|
-    yield size
-  end
-end
-
-def self.test_limits_with_sub_scheme(sub_scheme)
+def test_limits_with_sub_scheme(sub_scheme, network_count)
   scheme = Scheme::WidthLimited.new(sub_scheme)
   random = Random.new(SEED)
-  each_sample_size(random) do |width|
+  random_width_array(network_count, random).each do |width|
     visitor = WidthCheckingVisitor.new(width)
     scheme.network(width).host(visitor, FORWARD)
   end
 end
 
-def self.test_sorting_with_sub_scheme(sub_scheme, visitor_factory)
+def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
   scheme = Scheme::WidthLimited.new(sub_scheme)
   random = Random.new(SEED)
-  each_sample_size(random) do |width|
+  random_width_array(network_count, random).each do |width|
     a = Array.new(width) { yield random }
     b = a.clone
     c = sort(a)
@@ -76,18 +58,18 @@ end
 
 describe Scheme::WidthLimited do
   it "trims oe merge sorting networks to within limits" do
-    test_limits_with_sub_scheme(oe_scheme)
+    test_limits_with_sub_scheme(oe_scheme, network_count)
   end
 
   it "trims direct merge sorting networks to within limits" do
-    test_limits_with_sub_scheme(direct_scheme)
+    test_limits_with_sub_scheme(direct_scheme, network_count)
   end
 
   it "sorts with the help of oe merge sorting networks" do
-    test_sorting_with_sub_scheme(oe_scheme, Visitor::ArraySwap, &.next_float)
+    test_sorting_with_sub_scheme(oe_scheme, network_count, Visitor::ArraySwap, &.next_float)
   end
 
   it "sorts with the help of direct merge sorting networks" do
-    test_sorting_with_sub_scheme(direct_scheme, Visitor::ArrayLogic, &.next_bool)
+    test_sorting_with_sub_scheme(direct_scheme, network_count, Visitor::ArrayLogic, &.next_bool)
   end
 end
