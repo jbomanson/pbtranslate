@@ -93,7 +93,8 @@ class PBTranslator::Tool::CardinalityTranslator <
 
     context = context_class_for(a).new(self)
     visitor = Visitor::ArrayLogic.new(a, context)
-    network_of_width(n).visit(visitor)
+    network = network_of_width(n)
+    network.host(visitor, FORWARD)
 
     # Derive the glue literal from the appropriate body literal.
     context.operate(Gate::Restriction::Or, glue_literal, {a[@lower_bound - 1]})
