@@ -8,7 +8,11 @@ struct PBTranslator::Reader::ASPIF::LogicContext(I)
   include Visitor::ArrayLogic::Context(Literal(I))
   include Gate::Restriction
 
-  def initialize(@aspif_broker : ASPIFBroker)
+  def self.class_for(a : Array(Literal(I))) forall I
+    LogicContext(I)
+  end
+
+  def initialize(@aspif_broker : Tool::ASPIFBroker)
   end
 
   def operate(f, args)

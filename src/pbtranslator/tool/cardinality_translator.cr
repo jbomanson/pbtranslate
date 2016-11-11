@@ -91,7 +91,7 @@ class PBTranslator::Tool::CardinalityTranslator <
 
     return true if n < @lower_bound
 
-    context = context_class_for(a).new(self)
+    context = Reader::ASPIF::LogicContext.class_for(a).new(self)
     visitor = Visitor::ArrayLogic.new(a, context)
     network = network_of_width(n)
     network.host(visitor, FORWARD)
@@ -131,9 +131,5 @@ class PBTranslator::Tool::CardinalityTranslator <
         )
       )
     scheme.network(n)
-  end
-
-  private def context_class_for(a : Array(Literal(I))) forall I
-    ASPIF::LogicContext(I)
   end
 end
