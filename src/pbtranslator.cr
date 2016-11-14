@@ -1,4 +1,5 @@
+# This is the file that is compiled to generate the executable.
+
 require "./pbtranslator/**"
 
-module PBTranslator
-end
+PBTranslator::Command.run
