@@ -31,7 +31,7 @@
 #       end
 #     end
 #
-#     a = [{0, 1}, {2, 3}, {0, 2}, {1, 3}, {2, 3}]
+#     a = [{0, 1}, {2, 3}, {0, 2}, {1, 3}, {1, 2}]
 #     network = Network.new(a)
 #     width = network.width # => 4
 #     visitor = MyVisitor.new
@@ -45,7 +45,7 @@
 #     # {2, 3} @ 0
 #     # {0, 2} @ 1
 #     # {1, 3} @ 1
-#     # {2, 3} @ 2
+#     # {1, 2} @ 2
 struct PBTranslator::Visitor::ArrayDepth(V)
   include Gate::Restriction
 
@@ -61,17 +61,18 @@ struct PBTranslator::Visitor::ArrayDepth(V)
   end
 
   # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
-  def initialize(*, width, @visitor : V)
-    @array = Array(UInt32).new(width, 0_u32)
+  def initialize(*, width, @visitor : V, initial_depth = 0_u32)
+    @array = Array(UInt32).new(width, initial_depth.to_u32)
   end
 
   # Guides the wrapped visitor through a visit to a _gate_ and provides an
-  # additional named parameter _depth_.
-  def visit(gate : Gate(_, InPlace, _), *args, **options) : Void
+  # additional parameter _depth_.
+  def visit(gate : Gate(_, InPlace, _), way : Way, *args, **options) : Void
     input_wires = gate.wires
     depth = @array.values_at(*input_wires).max
-    @visitor.visit(gate, *args, **options, depth: depth)
-    depth += 1
+    depth += increment_before(way)
+    @visitor.visit(gate, way, *args, **options, depth: depth)
+    depth += increment_after(way)
     output_wires = gate.wires
     output_wires.each do |index|
       @array[index] = depth
@@ -81,5 +82,21 @@ struct PBTranslator::Visitor::ArrayDepth(V)
   # Computes the depth of the network seen so far.
   def depth
     @array.max
+  end
+
+  private def increment_before(way : Forward)
+    0
+  end
+
+  private def increment_before(way : Backward)
+    -1
+  end
+
+  private def increment_after(way : Forward)
+    1
+  end
+
+  private def increment_after(way : Backward)
+    0
   end
 end
