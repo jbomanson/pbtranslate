@@ -1,4 +1,4 @@
-# A visitor that guides two other visitors through a network.
+# A visitor that guides two other visitors through a network with added weights.
 #
 # See `arrange_visit`.
 struct PBTranslator::Visitor::ArrayWeightPropagator(V, W, I)
@@ -21,6 +21,10 @@ struct PBTranslator::Visitor::ArrayWeightPropagator(V, W, I)
 
   def visit(gate : Gate(Comparator, InPlace, _), *args, **options) : Void
     propagate_weights_at(gate.wires)
+    @gate_visitor.visit(gate, *args, **options)
+  end
+
+  def visit(gate : Gate(Passthrough, _, _), *args, **options) : Void
     @gate_visitor.visit(gate, *args, **options)
   end
 

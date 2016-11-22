@@ -12,6 +12,9 @@ record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
     @array[j] = c ? b : a
   end
 
+  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+  end
+
   # On some machine, the following is a 1.15x slower version of the above.
   # def visit_comparator(i, j) : Void
   #   a, b = @array.values_at(i, j)

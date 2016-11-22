@@ -25,6 +25,9 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     @array[j] = @context.operate(And, {a, b})
   end
 
+  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+  end
+
   def visit(f : OOPLayer.class, way : Way) : Void
     @array.lag do |lagged|
       layer_visitor = Layer.new(lagged, @context, @factory)
@@ -95,6 +98,9 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     def visit(gate : Gate(F, Input, _), way : Forward) : Void
       operands = gate.wires.map { |wire| @array[wire] }
       visit(@context.operate(F, operands))
+    end
+
+    def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
     end
 
     def visit(t : T) : Void

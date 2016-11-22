@@ -1,28 +1,48 @@
 struct PBTranslator::Gate(F, S, T)
+  module Function
+  end
+
+  module Form
+  end
+
   module Restriction
     struct OOPLayer
     end
 
+    struct Passthrough
+      extend Function
+    end
+
     struct And
+      extend Function
     end
 
     struct Or
+      extend Function
     end
 
     struct Comparator
+      extend Function
     end
 
     struct InPlace
+      extend Form
     end
 
     struct Input
+      extend Form
     end
 
     struct Output
+      extend Form
     end
   end
 
   include Restriction
+
+  def self.passthrough_at(*wire)
+    Gate(Passthrough, InPlace, typeof(wire)).new(wire)
+  end
 
   def self.comparator_between(*wires)
     Gate(Comparator, InPlace, typeof(wires)).new(wires)

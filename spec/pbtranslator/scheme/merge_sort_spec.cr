@@ -1,6 +1,7 @@
 require "../../spec_helper"
 
 include PBTranslator
+include Gate::Restriction
 
 scheme =
   Scheme::MergeSort::Recursive.new(
@@ -27,7 +28,7 @@ describe Scheme::MergeSort do
       a = network.size
       visitor = VisitCallCounter.new
       network.host(visitor, FORWARD)
-      b = visitor.count(FORWARD)
+      b = visitor.count(Comparator, InPlace, FORWARD)
       a.should eq(b)
     end
   end
@@ -42,8 +43,8 @@ describe Scheme::MergeSort do
       network.host(vf, wf)
       network.host(vb, wb)
 
-      ff, fb = {wf, wb}.map {|w| vf.count(w)}
-      bf, bb = {wf, wb}.map {|w| vb.count(w)}
+      ff, fb = {wf, wb}.map {|w| vf.count(Comparator, InPlace, w)}
+      bf, bb = {wf, wb}.map {|w| vb.count(Comparator, InPlace, w)}
 
       fb.should eq(0)
       bf.should eq(0)

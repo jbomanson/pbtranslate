@@ -16,6 +16,9 @@ record ArrayConeSwap(T), array : Array(T) do
     @array[i] = c ? a : b if x
     @array[j] = c ? b : a if y
   end
+
+  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+  end
 end
 
 record ArrayConeNot do
@@ -26,6 +29,9 @@ record ArrayConeNot do
     if x || y
       raise "Expected two false booleans, got #{{x, y}}"
     end
+  end
+
+  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
   end
 end
 

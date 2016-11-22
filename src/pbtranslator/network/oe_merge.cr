@@ -35,12 +35,20 @@ class PBTranslator::Network::OEMerge(I)
     a, b = {I.new(0), (I.new(1) << (half_width_log2 + 1)) - 1}
     way.each_between(a, b) do |wire_index|
       partner_index = partner(half_width_log2, layer_index, wire_index)
-      next unless wire_index < partner_index
-      gate =
-        Gate
-        .comparator_between(wire_index, partner_index)
-        .shifted_by(offset)
-      visitor.visit(gate, way)
+      case wire_index <=> partner_index
+      when -1
+        gate =
+          Gate
+          .comparator_between(wire_index, partner_index)
+          .shifted_by(offset)
+        visitor.visit(gate, way)
+      when 0
+        gate =
+          Gate
+          .passthrough_at(wire_index)
+          .shifted_by(offset)
+        visitor.visit(gate, way)
+      end
     end
   end
 

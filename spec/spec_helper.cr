@@ -9,15 +9,15 @@ SEED           = 482382392
 # An object that counts the number of times its visit forward and backward.
 class VisitCallCounter
   def initialize
-    @h = Hash(String, UInt32).new(0_u32)
+    @h = Hash({Gate::Function, Gate::Form, String}, UInt32).new(0_u32)
   end
 
-  def visit(location, way : Way) : Void #, *args, **options) : Void
-    @h[way.to_s] += 1
+  def visit(gate : Gate(A, B, _), way : Way) : Void
+    @h[{A, B, way.to_s}] += 1
   end
 
-  def count(way : Way)
-    @h[way.to_s]
+  def count(a : Gate::Function, b : Gate::Form, way : Way)
+    @h[{a, b, way.to_s}]
   end
 end
 
