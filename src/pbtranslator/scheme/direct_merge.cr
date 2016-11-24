@@ -8,7 +8,7 @@ require "../network/direct_merge"
 class PBTranslator::Scheme::DirectMerge
   INSTANCE = new
 
-  def network(half_width_log2)
-    Network::DirectMerge.new(half_width_log2)
+  def network(half_width : Width::Pw2)
+    Network::DirectMerge.new(half_width.log2)
   end
 end

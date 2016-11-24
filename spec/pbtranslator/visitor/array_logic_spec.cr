@@ -16,7 +16,7 @@ describe Visitor::ArrayLogic do
       b = a.clone
       c = a.sort_by { |w| w ? 0 : 1 }
       visitor = Visitor::ArrayLogic.new(b)
-      scheme.network(width_log2).host(visitor, FORWARD)
+      scheme.network(Width.from_log2(width_log2)).host(visitor, FORWARD)
       b.should eq(c)
     end
   end

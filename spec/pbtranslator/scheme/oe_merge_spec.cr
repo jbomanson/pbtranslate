@@ -16,7 +16,7 @@ describe Scheme::OEMerge do
       b = a.clone
       c = a.sort
       visitor = Visitor::ArraySwap.new(b)
-      scheme.network(1).host(visitor, FORWARD)
+      scheme.network(Width.from_log2(1)).host(visitor, FORWARD)
       b.should eq(c)
     end
   end

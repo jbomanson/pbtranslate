@@ -26,7 +26,7 @@ describe Visitor::ArrayWeightPropagator do
   it "preserves sums of weights" do
     random = Random.new(SEED)
     random_width_array(network_count, random).each do |width|
-      network = scheme.network(width)
+      network = scheme.network(Width.from_value(width))
       visitor = WeightCountingVisitor(typeof(random.next_int)).new
       weights = Array.new(width) { random.next_int }
       backup_weights = weights.clone

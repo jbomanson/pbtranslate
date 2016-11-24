@@ -47,7 +47,7 @@ private def compute(scheme, random, width_log2, wanted)
   b = a.clone
   c = a.sort
   Cone.arrange_visit(
-    network: scheme.network(width_log2),
+    network: scheme.network(Width.from_log2(width_log2)),
     visitor: ArrayConeSwap.new(b),
     wanted: wanted,
   )
@@ -68,7 +68,7 @@ describe Cone do
       width = 1 << width_log2
       wanted = BitArray.new(width, false)
       Cone.arrange_visit(
-        network: scheme.network(width_log2),
+        network: scheme.network(Width.from_log2(width_log2)),
         visitor: ArrayConeNot.new,
         wanted: wanted,
       )

@@ -130,6 +130,6 @@ class PBTranslator::Tool::CardinalityTranslator <
           Scheme::OEMerge::INSTANCE
         )
       )
-    scheme.network(n)
+    scheme.network(Width.from_value(n))
   end
 end

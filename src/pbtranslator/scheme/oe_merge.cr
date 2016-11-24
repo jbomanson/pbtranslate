@@ -16,7 +16,7 @@ class PBTranslator::Scheme::OEMerge
   #
   # The binary logarithm of the width of both of these halves is
   # *half_width_log2*.
-  def network(half_width_log2)
-    Network::OEMerge.new(half_width_log2)
+  def network(half_width : Width::Pw2)
+    Network::OEMerge.new(half_width.log2)
   end
 end

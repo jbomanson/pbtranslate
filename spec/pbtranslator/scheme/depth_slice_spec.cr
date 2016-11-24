@@ -22,19 +22,19 @@ describe Scheme::DepthSlice do
     random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
-      depth = scheme.network(width_log2).depth
+      depth = scheme.network(Width.from_log2(width_log2)).depth
       point = depth <= 1 ? 0 : random.rand(1...depth)
 
-      scheme_a = Scheme::DepthSlice.new(scheme, 0...point)
-      scheme_b = Scheme::DepthSlice.new(scheme, point...depth)
+      scheme_a = Scheme::DepthSlice.new(scheme, ->(width : Width::Pw2(Int32)) { 0...point })
+      scheme_b = Scheme::DepthSlice.new(scheme, ->(width : Width::Pw2(Int32)) { point...depth })
 
       visitor_x = RecordingVisitor.new
       visitor_y = RecordingVisitor.new
 
-      scheme.network(width_log2).host(visitor_x, FORWARD)
+      scheme.network(Width.from_log2(width_log2)).host(visitor_x, FORWARD)
 
-      scheme_a.network(width_log2, width: width).host(visitor_y, FORWARD)
-      scheme_b.network(width_log2, width: width).host(visitor_y, FORWARD)
+      scheme_a.network(Width.from_log2(width_log2)).host(visitor_y, FORWARD)
+      scheme_b.network(Width.from_log2(width_log2)).host(visitor_y, FORWARD)
 
       visitor_x.array.sort.should eq(visitor_y.array.sort)
     end

@@ -7,7 +7,8 @@ class PBTranslator::Network::MergeSort(S, M, I)
 
   # :nodoc:
   macro three_cases(zero, one_call, else_expr)
-    less = @width_log2 - 1
+    less_value = @width_log2 - 1
+    less = Width.from_log2(less_value)
     case @width_log2
     when I.new(0)
       {{zero}}
@@ -38,7 +39,7 @@ class PBTranslator::Network::MergeSort(S, M, I)
     three_cases(
       nil,
       host(*args, **options),
-      yield less, I.new(1) << less, @sort_scheme.network(less)
+      yield less, I.new(1) << less_value, @sort_scheme.network(less)
     )
   end
 

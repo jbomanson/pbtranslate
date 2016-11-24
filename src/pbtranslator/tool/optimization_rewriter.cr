@@ -79,7 +79,7 @@ class PBTranslator::Tool::OptimizationRewriter <
           Scheme::OEMerge::INSTANCE
         )
       )
-    scheme.network(n)
+    scheme.network(Width.from_value(n))
   end
 
   private def task_write
