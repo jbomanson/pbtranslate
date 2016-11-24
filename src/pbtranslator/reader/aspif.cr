@@ -361,7 +361,7 @@ module PBTranslator::Reader
     end
 
     private describe EXISTING, statement do
-      (c = nilable_cursor) && (c != '0') && c.digit? &&
+      (c = nilable_cursor) && (c != '0') && c.ascii_number? &&
         (t = parse_enum_plain(Statement)) &&
         visit(t) {
           case t
@@ -617,7 +617,7 @@ module PBTranslator::Reader
     end
 
     private def nonnegative_integer_plain
-      advance(Append, AtLeastOne, &.digit?) ? reap.to_i : nil
+      advance(Append, AtLeastOne, &.ascii_number?) ? reap.to_i : nil
     end
 
     private describe POSSIBLY_EMPTY, remaining_line do

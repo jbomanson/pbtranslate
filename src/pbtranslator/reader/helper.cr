@@ -244,7 +244,7 @@ module PBTranslator
     def initialize(
       @iterator : Iterator(Char),
       *,
-      @buffer : MemoryIO = MemoryIO.new)
+      @buffer : IO::Memory = IO::Memory.new)
 
       @cursor_position = Position.new
       @cursor = @iterator.next
