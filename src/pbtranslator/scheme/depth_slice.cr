@@ -1,12 +1,16 @@
 require "../../width"
 
 class PBTranslator::Scheme::DepthSlice(S, I, W)
-    def initialize(@scheme : S, @range_block : W -> Range(I, I))
+  def initialize(*, @scheme : S, @range_proc : W -> Range(I, I))
+    check_scheme(scheme)
   end
 
-  def network(width : W)
-    network = @scheme.network(width)
-    range = @range_block.call(width)
-    Network::DepthSlice.new(network: network, width: width.value, range: range)
+  def network(width w : W)
+    n = @scheme.network(w)
+    r = @range_proc.call(w)
+    Network::DepthSlice.new(network: n, width: w.value, range: r)
+  end
+
+  private def check_scheme(scheme : WithDepth::Scheme)
   end
 end

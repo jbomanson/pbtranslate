@@ -1,5 +1,6 @@
 struct PBTranslator::Network::DepthSlice(N, I)
   def initialize(*, @network : N, @width : I, @range : Range(I, I))
+    check_network(network)
   end
 
   # Returns an upper bound on the size of this network.
@@ -15,8 +16,10 @@ struct PBTranslator::Network::DepthSlice(N, I)
   def host(visitor, *args, **options) : Void
     v = visitor
     vv = DepthSliceVisitor.new(v, @range)
-    vvv = Visitor::ArrayDepth.new(width: @width, visitor: vv)
-    @network.host(vvv, *args, **options)
+    @network.host(vv, *args, **options)
+  end
+
+  private def check_network(network : WithDepth::Network)
   end
 
   private struct DepthSliceVisitor(V, I)

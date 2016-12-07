@@ -58,9 +58,10 @@ describe Scheme::MergeSort do
       network = scheme.network(Width.from_log2(width_log2))
       a = network.depth
       width = 1 << width_log2
-      visitor = Visitor::ArrayDepth.new(width: width)
-      network.host(visitor, FORWARD)
-      b = visitor.depth
+      visitor = PBTranslator::Visitor::Noop::INSTANCE
+      nn = DepthTracking::Network.new(network: network, width: width)
+      nn.host(visitor, FORWARD)
+      b = nn.computed_depth
       a.should eq(b)
     end
   end

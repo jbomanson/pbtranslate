@@ -3,8 +3,10 @@ require "../../spec_helper"
 include PBTranslator
 
 scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::OEMerge::INSTANCE
+  DepthTracking::Scheme.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::OEMerge::INSTANCE
+    )
   )
 
 struct RecordingVisitor
@@ -25,8 +27,8 @@ describe Scheme::DepthSlice do
       depth = scheme.network(Width.from_log2(width_log2)).depth
       point = depth <= 1 ? 0 : random.rand(1...depth)
 
-      scheme_a = Scheme::DepthSlice.new(scheme, ->(width : Width::Pw2(Int32)) { 0...point })
-      scheme_b = Scheme::DepthSlice.new(scheme, ->(width : Width::Pw2(Int32)) { point...depth })
+      scheme_a = Scheme::DepthSlice.new(scheme: scheme, range_proc: ->(width : Width::Pw2(Int32)) { 0...point })
+      scheme_b = Scheme::DepthSlice.new(scheme: scheme, range_proc: ->(width : Width::Pw2(Int32)) { point...depth })
 
       visitor_x = RecordingVisitor.new
       visitor_y = RecordingVisitor.new
