@@ -130,7 +130,7 @@ module PBTranslator
     # DSL.
 
     macro advance_string(action, string)
-      advance({{action}}, { {{string.chars.argify}} })
+      advance({{action}}, { {{string.chars.splat}} })
     end
 
     macro describe(name)
