@@ -65,7 +65,7 @@ class PBTranslator::Command
       OptionParser.parse(options) do |opts|
         opts.banner = "Usage: pbtranslator translate [options] [--] [input file]\n\nOptions:"
 
-        opts.on("--type cardinality|optimization", "Translate cardinality rules or rewrite optimization statements") do |t|
+        opts.on("--type cardinality|optimization|nothing", "Translate cardinality rules, rewrite optimization statements or do nothing") do |t|
           type = t
         end
 
@@ -117,6 +117,8 @@ class PBTranslator::Command
       Tool::CardinalityTranslator
     when "optimization".starts_with? type
       Tool::OptimizationRewriter
+    when "nothing".starts_with? type
+      Tool::ASPIFBroker
     else
       if type
         error "unknown argument '#{type}' to --type"
