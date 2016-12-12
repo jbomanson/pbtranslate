@@ -60,6 +60,7 @@ class PBTranslator::Command
     type = nil
     input_filename = nil
     output_filename = nil
+    crop_depth = nil
 
     option_parser =
       OptionParser.parse(options) do |opts|
@@ -67,6 +68,10 @@ class PBTranslator::Command
 
         opts.on("--type cardinality|optimization|nothing", "Translate cardinality rules, rewrite optimization statements or do nothing") do |t|
           type = t
+        end
+
+        opts.on("--crop-depth <d>", "Use first <d> or last -<d> layers of a sorting network") do |d|
+          crop_depth = d
         end
 
         opts.on("-o ", "Output filename") do |o|
@@ -104,6 +109,12 @@ class PBTranslator::Command
       with_file_or_io(output_filename, "w", STDOUT) do |output_io|
         translator_class = translator_class_of(type)
         translator = translator_class.new(input_io, output_io)
+        if d = crop_depth
+          unless translator.responds_to? :"crop_depth="
+            error "the --crop-depth option is not supported with --type #{type}"
+          end
+          translator.crop_depth = d.to_i
+        end
         translate(translator)
       end
     end

@@ -9,10 +9,13 @@ class PBTranslator::Tool::OptimizationRewriter <
     Write
   end
 
+  property crop_depth
+
   @task           = Task::Pass
   @priority       = 0
   @input_visitor  = WeightCollector.new
   @output_visitor = WeightCollector.new
+  @crop_depth     = nil.as(Int32?)
 
   def visit(s : Statement) : Bool
     case {@task, s}
@@ -73,13 +76,33 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   private def network_of_width(n)
-    scheme =
-      Scheme::WidthLimited.new(
-        Scheme::MergeSort::Recursive.new(
-          Scheme::OEMerge::INSTANCE
-        )
+    s =
+      Scheme::MergeSort::Recursive.new(
+        Scheme::OEMerge::INSTANCE
       )
-    scheme.network(Width.from_value(n))
+    d = @crop_depth
+    ss =
+      if d
+        if d.not_nil! >= 0
+          Scheme::DepthSlice.new(
+            scheme: DepthTracking::Scheme.new(s),
+            range_proc: ->(width: Width::Pw2(Int32), depth: Int32) {
+              0...d.not_nil!
+            },
+          )
+        else
+          Scheme::DepthSlice.new(
+            scheme: DepthTracking::Scheme.new(s),
+            range_proc: ->(width: Width::Pw2(Int32), depth: Int32) {
+              depth + d.not_nil!...depth
+            },
+          )
+        end
+      else
+        s
+      end
+    sss = Scheme::WidthLimited.new(ss)
+    sss.network(Width.from_value(n))
   end
 
   private def task_write
