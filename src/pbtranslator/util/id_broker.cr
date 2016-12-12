@@ -50,16 +50,14 @@ module PBTranslator::Util
     end
 
     private def chunk_for(quotient)
-      count = quotient - @chunks.size + 1
-      chunk = nil
-      count.times do
-        chunk = push_new_chunk
+      @chunks.size.upto(quotient) do
+        @chunks << new_chunk
       end
-      chunk || @chunks[quotient]
+      @chunks[quotient]
     end
 
-    private def combine(chunk, remainder, type : T.class) : T
-      (T.zero + chunk) * Chunk::SIZE + remainder
+    private def combine(chunk, remainder, type : T.class) : T forall T
+      ((T.zero + chunk) << Chunk::SHIFT) | remainder
     end
 
     private def new_chunk
@@ -68,10 +66,5 @@ module PBTranslator::Util
       c
     end
 
-    private def push_new_chunk
-      chunk = new_chunk
-      @chunks << chunk
-      chunk
-    end
   end
 end
