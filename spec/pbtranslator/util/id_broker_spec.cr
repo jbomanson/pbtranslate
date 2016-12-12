@@ -10,7 +10,7 @@ describe Util::IdBroker do
   it "generates 0, 1, ..., #{medium_number}" do
     broker = Util::IdBroker.new
     medium_number.times do |i|
-      broker.fresh_id.should eq(i)
+      broker.fresh_id.brokered_id.should eq(i)
     end
   end
 
@@ -21,7 +21,7 @@ describe Util::IdBroker do
     b = a.shuffle(random)
     c =
       Array.new(medium_number) do |i|
-        broker.rename(b[i])
+        broker.rename(b[i]).brokered_id
       end
     c.sort!
     c.each_index do |i|
@@ -40,9 +40,9 @@ describe Util::IdBroker do
     b =
       a.map do |(rename_please, index)|
         if rename_please
-          broker.rename(index)
+          broker.rename(index).brokered_id
         else
-          broker.fresh_id
+          broker.fresh_id.brokered_id
         end
       end
     b.sort!

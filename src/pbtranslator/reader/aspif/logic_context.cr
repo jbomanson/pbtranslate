@@ -3,13 +3,14 @@ require "../../visitor/array_logic"
 # An object that specifies how definitions of the outputs of "And" and "Or"
 # gates are written in ASPIF.
 #
+# The type parameter `T` is the type used with ArrayLogic::Context.
 # The type parameter `I` is the integer type used to number literals.
-struct PBTranslator::Reader::ASPIF::LogicContext(I)
-  include Visitor::ArrayLogic::Context(Literal(I))
+struct PBTranslator::Reader::ASPIF::LogicContext(T, I)
+  include Visitor::ArrayLogic::Context(T)
   include Gate::Restriction
 
-  def self.class_for(a : Array(Literal(I))) forall I
-    LogicContext(I)
+  def self.class_for(a : Array(T), i : I.class) forall T, I
+    LogicContext(T, I)
   end
 
   def initialize(@aspif_broker : Tool::ASPIFBroker)
@@ -21,8 +22,8 @@ struct PBTranslator::Reader::ASPIF::LogicContext(I)
     end
   end
 
-  private def broker_define_literal : Literal(I)
-    Literal(I).new(@aspif_broker.fresh_id(I)).tap do |head_literal|
+  private def broker_define_literal : T
+    Literal.new(@aspif_broker.fresh_id(I)).tap do |head_literal|
       yield head_literal
     end
   end

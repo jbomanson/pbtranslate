@@ -47,10 +47,14 @@ class PBTranslator::Tool::OptimizationRewriter <
     end
   end
 
+  def visit(l : Literal(Util::BrokeredId), w : Int) : Bool
+    super(l, w)
+  end
+
   def visit(l : Literal, w : Int) : Bool
     case @task
     when Task::Read
-      @input_visitor.add(literal: l, weight: w)
+      @input_visitor.add(literal: rename(l.value.to_i32), weight: w)
       true
     else
       super(l, w)
@@ -64,7 +68,7 @@ class PBTranslator::Tool::OptimizationRewriter <
 
   private def refactor
     @input_visitor.devour do |literals, weights|
-      context = Reader::ASPIF::LogicContext.class_for(literals).new(self)
+      context = Reader::ASPIF::LogicContext.class_for(literals, Int32).new(self)
       Visitor::ArrayWeightPropagator.arrange_visit(
         FORWARD,
         network:        network_of_width(literals.size),
@@ -127,7 +131,7 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   private struct FilterVisitor
-    def initialize(@literals : Array(Literal(Int32)), @collector : WeightCollector)
+    def initialize(@literals : Array(Literal(Util::BrokeredId(Int32))), @collector : WeightCollector)
     end
 
     def visit(*, wire, weight) : Void
@@ -137,7 +141,7 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   private struct WeightCollector
-    @literals = Array(Literal(Int32)).new
+    @literals = Array(Literal(Util::BrokeredId(Int32))).new
     @weights  = Array(Int32).new
 
     def add(*, literal, weight) : Void

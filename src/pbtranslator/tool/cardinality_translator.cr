@@ -6,7 +6,7 @@ class PBTranslator::Tool::CardinalityTranslator <
     
   @in_weight_rule = false
   @lower_bound = 0
-  @literals = Array(Literal(Int32)).new
+  @literals = Array(Literal(Util::BrokeredId(Int32))).new
   @weights = Array(Int32).new
   @delegate_to_super = false
 
@@ -37,12 +37,16 @@ class PBTranslator::Tool::CardinalityTranslator <
       !!yield
     end
   end
-  
+
+  def visit(l : Literal(Util::BrokeredId), w : Int) : Bool
+    super
+  end
+
   def visit(l : Literal, w : Int) : Bool
     if @delegate_to_super || !@in_weight_rule
       super
     else
-      @literals << Literal.new(l.value.to_i32)
+      @literals << rename(l.value.to_i32)
       @weights << w.to_i32
       true
     end
@@ -77,7 +81,7 @@ class PBTranslator::Tool::CardinalityTranslator <
       return true
     else
       # ... a single-literal body.
-      glue_literal = Literal.new(b.fresh_id(Int32))
+      glue_literal = b.fresh_id(Int32)
       b.visit(Body::Normal) do
         b.visit(IntegerListStart.new(1)) do
           b.visit(glue_literal)
@@ -91,7 +95,7 @@ class PBTranslator::Tool::CardinalityTranslator <
 
     return true if n < @lower_bound
 
-    context = Reader::ASPIF::LogicContext.class_for(a).new(self)
+    context = Reader::ASPIF::LogicContext.class_for(a, Int32).new(self)
     visitor = Visitor::ArrayLogic.new(a, context)
     network = network_of_width(n)
     network.host(visitor, FORWARD)

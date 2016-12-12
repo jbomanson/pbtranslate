@@ -1,4 +1,16 @@
 module PBTranslator::Util
+  # A brokered id.
+  struct BrokeredId(T)
+    getter brokered_id
+
+    def initialize(@brokered_id : T)
+    end
+
+    def operate : self
+      self.class.new(yield @brokered_id)
+    end
+  end
+
   # A class for renaming and generating integer identifiers.
   #
   # The output integers start from zero.
@@ -19,13 +31,13 @@ module PBTranslator::Util
       @anonymous_counter = 0
     end
 
-    # Returns a new Int32 identifier.
-    def fresh_id : Int32
+    # Returns a new Int32 based identifier.
+    def fresh_id : BrokeredId(Int32)
       fresh_id(Int32)
     end
 
     # Returns a new identifier of the given _type_.
-    def fresh_id(type : T.class) : T
+    def fresh_id(type : T.class) : BrokeredId(T)
       chunk = @anonymous_chunk
       counter = @anonymous_counter
       if counter & Chunk::MASK == 0
@@ -36,13 +48,13 @@ module PBTranslator::Util
       combine(chunk, counter, type)
     end
 
-    # Returns a new or an existing Int32 identifier unique to _key_.
-    def rename(key) : Int32
+    # Returns a new or an existing Int32 based identifier unique to _key_.
+    def rename(key) : BrokeredId(Int32)
       rename(key, Int32)
     end
 
     # Returns a new or an existing identifier of _type_ unique to _key_.
-    def rename(key, type : T.class) : T
+    def rename(key, type : T.class) : BrokeredId(T)
       quotient = key >> Chunk::SHIFT
       remainder = key & Chunk::MASK
       chunk = chunk_for(quotient)
@@ -56,8 +68,8 @@ module PBTranslator::Util
       @chunks[quotient]
     end
 
-    private def combine(chunk, remainder, type : T.class) : T forall T
-      ((T.zero + chunk) << Chunk::SHIFT) | remainder
+    private def combine(chunk, remainder, type : T.class) : BrokeredId(T) forall T
+      BrokeredId.new(((T.zero + chunk) << Chunk::SHIFT) | remainder)
     end
 
     private def new_chunk

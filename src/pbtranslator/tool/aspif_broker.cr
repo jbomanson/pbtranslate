@@ -54,10 +54,10 @@ class PBTranslator::Tool::ASPIFBroker < PBTranslator::Reader::ASPIF
     @start_of_line = true
   end
 
-  protected def rename(literal)
-    sign = literal < 0 ? -1 : 1
-    atom = literal.abs
-    @id_broker.rename(atom) * sign
+  protected def rename(literal_value : Int)
+    sign = literal_value < 0 ? -1 : 1
+    atom = literal_value.abs
+    Literal.new(@id_broker.rename(atom).operate &.*(sign))
   end
 
   protected def token(e : Enum)
@@ -68,8 +68,17 @@ class PBTranslator::Tool::ASPIFBroker < PBTranslator::Reader::ASPIF
     true
   end
 
-  protected def token(l : Literal)
+  protected def token(l : Literal(Util::BrokeredId(T))) forall T
+    check_int(T)
+    token(l.value.brokered_id)
+  end
+
+  protected def token(l : Literal(T)) forall T
+    check_int(T)
     token(rename(l.value))
+  end
+
+  private def check_int(i : Int.class)
   end
 
   protected def token(s : String)
