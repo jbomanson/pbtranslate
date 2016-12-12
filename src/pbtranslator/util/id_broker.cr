@@ -24,7 +24,7 @@ module PBTranslator::Util
       fresh_id(Int32)
     end
 
-    # Returns a new identifier of the given `type`.
+    # Returns a new identifier of the given _type_.
     def fresh_id(type : T.class) : T
       chunk = @anonymous_chunk
       counter = @anonymous_counter
@@ -36,12 +36,12 @@ module PBTranslator::Util
       combine(chunk, counter, type)
     end
 
-    # Returns a new or an existing Int32 identifier unique to `key`.
+    # Returns a new or an existing Int32 identifier unique to _key_.
     def rename(key) : Int32
       rename(key, Int32)
     end
 
-    # Returns a new or an existing identifier of `type` unique to `key`.
+    # Returns a new or an existing identifier of _type_ unique to _key_.
     def rename(key, type : T.class) : T
       quotient = key >> Chunk::SHIFT
       remainder = key & Chunk::MASK
