@@ -3,6 +3,10 @@ require "./helper"
 # TODO: Bump positions pointing to spaces in error messages.
 # TODO: Decrement positions pointing after enums in error messages.
 
+# This is based on the definition of the ASP Input Format (ASPIF)
+# in Appendix A of
+# "Theory Solving made easy with Clingo 5 (Extended Version ∗)".
+
 module PBTranslator::Reader
   class ASPIF
     include Helper::Name
