@@ -148,7 +148,7 @@ class PBTranslator::Command
     end
   end
 
-  def with_file_or_io(file : String?, mode : String, io : IO, &block : IO ->)
+  private def with_file_or_io(file : String?, mode : String, io : IO, &block : IO ->)
     if file
       File.open(file, mode, &block)
     else
