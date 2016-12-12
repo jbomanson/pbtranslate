@@ -5,8 +5,8 @@ struct PBTranslator::Network::WidthLimited(N, I)
   def initialize(@network : N, @width : I)
   end
 
-  def host(visitor, *args)
-    @network.host(Visitor.new(visitor, @width), *args)
+  def host(visitor, *args, **options)
+    @network.host(Visitor.new(visitor, @width), *args, **options)
   end
 
   private struct Visitor(V, I)
@@ -16,18 +16,18 @@ struct PBTranslator::Network::WidthLimited(N, I)
     end
 
     macro define_visit(please_yield)
-      def visit(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), *args) : Void
+      def visit(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), *args, **options) : Void
         return unless gate.wires.all? &.<(@width)
-        @visitor.visit(gate, *args) {{
+        @visitor.visit(gate, *args, **options) {{
           (please_yield ? "{ |v| yield Visitor.new(v, @width) }" : "").id
         }}
       end
 
       # TODO: Move this outside of the macro and remove the yield.
-      def visit(gate : Gate(Or, Input, _), *args) : Void
+      def visit(gate : Gate(Or, Input, _), *args, **options) : Void
         limited_gate = typeof(gate).new?(Wires.new(wires, &.<(@width)))
         return unless limited_gate
-        @visitor.visit(limited_gate, *args) {{
+        @visitor.visit(limited_gate, *args, **options) {{
           (please_yield ? "{ |v| yield Visitor.new(v, @width) }" : "").id
         }}
       end
@@ -36,8 +36,8 @@ struct PBTranslator::Network::WidthLimited(N, I)
     define_visit false
     define_visit true
 
-    def visit(layer : OOPLayer.class, *args)
-      @visitor.visit(layer, *args) { |v| yield Visitor.new(v, @width) }
+    def visit(layer : OOPLayer.class, *args, **options)
+      @visitor.visit(layer, *args, **options) { |v| yield Visitor.new(v, @width) }
     end
 
     private struct Wires(T, P)

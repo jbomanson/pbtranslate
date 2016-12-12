@@ -17,7 +17,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     @factory = AccumulatingVisitorFactory(T).new
   end
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward) : Void
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, *args, **options) : Void
     i, j = gate.wires
     a = @array[i]
     b = @array[j]
@@ -25,7 +25,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     @array[j] = @context.operate(And, {a, b})
   end
 
-  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+  def visit(gate : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
   end
 
   def visit(f : OOPLayer.class, way : Way) : Void
@@ -54,7 +54,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @factory : AccumulatingVisitorFactory(T))
     end
 
-    def visit(gate : Gate(F, Output, _), way : Forward) : Void
+    def visit(gate : Gate(F, Output, _), way : Forward, *args, **options) : Void
       index = gate.wires.first
       value =
         @factory.visit(F, @array.to_a, @context) do |output_visitor|
@@ -95,12 +95,12 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @storage : Array(T))
     end
 
-    def visit(gate : Gate(F, Input, _), way : Forward) : Void
+    def visit(gate : Gate(F, Input, _), way : Forward, *args, **options) : Void
       operands = gate.wires.map { |wire| @array[wire] }
       visit(@context.operate(F, operands))
     end
 
-    def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+    def visit(gate : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
     end
 
     def visit(t : T) : Void
