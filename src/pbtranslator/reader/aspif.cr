@@ -524,7 +524,10 @@ module PBTranslator::Reader
     end
 
     private describe EXISTING, weighted_literal(visitor) do
-      (l = literal) && (w = positive_integer) ?  visitor.visit(l, w) : false
+      # In the format definition, w is a positive integer.
+      # However, clasp accepts zero as well as of 2016-12-09.
+      # Thus we accept it as well.
+      (l = literal) && (w = nonnegative_integer) ? visitor.visit(l, w) : false
     end
 
     private describe EXISTING, literal(visitor) do
