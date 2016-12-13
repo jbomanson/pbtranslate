@@ -5,7 +5,7 @@ struct PBTranslator::Network::WidthLimited(N, I)
   def initialize(@network : N, @width : I)
   end
 
-  def host(visitor, *args, **options)
+  def host(visitor, *args, **options) : Void
     @network.host(Visitor.new(visitor, @width), *args, **options)
   end
 
