@@ -47,24 +47,9 @@ module PBTranslator::DepthTracking
   # The depth of an entire network is the longest distance between an input and
   # an output.
   #
-  # Example:
+  # ### Example
   #
-  #     struct Network
-  #       include Gate::Restriction
-  #
-  #       def initialize(@wire_pairs : Array(Tuple(Int32, Int32)))
-  #       end
-  #
-  #       def width
-  #         @wire_pairs.map(&.max).max + 1
-  #       end
-  #
-  #       def host(visitor, *args) : Void
-  #         @wire_pairs.each do |pair|
-  #           visitor.visit(Gate.comparator_between(*pair), *args)
-  #         end
-  #       end
-  #     end
+  #     include PBTranslator
   #
   #     struct MyVisitor
   #       def visit(gate, *args, depth) : Void
@@ -73,7 +58,7 @@ module PBTranslator::DepthTracking
   #     end
   #
   #     a = [{0, 1}, {2, 3}, {0, 2}, {1, 3}, {1, 2}]
-  #     network = Network.new(a)
+  #     network = Network::IndexableComparator.new(a)
   #     width = network.width # => 4
   #     visitor = MyVisitor.new
   #     wrapper = DepthTracking::Visitor.new(width: width, visitor: visitor)
