@@ -1,8 +1,8 @@
 require "../visitor/array_logic"
 
-# An object that translates cardinality rules into normal rules in ASPIF.
+# An object that translates cardinality rules into normal rules in ASPIF::Reader.
 class PBTranslator::Tool::CardinalityTranslator <
-    PBTranslator::Tool::ASPIFBroker
+    PBTranslator::ASPIF::Broker
     
   @in_weight_rule = false
   @lower_bound = 0
@@ -94,7 +94,7 @@ class PBTranslator::Tool::CardinalityTranslator <
 
     return true if n < @lower_bound
 
-    context = Reader::ASPIF::LogicContext.class_for(a, Int32).new(self)
+    context = ASPIF::LogicContext.class_for(a, Int32).new(self)
     visitor = Visitor::ArrayLogic.new(a, context)
     network = network_of_width(n)
     network.host(visitor, FORWARD)

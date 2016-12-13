@@ -129,7 +129,7 @@ class PBTranslator::Command
     when "optimization".starts_with? type
       Tool::OptimizationRewriter
     when "nothing".starts_with? type
-      Tool::ASPIFBroker
+      ASPIF::Broker
     else
       if type
         error "unknown argument '#{type}' to --type"

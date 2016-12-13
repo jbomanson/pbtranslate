@@ -2,9 +2,9 @@ require "../../spec_helper"
 
 include PBTranslator
 
-RR = Reader::ASPIF
+RR = ASPIF::Reader
 
-describe Reader::ASPIF do
+describe ASPIF::Reader do
   it "parses Figure 3. from gekakaosscwa16b" do
 
     s =

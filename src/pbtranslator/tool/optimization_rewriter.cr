@@ -1,8 +1,8 @@
 require "../visitor/array_weight_propagator"
 
-# An object that rewrites optimization statements using normal rules in ASPIF.
+# An object that rewrites optimization statements using normal rules in ASPIF::Reader.
 class PBTranslator::Tool::OptimizationRewriter <
-  PBTranslator::Tool::ASPIFBroker
+  PBTranslator::ASPIF::Broker
   enum Task
     Pass
     Read
@@ -68,7 +68,7 @@ class PBTranslator::Tool::OptimizationRewriter <
 
   private def refactor
     @input_visitor.devour do |literals, weights|
-      context = Reader::ASPIF::LogicContext.class_for(literals, Int32).new(self)
+      context = ASPIF::LogicContext.class_for(literals, Int32).new(self)
       Visitor::ArrayWeightPropagator.arrange_visit(
         FORWARD,
         network:        network_of_width(literals.size),

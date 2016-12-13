@@ -1,11 +1,11 @@
 require "../../visitor/array_logic"
 
 # An object that specifies how definitions of the outputs of "And" and "Or"
-# gates are written in ASPIF.
+# gates are written in ASPIF::Reader.
 #
 # The type parameter `T` is the type used with ArrayLogic::Context.
 # The type parameter `I` is the integer type used to number literals.
-struct PBTranslator::Reader::ASPIF::LogicContext(T, I)
+struct PBTranslator::ASPIF::LogicContext(T, I)
   include Visitor::ArrayLogic::Context(T)
   include Gate::Restriction
 
@@ -13,7 +13,7 @@ struct PBTranslator::Reader::ASPIF::LogicContext(T, I)
     LogicContext(T, I)
   end
 
-  def initialize(@aspif_broker : Tool::ASPIFBroker)
+  def initialize(@aspif_broker : ASPIF::Broker)
   end
 
   def operate(f, args)

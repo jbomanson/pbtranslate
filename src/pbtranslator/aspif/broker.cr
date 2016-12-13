@@ -1,4 +1,6 @@
-# ASPIFBroker renames atom numbers as necessary in a program written in ASPIF.
+require "./reader"
+
+# An object to rename atom numbers in a program written in ASPIF.
 #
 # The numbers are produced by renaming with `Util::IdBroker`.
 #
@@ -23,7 +25,7 @@
 #
 #     r =
 #       String.build do |builder|
-#         aspif_broker = Tool::ASPIFBroker.new(s, builder, id_broker)
+#         aspif_broker = ASPIF::Broker.new(s, builder, id_broker)
 #         aspif_broker.parse
 #       end
 #
@@ -39,13 +41,13 @@
 #     # 0
 #
 #     id_broker.fresh_id # => 1 : Int32
-class PBTranslator::Tool::ASPIFBroker < PBTranslator::Reader::ASPIF
+class PBTranslator::ASPIF::Broker < PBTranslator::ASPIF::Reader
   delegate fresh_id, to: @id_broker
 
-  # Creates a new ASPIFBroker that reads from `source`, writes to `sink_io` and
+  # Creates a new Broker that reads from `source`, writes to `sink_io` and
   # renames with `id_broker`.
   #
-  # The source is interpreted as by `Reader::ASPIF`.
+  # The source is interpreted as by `ASPIF::Reader`.
   def initialize(
                  source,
                  @sink_io : IO,
