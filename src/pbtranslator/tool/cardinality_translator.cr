@@ -68,26 +68,26 @@ class PBTranslator::Tool::CardinalityTranslator <
   protected def translate_cardinality
     check_delegate_to_super
 
-    b = self
     # Complete the unfinished rule with ...
     if @lower_bound <= 0
       # ... an empty conjunction.
-      b.visit(Body::Normal) do
-        b.visit(IntegerListStart.new(0)) do
+      visit(Body::Normal) do
+        visit(IntegerListStart.new(0)) do
           # no-op
         end
       end
-      b.visit(Newline)
+      visit(Newline)
       return true
     else
       # ... a single-literal body.
       glue_literal = b.fresh_id(Int32)
-      b.visit(Body::Normal) do
-        b.visit(IntegerListStart.new(1)) do
-          b.visit(glue_literal)
+      glue_literal = Literal.new(fresh_id(Int32))
+      visit(Body::Normal) do
+        visit(IntegerListStart.new(1)) do
+          visit(glue_literal)
         end
       end
-      b.visit(Newline)
+      visit(Newline)
     end
 
     a = @literals
