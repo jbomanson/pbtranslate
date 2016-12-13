@@ -72,13 +72,17 @@ module PBTranslator::DepthTracking
   #     # {0, 2} @ 1
   #     # {1, 3} @ 1
   #     # {1, 2} @ 2
-  struct Visitor(V)
+  class Visitor(V)
     include Gate::Restriction
     include WithDepth::Visitor
+
+    # Computes the depth of the network seen so far.
+    getter depth
 
     # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
     def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, width w : Int, initial_depth d = 0_u32)
       @array = Array(UInt32).new(w, d.to_u32)
+      @depth = 0_u32
     end
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
@@ -89,15 +93,11 @@ module PBTranslator::DepthTracking
       depth += increment_before(w)
       @visitor.visit(g, w, *args, **options, depth: depth)
       depth += increment_after(w)
+      @depth = {@depth, depth}.max
       output_wires = g.wires
       output_wires.each do |index|
         @array[index] = depth
       end
-    end
-
-    # Computes the depth of the network seen so far.
-    def depth
-      @array.max
     end
 
     private def increment_before(way : Forward)
