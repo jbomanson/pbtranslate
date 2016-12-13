@@ -23,7 +23,7 @@ struct MyVisitor
 
   @array = Array({UInt32, Int32} | {UInt32, Int32, Int32}).new
 
-  def visit(gate, *args, depth)
+  def visit(gate, *args, depth) : Void
     @array << {depth} + gate.wires
   end
 end

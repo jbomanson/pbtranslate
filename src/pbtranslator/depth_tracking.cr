@@ -67,7 +67,7 @@ module PBTranslator::DepthTracking
   #     end
   #
   #     struct MyVisitor
-  #       def visit(gate, *args, depth)
+  #       def visit(gate, *args, depth) : Void
   #         puts "#{gate.wires} @ #{depth}"
   #       end
   #     end

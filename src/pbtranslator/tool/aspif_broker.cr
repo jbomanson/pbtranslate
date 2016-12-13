@@ -98,14 +98,14 @@ class PBTranslator::Tool::ASPIFBroker < PBTranslator::Reader::ASPIF
   end
 
   # :nodoc:
-  def visit(c : Newline.class)
+  def visit(c : Newline.class) : Bool
     @sink_io << '\n'
     @start_of_line = true
     true
   end
 
   # :nodoc:
-  def visit(*args)
+  def visit(*args) : Bool
     args.each do |arg|
       token arg
     end
@@ -113,7 +113,7 @@ class PBTranslator::Tool::ASPIFBroker < PBTranslator::Reader::ASPIF
   end
 
   # :nodoc:
-  def visit(*args)
+  def visit(*args) : Bool
     visit(*args)
     yield
     true

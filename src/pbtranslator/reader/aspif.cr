@@ -191,7 +191,7 @@ module PBTranslator::Reader
       !!yield
     end
 
-    def visit(c : Newline.class)
+    def visit(c : Newline.class) : Bool
       true
     end
 
@@ -239,8 +239,7 @@ module PBTranslator::Reader
       !!yield
     end
 
-    def visit(
-      m : Heuristic, pos_lit : Literal, k : Int, priority : Int) : Bool
+    def visit(m : Heuristic, pos_lit : Literal, k : Int, priority : Int) : Bool
 
       !!yield
     end

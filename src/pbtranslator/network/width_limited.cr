@@ -36,7 +36,7 @@ struct PBTranslator::Network::WidthLimited(N, I)
     define_visit false
     define_visit true
 
-    def visit(layer : OOPLayer.class, *args, **options)
+    def visit(layer : OOPLayer.class, *args, **options) : Void
       @visitor.visit(layer, *args, **options) { |v| yield Visitor.new(v, @width) }
     end
 
