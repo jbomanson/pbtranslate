@@ -99,25 +99,40 @@ class PBTranslator::ASPIF::Broker < PBTranslator::ASPIF::Reader
     true
   end
 
-  # :nodoc:
-  def visit(c : Newline.class) : Bool
+  #
+  #     Output methods corresponding to visit methods
+  #
+
+  def output(c : Newline.class) : Bool
     @sink_io << '\n'
     @start_of_line = true
     true
   end
 
-  # :nodoc:
-  def visit(*args) : Bool
+  def output(*args) : Bool
     args.each do |arg|
       token arg
     end
     true
   end
 
-  # :nodoc:
-  def visit(*args) : Bool
-    visit(*args)
+  def output(*args) : Bool
+    output(*args)
     yield
     true
+  end
+
+  #
+  #     Visit methods called by Reader
+  #
+
+  # :nodoc:
+  def visit(*args) : Bool
+    output(*args)
+  end
+
+  # :nodoc:
+  def visit(*args) : Bool
+    output(*args) { yield }
   end
 end
