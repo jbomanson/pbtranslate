@@ -20,11 +20,11 @@ class PBTranslator::Tool::OptimizationRewriter <
   def visit(s : Statement) : Bool
     case {@task, s}
     when {Task::Pass, Statement::Minimize}
-      r = task_read { yield } && refactor && super(s) { task_write }
+      r = task_read { yield } && refactor && output(s) { task_write }
       task_reset
       r
     else
-      super(s) { yield }
+      output(s) { yield }
     end
   end
 
@@ -34,7 +34,7 @@ class PBTranslator::Tool::OptimizationRewriter <
       @priority = priority
       !!yield
     else
-      super(c, priority) { yield }
+      output(c, priority) { yield }
     end
   end
 
@@ -43,12 +43,8 @@ class PBTranslator::Tool::OptimizationRewriter <
     when Task::Read
       !!yield
     else
-      super(n) { yield }
+      output(n) { yield }
     end
-  end
-
-  def visit(l : Literal(Util::BrokeredId), w : Int) : Bool
-    super(l, w)
   end
 
   def visit(l : Literal, w : Int) : Bool
@@ -57,7 +53,7 @@ class PBTranslator::Tool::OptimizationRewriter <
       @input_visitor.add(literal: rename(l.value.to_i32), weight: w)
       true
     else
-      super(l, w)
+      output(l, w)
     end
   end
 
@@ -112,10 +108,10 @@ class PBTranslator::Tool::OptimizationRewriter <
   private def task_write
     @output_visitor.devour do |literals, weights|
       @task = Task::Write
-      visit(MinimizeStatement, @priority) do
-        visit(WeightedLiteralListStart.new(literals.size)) do
+      output(MinimizeStatement, @priority) do
+        output(WeightedLiteralListStart.new(literals.size)) do
           literals.each_with_index do |literal, i|
-            visit(literal, weights[i])
+            output(literal, weights[i])
           end
         end
       end
