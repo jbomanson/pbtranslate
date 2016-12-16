@@ -4,6 +4,10 @@ require "./concept"
 # This is based on the definition of the ASP Input Format (ASPIF)
 # in Appendix A of
 # "Theory Solving made easy with Clingo 5 (Extended Version ∗)".
+#
+# In the format definition, there are some positive integers that clasp (3.2.1)
+# allows to be zero as well. We follow clasp in these cases, which are marked
+# with See_c864c0f4c7.
 
 class PBTranslator::ASPIF::Reader
   include AbstractReader::Name
@@ -239,7 +243,8 @@ class PBTranslator::ASPIF::Reader
       when Body::Normal
         visit(c) { literal_list }
       when Body::Weight
-        (l = positive_integer) && visit(c, l) { weighted_literal_list }
+        # See_c864c0f4c7
+        (l = nonnegative_integer) && visit(c, l) { weighted_literal_list }
       else
         raise "Internal error"
       end
@@ -367,9 +372,7 @@ class PBTranslator::ASPIF::Reader
   end
 
   private describe EXISTING, weighted_literal(visitor) do
-    # In the format definition, w is a positive integer.
-    # However, clasp accepts zero as well as of 2016-12-09.
-    # Thus we accept it as well.
+    # See_c864c0f4c7
     (l = literal) && (w = nonnegative_integer) ? visitor.visit(l, w) : false
   end
 
@@ -383,19 +386,6 @@ class PBTranslator::ASPIF::Reader
 
   private describe EXISTING, positive_literal do
     (l = literal) && (l.positive? ? l : nil)
-  end
-
-  private describe EXISTING, positive_integer do
-    (i = nonnegative_integer) ? check_nonzero(i, "zero integer") : nil
-  end
-
-  private def check_nonzero(l, msg)
-    if l == 0
-      problem(msg)
-      nil
-    else
-      l
-    end
   end
 
   # Misc
