@@ -45,7 +45,7 @@ class PBTranslator::Command
       puts USAGE
       exit(1)
     end
-  rescue ex : OptionParser::Exception
+  rescue ex : OptionParser::Exception | Errno
     error ex.message
   rescue ex
     puts ex
@@ -98,12 +98,6 @@ class PBTranslator::Command
           end
         end
       end
-
-    if f = input_filename
-      if File.file?(f)
-        error "file #{f} does not exist"
-      end
-    end
 
     with_file_or_io(input_filename, "r", STDIN) do |input_io|
       with_file_or_io(output_filename, "w", STDOUT) do |output_io|
