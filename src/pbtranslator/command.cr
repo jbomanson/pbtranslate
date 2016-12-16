@@ -21,12 +21,11 @@ class PBTranslator::Command
   private getter options
 
   def initialize(@options : Array(String))
-    @color = true
+    @use_color = true
   end
 
   def run
     command = options.first?
-
     if command
       case
       when "translate".starts_with? command
@@ -53,7 +52,7 @@ class PBTranslator::Command
       puts frame
     end
     puts
-    error "you've found a bug in PBTranslator"
+    error "you've found a bug"
   end
 
   private def translate
@@ -84,7 +83,7 @@ class PBTranslator::Command
         end
 
         opts.on("--no-color", "Disable colored output") do
-          @color = false
+          @use_color = false
         end
         opts.unknown_args do |before, after|
           filenames = before + after
@@ -151,10 +150,12 @@ class PBTranslator::Command
   end
 
   private def error(msg, *, extra = "", exit_code = 1, stderr = STDERR)
-    @color = false if ARGV.includes?("--no-color")
-    stderr.print "Error: ".colorize.toggle(@color).red.bold
-    stderr.puts msg.colorize.toggle(@color).bright
-    stderr.print extra
+    c = @use_color && stderr.tty?
+    stderr << "pbtranslator: "
+    stderr << "error: ".colorize.toggle(c).red.bold
+    stderr << msg
+    stderr << "\n"
+    stderr << extra
     exit(exit_code)
   end
 end
