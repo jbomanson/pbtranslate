@@ -92,7 +92,7 @@ class PBTranslator::Network::Cone(N)
   end
 
   # :nodoc:
-  struct PassingGuide(V, I)
+  class PassingGuide(V, I)
     include Gate::Restriction
 
     # A visitor that guides another and indicates to it which output wires
