@@ -11,20 +11,18 @@ require "../gate"
 class PBTranslator::Network::Cone(N)
   @levels : Array(Int32?)
 
-  # Creates a version of a _network_ that provides an *output_cone* method for
-  # all visited gates.
+  # Creates a version of a _network_ that augments visits with a named parameter
+  # *output_cone*.
   #
+  # The output_cone parameter is a tuple of booleans indicating which outputs
+  # are in the cone.
   # The cone is computed based on network outputs for which _output.[]_ returns
   # true.
   def self.new(*args, **options, output)
     new(*args, **options) {|i| output[i]}
   end
 
-  # Creates a version of a _network_ that provides an *output_cone* method for
-  # all visited gates.
-  #
-  # The cone is computed based on network outputs for which the given block
-  # returns true.
+  # Like the other `new` but using a block for picking network outputs.
   def initialize(*, @network : N, width, &block : Int32 -> Bool)
     @levels = Array.new(width) { |index| (yield index) ? Int32.zero : nil }
     @is_pending = true
@@ -81,7 +79,7 @@ class PBTranslator::Network::Cone(N)
         @levels.values_at(*output_wires).map do |wire|
           wire ? true : false
         end
-      @visitor.visit(Wires.wrap(gate, output_cone), way, *args, **options)
+      @visitor.visit(gate, way, *args, **options, output_cone: output_cone)
       output_cone.any?
     end
 
@@ -110,26 +108,8 @@ class PBTranslator::Network::Cone(N)
         @levels.values_at(*output_wires).map do |wire|
           wire ? @index < wire : false
         end
-      @visitor.visit(Wires.wrap(gate, output_cone), way, *args, **options)
+      @visitor.visit(gate, way, *args, **options, output_cone: output_cone)
       @index += 1
     end
-  end
-
-  # A wire tuple enhanced with an `#output_cone` method.
-  struct Wires(T, C)
-    def self.wrap(gate : Gate(F, S, T), output_cone)
-      Gate(F, S, Wires(T, typeof(output_cone))).new(Wires.new(gate.wires, output_cone))
-    end
-
-    # A tuple of booleans indicating the output wires in a cone of influence.
-    #
-    # This is computed based on `#output_wires`.
-    getter output_cone
-
-    protected def initialize(@wires : T, @output_cone : C)
-    end
-
-    # Forwards all calls to the wrapped wires.
-    forward_missing_to @wires
   end
 end

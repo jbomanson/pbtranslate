@@ -7,9 +7,9 @@ include PBTranslator
 record ArrayConeSwap(T), array : Array(T) do
   include Gate::Restriction
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward) : Void
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, **options, output_cone) : Void
     i, j = gate.wires
-    x, y = gate.wires.output_cone
+    x, y = output_cone
     a = @array[i]
     b = @array[j]
     c = a < b
@@ -17,21 +17,19 @@ record ArrayConeSwap(T), array : Array(T) do
     @array[j] = c ? b : a if y
   end
 
-  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+  def visit(gate : Gate(Passthrough, _, _), way : Forward, **options) : Void
   end
 end
 
 record ArrayConeNot do
   include Gate::Restriction
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward) : Void
-    x, y = gate.wires.output_cone
-    if x || y
-      raise "Expected two false booleans, got #{{x, y}}"
-    end
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, **options, output_cone) : Void
+    return if output_cone.none?
+    raise "Expected two false booleans, got #{output_cone}"
   end
 
-  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+  def visit(gate : Gate(Passthrough, _, _), way : Forward, **options) : Void
   end
 end
 
@@ -43,7 +41,6 @@ scheme =
 private def create_network(scheme, width_log2, wanted, visitor) : Void
   w = Width.from_log2(width_log2)
   n = scheme.network(w)
-  #nn = Network::Cone.new(network: n, width: w.value) {|i| wanted[i]}
   nn = Network::Cone.new(network: n, width: w.value, output: wanted)
   nn.host(visitor, FORWARD)
 end
