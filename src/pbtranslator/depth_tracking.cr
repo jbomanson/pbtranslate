@@ -1,3 +1,4 @@
+require "./gate"
 require "./with_depth"
 
 module PBTranslator::DepthTracking

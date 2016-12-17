@@ -1,6 +1,6 @@
 require "bit_array"
 
-require "../spec_helper"
+require "../../spec_helper"
 
 include PBTranslator
 
@@ -40,17 +40,21 @@ scheme =
     Scheme::OEMerge::INSTANCE
   )
 
+private def create_network(scheme, width_log2, wanted, visitor) : Void
+  w = Width.from_log2(width_log2)
+  n = scheme.network(w)
+  #nn = Network::Cone.new(network: n, width: w.value) {|i| wanted[i]}
+  nn = Network::Cone.new(network: n, width: w.value, output: wanted)
+  nn.host(visitor, FORWARD)
+end
+
 # Returns a tuple of computed and a tuple of correct wanted outputs.
 private def compute(scheme, random, width_log2, wanted)
   width = 1 << width_log2
   a = Array.new(width) { random.rand }
   b = a.clone
   c = a.sort
-  Cone.arrange_visit(
-    network: scheme.network(Width.from_log2(width_log2)),
-    visitor: ArrayConeSwap.new(b),
-    wanted: wanted,
-  )
+  create_network(scheme, width_log2, wanted, ArrayConeSwap.new(b))
   {b, c}.map do |array|
     index = 0
     array.select do
@@ -61,17 +65,13 @@ private def compute(scheme, random, width_log2, wanted)
   end
 end
 
-describe Cone do
+describe Network::Cone do
   it "works with universally unwanted outputs and merge sorting networks" do
     random = Random.new(SEED)
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, false)
-      Cone.arrange_visit(
-        network: scheme.network(Width.from_log2(width_log2)),
-        visitor: ArrayConeNot.new,
-        wanted: wanted,
-      )
+      create_network(scheme, width_log2, wanted, ArrayConeNot.new)
     end
   end
 
