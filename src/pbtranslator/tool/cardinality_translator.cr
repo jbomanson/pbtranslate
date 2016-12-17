@@ -1,3 +1,4 @@
+require "../network/cone"
 require "../visitor/array_logic"
 
 # An object that translates cardinality rules into normal rules in ASPIF::Reader.
@@ -90,13 +91,13 @@ class PBTranslator::Tool::CardinalityTranslator <
     end
 
     a = @literals
-    n = a.size
+    w = a.size
 
-    return true if n < @lower_bound
+    return true if w < @lower_bound
 
     context = ASPIF::LogicContext.class_for(a, Int32).new(self)
     visitor = Visitor::ArrayLogic.new(a, context)
-    network = network_of_width(n)
+    network = network_of_width(w)
     network.host(visitor, FORWARD)
 
     # Derive the glue literal from the appropriate body literal.
@@ -126,13 +127,15 @@ class PBTranslator::Tool::CardinalityTranslator <
     raise "Internal error" unless @delegate_to_super
   end
 
-  private def network_of_width(n)
+  private def network_of_width(w)
     scheme =
       Scheme::WidthLimited.new(
         Scheme::MergeSort::Recursive.new(
           Scheme::OEMerge::INSTANCE
         )
       )
-    scheme.network(Width.from_value(n))
+    n = scheme.network(Width.from_value(w))
+    b = @lower_bound - 1
+    Network::Cone.new(network: n, width: w, &.==(b))
   end
 end
