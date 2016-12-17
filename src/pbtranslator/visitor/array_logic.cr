@@ -20,12 +20,20 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     @accumulator = Accumulator(T).new
   end
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, *args, **options) : Void
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, *args, **options, output_cone) : Void
     i, j = gate.wires
     a = @array[i]
     b = @array[j]
-    @array[i] = @context.operate(Or, {a, b})
-    @array[j] = @context.operate(And, {a, b})
+    if output_cone[0]
+      @array[i] = @context.operate(Or, {a, b})
+    end
+    if output_cone[1]
+      @array[j] = @context.operate(And, {a, b})
+    end
+  end
+
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, *args, **options) : Void
+    visit(gate, way, *args, **options, output_cone: gate.wires.map { true })
   end
 
   def visit(gate : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
