@@ -4,8 +4,15 @@ require "../../spec_helper"
 
 include PBTranslator
 
-record ArrayConeSwap(T), array : Array(T) do
+class ArrayConeSwap(T)
   include Gate::Restriction
+
+  getter cone_size
+
+  @cone_size = 0
+
+  def initialize(@array : Array(T))
+  end
 
   def visit(gate : Gate(Comparator, InPlace, _), way : Forward, **options, output_cone) : Void
     i, j = gate.wires
@@ -15,51 +22,49 @@ record ArrayConeSwap(T), array : Array(T) do
     c = a < b
     @array[i] = c ? a : b if x
     @array[j] = c ? b : a if y
+    @cone_size += output_cone.count &.itself
   end
 
   def visit(gate : Gate(Passthrough, _, _), way : Forward, **options) : Void
   end
 end
 
-record ArrayConeNot do
-  include Gate::Restriction
-
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, **options, output_cone) : Void
-    return if output_cone.none?
-    raise "Expected two false booleans, got #{output_cone}"
-  end
-
-  def visit(gate : Gate(Passthrough, _, _), way : Forward, **options) : Void
-  end
-end
-
-scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::OEMerge::INSTANCE
-  )
-
-private def create_network(scheme, width_log2, wanted, visitor) : Void
+# Hosts a visitor through a network with a cone and returns the size of the cone
+private def host_with_cone(width_log2, wanted, array) : Int32
+  scheme =
+    Scheme::MergeSort::Recursive.new(
+      Scheme::OEMerge::INSTANCE
+    )
   w = Width.from_log2(width_log2)
   n = scheme.network(w)
   nn = Network::Cone.new(network: n, width: w.value, output: wanted)
+  visitor = ArrayConeSwap.new(array)
   nn.host(visitor, FORWARD)
+  visitor.cone_size
 end
 
-# Returns a tuple of computed and a tuple of correct wanted outputs.
-private def compute(scheme, random, width_log2, wanted)
+# Evaluates given wanted outputs of a network with random input values.
+#
+# Returns
+# - the size of the cone in terms of gate output wires
+# - an array of computed wanted outputs
+# - an array of expected wanted outputs.
+private def compute(random, width_log2, wanted)
   width = 1 << width_log2
   a = Array.new(width) { random.rand }
   b = a.clone
   c = a.sort
-  create_network(scheme, width_log2, wanted, ArrayConeSwap.new(b))
-  {b, c}.map do |array|
-    index = 0
-    array.select do
-      wanted[index].tap do
-        index += 1
+  s = host_with_cone(width_log2, wanted, b)
+  x, y =
+    {b, c}.map do |array|
+      index = 0
+      array.select do
+        wanted[index].tap do
+          index += 1
+        end
       end
     end
-  end
+  {s, x, y}
 end
 
 describe Network::Cone do
@@ -68,7 +73,8 @@ describe Network::Cone do
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, false)
-      create_network(scheme, width_log2, wanted, ArrayConeNot.new)
+      size, computed, expected = compute(random, width_log2, wanted)
+      size.should eq(0)
     end
   end
 
@@ -77,20 +83,28 @@ describe Network::Cone do
     (0..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, true)
-      wanted_b, wanted_c = compute(scheme, random, width_log2, wanted)
-      wanted_b.should eq(wanted_c)
+      size, computed, expected = compute(random, width_log2, wanted)
+      computed.should eq(expected)
     end
   end
 
   it "works with single outputs and merge sorting networks" do
     random = Random.new(SEED)
-    (0..WIDTH_LOG2_MAX).each do |width_log2|
+    (1..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
-      wanted = BitArray.new(width)
-      index = random.rand(width)
-      wanted[index] = true
-      wanted_b, wanted_c = compute(scheme, random, width_log2, wanted)
-      wanted_b.should eq(wanted_c)
+
+      wanted_one = BitArray.new(width)
+      wanted_one[random.rand(width)] = true
+      size_one, computed_one, expected_one =
+        compute(random, width_log2, wanted_one)
+
+      computed_one.should eq(expected_one)
+
+      wanted_all = BitArray.new(width, true)
+      size_all, computed_all, expected_all =
+        compute(random, width_log2, wanted_all)
+
+      size_one.should be < size_all
     end
   end
 end
