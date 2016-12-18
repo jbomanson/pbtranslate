@@ -9,42 +9,33 @@ class PBTranslator::Tool::CardinalityTranslator <
   @lower_bound = 0
   @literals = Array(Literal(Util::BrokeredId(Int32))).new
   @weights = Array(Int32).new
-  @delegate_to_super = false
 
   def visit(b : Body, lower_bound : Int) : Bool
-    if @delegate_to_super
-      super(b, lower_bound) { yield }
-    else
-      unless Body::Weight == b
-        raise "Strange Body #{b}"
-      end
-      @in_weight_rule = true
-      @lower_bound = lower_bound
-      r = !!yield
-      if r
-        r = revisit
-        @in_weight_rule = false
-        @literals.clear
-        @weights.clear
-      end
-      r
+    unless Body::Weight == b
+      raise "Strange Body #{b}"
     end
+    @in_weight_rule = true
+    @lower_bound = lower_bound
+    r = !!yield
+    if r
+      r = revisit
+      @in_weight_rule = false
+      @literals.clear
+      @weights.clear
+    end
+    r
   end
 
   def visit(n : WeightedLiteralListStart) : Bool
-    if @delegate_to_super || !@in_weight_rule
+    unless @in_weight_rule
       super(n) { yield }
     else
       !!yield
     end
   end
 
-  def visit(l : Literal(Util::BrokeredId), w : Int) : Bool
-    super
-  end
-
   def visit(l : Literal, w : Int) : Bool
-    if @delegate_to_super || !@in_weight_rule
+    unless @in_weight_rule
       super
     else
       @literals << rename(l.value.to_i32)
@@ -54,40 +45,34 @@ class PBTranslator::Tool::CardinalityTranslator <
   end
 
   protected def revisit : Bool
-    @delegate_to_super = true
-    r =
-      if @weights.all? &.==(1)
-        translate_cardinality
-        comment_end_of_translation
-      else
-        output_weight_rule
-      end
-    @delegate_to_super = false
-    r
+    if @weights.all? &.==(1)
+      translate_cardinality
+      comment_end_of_translation
+    else
+      output_weight_rule
+    end
   end
 
   protected def translate_cardinality
-    check_delegate_to_super
-
     # Complete the unfinished rule with ...
     if @lower_bound <= 0
       # ... an empty conjunction.
-      visit(Body::Normal) do
-        visit(IntegerListStart.new(0)) do
+      output(Body::Normal) do
+        output(IntegerListStart.new(0)) do
           # no-op
         end
       end
-      visit(Newline)
+      output(Newline)
       return true
     else
       # ... a single-literal body.
       glue_literal = Literal.new(fresh_id(Int32))
-      visit(Body::Normal) do
-        visit(IntegerListStart.new(1)) do
-          visit(glue_literal)
+      output(Body::Normal) do
+        output(IntegerListStart.new(1)) do
+          output(glue_literal)
         end
       end
-      visit(Newline)
+      output(Newline)
     end
 
     a = @literals
@@ -107,24 +92,19 @@ class PBTranslator::Tool::CardinalityTranslator <
   end
 
   protected def comment_end_of_translation
-    visit(Statement::Comment) do
-      visit(Comment.new("End of translation"))
+    output(Statement::Comment) do
+      output(Comment.new("End of translation"))
     end
   end
 
   protected def output_weight_rule
-    check_delegate_to_super
-    visit(Body::Weight, @lower_bound) do
-      visit(WeightedLiteralListStart.new(@literals.size)) do
+    output(Body::Weight, @lower_bound) do
+      output(WeightedLiteralListStart.new(@literals.size)) do
         @literals.each_with_index do |l, i|
-          visit(l, @weights[i])
+          output(l, @weights[i])
         end
       end
     end
-  end
-
-  private def check_delegate_to_super
-    raise "Internal error" unless @delegate_to_super
   end
 
   private def network_of_width(w)
