@@ -75,6 +75,10 @@ class PBTranslator::ASPIF::Broker < PBTranslator::ASPIF::Reader
     token(l.value.brokered_id)
   end
 
+  protected def token(b : Util::BrokeredId)
+    -"This method should not be called with Util::BrokeredId"
+  end
+
   protected def token(l : Literal(T)) forall T
     check_int(T)
     token(rename(l.value))
