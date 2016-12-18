@@ -22,21 +22,19 @@ class WeightCountingVisitor(T)
   end
 end
 
-describe Visitor::ArrayWeightPropagator do
+describe Network::WireWeighted do
   it "preserves sums of weights" do
     random = Random.new(SEED)
     random_width_array(network_count, random).each do |width|
-      network = scheme.network(Width.from_value(width))
-      visitor = WeightCountingVisitor(typeof(random.next_int)).new
+      g = Visitor::Noop::INSTANCE
+      w = WeightCountingVisitor(typeof(random.next_int)).new
+      visitor = Network::WireWeighted.pair(gate_visitor: g, weight_visitor: w)
       weights = Array.new(width) { random.next_int }
       backup_weights = weights.clone
-      Visitor::ArrayWeightPropagator.arrange_visit(
-        FORWARD,
-        network:        network,
-        gate_visitor:   Visitor::Noop::INSTANCE,
-        weight_visitor: visitor,
-        weights:        weights)
-      a, b = {visitor, backup_weights}.map &.sum
+      n = scheme.network(Width.from_value(width))
+      nn = Network::WireWeighted.new(network: n, weights: weights)
+      nn.host(visitor, FORWARD)
+      a, b = {w, backup_weights}.map &.sum
       a.should eq(b)
     end
   end

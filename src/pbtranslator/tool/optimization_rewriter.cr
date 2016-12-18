@@ -1,5 +1,3 @@
-require "../visitor/array_weight_propagator"
-
 # An object that rewrites optimization statements using normal rules in ASPIF::Reader.
 class PBTranslator::Tool::OptimizationRewriter <
   PBTranslator::ASPIF::Broker
@@ -65,12 +63,12 @@ class PBTranslator::Tool::OptimizationRewriter <
   private def refactor
     @input_visitor.devour do |literals, weights|
       context = ASPIF::LogicContext.class_for(literals, Int32).new(self)
-      Visitor::ArrayWeightPropagator.arrange_visit(
-        FORWARD,
-        network:        network_of_width(literals.size),
-        gate_visitor:   Visitor::ArrayLogic.new(literals, context),
-        weight_visitor: FilterVisitor.new(literals, @output_visitor),
-        weights:        weights)
+      g = Visitor::ArrayLogic.new(literals, context)
+      w = FilterVisitor.new(literals, @output_visitor)
+      v = Network::WireWeighted.pair(gate_visitor: g, weight_visitor: w)
+      n = network_of_width(literals.size)
+      nn = Network::WireWeighted.new(network: n, weights: weights)
+      nn.host(v, FORWARD)
     end
     true
   end
