@@ -80,7 +80,7 @@ class PBTranslator::Tool::CardinalityTranslator <
       return true
     else
       # ... a single-literal body.
-      glue_literal = fresh_id(Int32)
+      glue_literal = Literal.new(fresh_id(Int32))
       visit(Body::Normal) do
         visit(IntegerListStart.new(1)) do
           visit(glue_literal)
