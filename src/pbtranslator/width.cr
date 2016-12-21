@@ -11,14 +11,20 @@ abstract struct PBTranslator::Width(I)
     Free.new(value: v)
   end
 
+  abstract def value : I
+  abstract def pw2ceil : I
+  abstract def log2ceil : I
+  abstract def to_pw2 : Pw2(I)
+  abstract def to_free : Free(I)
+
   struct Pw2(I) < Width(I)
-    getter log2
+    getter log2 : I
 
     def self.new(*, pw2 : I) forall I
       new(log2: I.zero + (pw2 - 1).popcount)
     end
 
-    def self.new(*, value) 
+    def self.new(*, value)
       new(pw2: Math.pw2ceil(value))
     end
 
@@ -29,46 +35,46 @@ abstract struct PBTranslator::Width(I)
       (I.zero + 1) << log2
     end
 
-    def value
+    def value : I
       pw2ceil
     end
 
-    def to_pw2
+    def to_pw2 : Pw2(I)
       self
     end
 
-    def to_free
+    def to_free : Free(I)
       Free.new(value: value)
     end
 
-    def log2ceil
+    def log2ceil : I
       log2
     end
 
-    def pw2ceil
+    def pw2ceil : I
       pw2
     end
   end
 
   struct Free(I) < Width(I)
-    getter value
+    getter value : I
 
     def initialize(*, @value : I)
     end
 
-    def pw2ceil
+    def pw2ceil : I
       Math.pw2ceil(value)
     end
 
-    def log2ceil
+    def log2ceil : I
       to_pw2.log2ceil
     end
 
-    def to_pw2
+    def to_pw2 : Pw2(I)
       Pw2.new(value: value)
     end
 
-    def to_free
+    def to_free : Free(I)
       self
     end
   end
