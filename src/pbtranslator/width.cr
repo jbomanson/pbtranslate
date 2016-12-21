@@ -32,11 +32,19 @@ abstract struct PBTranslator::Width(I)
     end
 
     def pw2
-      (I.zero + 1) << log2
+      I.new(1) << log2
     end
 
     def value : I
       pw2ceil
+    end
+
+    def pw2ceil : I
+      pw2
+    end
+
+    def log2ceil : I
+      log2
     end
 
     def to_pw2 : Pw2(I)
@@ -45,14 +53,6 @@ abstract struct PBTranslator::Width(I)
 
     def to_free : Free(I)
       Free.new(value: value)
-    end
-
-    def log2ceil : I
-      log2
-    end
-
-    def pw2ceil : I
-      pw2
     end
   end
 
