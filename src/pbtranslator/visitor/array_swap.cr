@@ -3,7 +3,7 @@ require "../gate"
 record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
   include Gate::Restriction
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward) : Void
+  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, **options) : Void
     i, j = gate.wires
     a = @array[i]
     b = @array[j]
@@ -12,7 +12,11 @@ record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
     @array[j] = c ? b : a
   end
 
-  def visit(gate : Gate(Passthrough, _, _), way : Forward) : Void
+  def visit(gate : Gate(Passthrough, _, _), way : Forward, **options) : Void
+  end
+
+  def visit(layer : Layer.class, way : Forward, **options) : Void
+    yield self
   end
 
   # On some machine, the following is a 1.15x slower version of the above.
