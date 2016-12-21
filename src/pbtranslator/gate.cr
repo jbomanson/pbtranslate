@@ -6,6 +6,9 @@ struct PBTranslator::Gate(F, S, T)
   end
 
   module Restriction
+    struct Layer
+    end
+
     struct OOPLayer
     end
 
