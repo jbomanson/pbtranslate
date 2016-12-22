@@ -1,8 +1,9 @@
+require "../../util/restrict"
 require "../../width"
 
 class PBTranslator::Scheme::DepthSlice(S, I, W)
   def initialize(*, @scheme : S, @range_proc : W, I -> Range(I, I))
-    check_scheme(scheme)
+    Util.restrict(scheme, WithDepth::Scheme)
   end
 
   def network(width w : W)
@@ -10,8 +11,5 @@ class PBTranslator::Scheme::DepthSlice(S, I, W)
     d = n.depth
     r = @range_proc.call(w, d)
     Network::DepthSlice.new(network: n, width: w.value, range: r)
-  end
-
-  private def check_scheme(scheme : WithDepth::Scheme)
   end
 end
