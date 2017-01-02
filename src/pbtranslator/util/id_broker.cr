@@ -37,7 +37,7 @@ module PBTranslator::Util
     end
 
     # Returns a new identifier of the given _type_.
-    def fresh_id(type : T.class) : BrokeredId(T)
+    def fresh_id(type : T.class) : BrokeredId(T) forall T
       chunk = @anonymous_chunk
       counter = @anonymous_counter
       if counter & Chunk::MASK == 0
@@ -54,7 +54,7 @@ module PBTranslator::Util
     end
 
     # Returns a new or an existing identifier of _type_ unique to _key_.
-    def rename(key, type : T.class) : BrokeredId(T)
+    def rename(key, type : T.class) : BrokeredId(T) forall T
       quotient = key >> Chunk::SHIFT
       remainder = key & Chunk::MASK
       chunk = chunk_for(quotient)

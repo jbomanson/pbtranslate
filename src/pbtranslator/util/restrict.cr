@@ -27,6 +27,6 @@ module PBTranslator::Util
     restrict_reverse(type, value)
   end
 
-  private def self.restrict_reverse(type : E.class, value : E) : Void
+  private def self.restrict_reverse(type : E.class, value : E) : Void forall E
   end
 end

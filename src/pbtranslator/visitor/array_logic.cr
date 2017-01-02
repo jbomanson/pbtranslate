@@ -68,7 +68,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @accumulator : Accumulator(T))
     end
 
-    def visit(gate : Gate(F, Output, _), way : Forward, *args, **options) : Void
+    def visit(gate : Gate(F, Output, _), way : Forward, *args, **options) : Void forall F
       index = gate.wires.first
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
@@ -107,7 +107,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @storage : Array(T))
     end
 
-    def visit(gate : Gate(F, Input, _), way : Forward, *args, **options) : Void
+    def visit(gate : Gate(F, Input, _), way : Forward, *args, **options) : Void forall F
       operands = gate.wires.map { |wire| @array[wire] }
       store(@context.operate(F, operands))
     end

@@ -8,7 +8,7 @@ class PBTranslator::Network::Random(C)
     LayerCache.class_for(Gate.comparator_between(I.zero, I.zero), depth: 0_u32)
   end
 
-  def self.new(*, random r : ::Random, width w : Width(I), depth d : UInt32)
+  def self.new(*, random r : ::Random, width w : Width(I), depth d : UInt32) forall I
     n = Generator.new(random: r, width: w, depth: d)
     new(layer_cache_class_for(w).new(network: n, width: w))
   end
