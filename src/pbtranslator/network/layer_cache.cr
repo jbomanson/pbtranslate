@@ -25,8 +25,8 @@ class PBTranslator::Network::LayerCache(G, O)
   end
 
   def host(visitor, way : Way) : Void
-    way.each_in(@layers) do |layer|
-      visitor.visit(Layer, way) do |layer_visitor|
+    way.each_with_index_in(@layers) do |layer, index|
+      visitor.visit(Layer.new(index.to_u32), way) do |layer_visitor|
         way.each_in(layer) do |element|
           next unless element
           gate, options = element

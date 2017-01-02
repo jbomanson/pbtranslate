@@ -44,6 +44,13 @@ abstract struct PBTranslator::Way
     each_in(0...object.size) { |x| yield x }
   end
 
+  # Similar to Indexable#each_with_index for _object_.
+  #
+  # The order of iteration is determined by the type of _self_.
+  def each_with_index_in(object)
+    each_index_to(object) { |index| yield object[index], index }
+  end
+
   # A convenience macro for defining argumentless _each_ and *reverse_each*
   # methods for an object that defines *each_in* with a single `Way` argument.
   macro define_each

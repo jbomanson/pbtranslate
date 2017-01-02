@@ -15,7 +15,7 @@ record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
   def visit(gate : Gate(Passthrough, _, _), way : Forward, **options) : Void
   end
 
-  def visit(layer : Layer.class, way : Forward, **options) : Void
+  def visit(layer : Layer, way : Forward, **options) : Void
     yield self
   end
 
