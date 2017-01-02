@@ -3,7 +3,7 @@ require "../spec_helper"
 include PBTranslator
 
 instance_path = "spec/instance/300.aspif"
-filter_program = "lpconvert"
+filter_program = %x(spec/script/find-lpconvert.sh).chomp
 
 instance = File.read(instance_path)
 
