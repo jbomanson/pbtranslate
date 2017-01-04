@@ -15,19 +15,16 @@ struct PBTranslator::Network::WidthLimited(N, I)
     def initialize(@visitor : V, @width : I)
     end
 
+    def visit(gate : Gate(Or, Input, _), *args, **options) : Void
+      limited_gate = typeof(gate).new?(Wires.new(wires, &.<(@width)))
+      return unless limited_gate
+      @visitor.visit(limited_gate, *args, **options)
+    end
+
     macro define_visit(please_yield)
       def visit(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), *args, **options) : Void
         return unless gate.wires.all? &.<(@width)
         @visitor.visit(gate, *args, **options) {{
-          (please_yield ? "{ |v| yield Guide.new(v, @width) }" : "").id
-        }}
-      end
-
-      # TODO: Move this outside of the macro and remove the yield.
-      def visit(gate : Gate(Or, Input, _), *args, **options) : Void
-        limited_gate = typeof(gate).new?(Wires.new(wires, &.<(@width)))
-        return unless limited_gate
-        @visitor.visit(limited_gate, *args, **options) {{
           (please_yield ? "{ |v| yield Guide.new(v, @width) }" : "").id
         }}
       end
