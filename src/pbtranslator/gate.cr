@@ -11,7 +11,7 @@ struct PBTranslator::Gate(F, S, T)
       end
     end
 
-    struct OOPLayer
+    struct OOPSublayer
     end
 
     struct Passthrough

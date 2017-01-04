@@ -19,7 +19,7 @@ class PBTranslator::Network::DirectMerge(I)
   # Arranges a visit over the AND and OR gates in this network placed at an
   # *offset*.
   def host(visitor, way : Way, at offset = I.new(0)) : Void
-    visitor.visit(OOPLayer, way) do |layer_visitor|
+    visitor.visit(OOPSublayer, way) do |layer_visitor|
       base = offset - 1
       half_width = I.new(1) << @half_width_log2
       a = I.new(1)

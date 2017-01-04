@@ -39,7 +39,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
   def visit(gate : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
   end
 
-  def visit(f : OOPLayer.class, way : Way) : Void
+  def visit(f : OOPSublayer.class, way : Way) : Void
     @array.lag do |lagged|
       layer_visitor = LayerVisitor.new(lagged, @context, @accumulator)
       yield layer_visitor
