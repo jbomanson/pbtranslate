@@ -6,10 +6,10 @@ struct PBTranslator::Network::WidthLimited(N, I)
   end
 
   def host(visitor, *args, **options) : Void
-    @network.host(Visitor.new(visitor, @width), *args, **options)
+    @network.host(Guide.new(visitor, @width), *args, **options)
   end
 
-  private struct Visitor(V, I)
+  private struct Guide(V, I)
     include Gate::Restriction
 
     def initialize(@visitor : V, @width : I)
@@ -19,7 +19,7 @@ struct PBTranslator::Network::WidthLimited(N, I)
       def visit(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), *args, **options) : Void
         return unless gate.wires.all? &.<(@width)
         @visitor.visit(gate, *args, **options) {{
-          (please_yield ? "{ |v| yield Visitor.new(v, @width) }" : "").id
+          (please_yield ? "{ |v| yield Guide.new(v, @width) }" : "").id
         }}
       end
 
@@ -28,7 +28,7 @@ struct PBTranslator::Network::WidthLimited(N, I)
         limited_gate = typeof(gate).new?(Wires.new(wires, &.<(@width)))
         return unless limited_gate
         @visitor.visit(limited_gate, *args, **options) {{
-          (please_yield ? "{ |v| yield Visitor.new(v, @width) }" : "").id
+          (please_yield ? "{ |v| yield Guide.new(v, @width) }" : "").id
         }}
       end
     end
@@ -37,7 +37,7 @@ struct PBTranslator::Network::WidthLimited(N, I)
     define_visit true
 
     def visit(layer : OOPLayer.class, *args, **options) : Void
-      @visitor.visit(layer, *args, **options) { |v| yield Visitor.new(v, @width) }
+      @visitor.visit(layer, *args, **options) { |v| yield Guide.new(v, @width) }
     end
 
     private struct Wires(T, P)

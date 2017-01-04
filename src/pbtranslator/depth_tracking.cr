@@ -26,9 +26,9 @@ module PBTranslator::DepthTracking
 
     def host(visitor v, way y : Way) : Void
       d = initial_depth(y)
-      u = Visitor.new(visitor: v, width: @width, initial_depth: d)
-      @network.host(u, y)
-      @computed_depth = u.depth
+      g = Guide.new(visitor: v, width: @width, initial_depth: d)
+      @network.host(g, y)
+      @computed_depth = g.depth
     end
 
     private def initial_depth(way : Forward)
@@ -40,7 +40,7 @@ module PBTranslator::DepthTracking
     end
   end
   
-  # A visitor wrapper or a guide that computes the depths in a network.
+  # A visitor guide that computes the depths in a network.
   #
   # The depth of a gate refers to the distance to the input furthest from it.
   # Here distance is counted in terms of gates properly between them, so that
@@ -62,7 +62,7 @@ module PBTranslator::DepthTracking
   #     network = Network::IndexableComparator.new(a)
   #     width = network.width # => 4
   #     visitor = MyVisitor.new
-  #     wrapper = DepthTracking::Visitor.new(width: width, visitor: visitor)
+  #     wrapper = DepthTracking::Guide.new(width: width, visitor: visitor)
   #     network.host(wrapper, FORWARD)
   #     wrapper.depth # => 3
   #
@@ -73,7 +73,7 @@ module PBTranslator::DepthTracking
   #     # {0, 2} @ 1
   #     # {1, 3} @ 1
   #     # {1, 2} @ 2
-  class Visitor(V)
+  class Guide(V)
     include Gate::Restriction
     include WithDepth::Visitor
 
