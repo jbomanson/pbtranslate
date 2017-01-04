@@ -3,8 +3,8 @@ require "../gate"
 record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
   include Gate::Restriction
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, **options) : Void
-    i, j = gate.wires
+  def visit_gate(g : Gate(Comparator, InPlace, _), way : Forward, **options) : Void
+    i, j = g.wires
     a = @array[i]
     b = @array[j]
     c = a < b
@@ -12,10 +12,10 @@ record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
     @array[j] = c ? b : a
   end
 
-  def visit(gate : Gate(Passthrough, _, _), way : Forward, **options) : Void
+  def visit_gate(g : Gate(Passthrough, _, _), way : Forward, **options) : Void
   end
 
-  def visit(layer : Layer, way : Forward, **options) : Void
+  def visit_region(layer : Layer, way : Forward, **options) : Void
     yield self
   end
 

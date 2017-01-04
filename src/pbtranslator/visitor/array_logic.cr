@@ -20,8 +20,8 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     @accumulator = Accumulator(T).new
   end
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, *args, **options, output_cone) : Void
-    i, j = gate.wires
+  def visit_gate(g : Gate(Comparator, InPlace, _), way : Forward, *args, **options, output_cone) : Void
+    i, j = g.wires
     a = @array[i]
     b = @array[j]
     if output_cone[0]
@@ -32,14 +32,14 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     end
   end
 
-  def visit(gate : Gate(Comparator, InPlace, _), way : Forward, *args, **options) : Void
-    visit(gate, way, *args, **options, output_cone: gate.wires.map { true })
+  def visit_gate(g : Gate(Comparator, InPlace, _), way : Forward, *args, **options) : Void
+    visit_gate(g, way, *args, **options, output_cone: g.wires.map { true })
   end
 
-  def visit(gate : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
+  def visit_gate(g : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
   end
 
-  def visit(f : OOPSublayer.class, way : Way) : Void
+  def visit_region(f : OOPSublayer.class, way : Way) : Void
     @array.lag do |lagged|
       layer_visitor = LayerVisitor.new(lagged, @context, @accumulator)
       yield layer_visitor
@@ -68,8 +68,8 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @accumulator : Accumulator(T))
     end
 
-    def visit(gate : Gate(F, Output, _), way : Forward, *args, **options) : Void forall F
-      index = gate.wires.first
+    def visit_gate(g : Gate(F, Output, _), way : Forward, *args, **options) : Void forall F
+      index = g.wires.first
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
           yield output_visitor
@@ -107,12 +107,12 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @storage : Array(T))
     end
 
-    def visit(gate : Gate(F, Input, _), way : Forward, *args, **options) : Void forall F
-      operands = gate.wires.map { |wire| @array[wire] }
+    def visit_gate(g : Gate(F, Input, _), way : Forward, *args, **options) : Void forall F
+      operands = g.wires.map { |wire| @array[wire] }
       store(@context.operate(F, operands))
     end
 
-    def visit(gate : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
+    def visit_gate(g : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
     end
 
     private def store(t : T) : Void

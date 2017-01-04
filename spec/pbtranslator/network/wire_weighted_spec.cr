@@ -17,7 +17,7 @@ class WeightCountingVisitor(T)
   def initialize(@sum : T = T.zero)
   end
 
-  def visit(*args, **options, weight) : Void
+  def visit_weighted_wire(*args, **options, weight) : Void
     @sum += weight
   end
 end

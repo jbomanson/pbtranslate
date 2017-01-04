@@ -128,7 +128,7 @@ class PBTranslator::Tool::OptimizationRewriter <
     def initialize(@literals : Array(Literal(Util::BrokeredId(Int32))), @collector : WeightCollector)
     end
 
-    def visit(*, wire, weight) : Void
+    def visit_weighted_wire(*, wire, weight) : Void
       return if weight == 0
       @collector.add(literal: @literals[wire], weight: weight)
     end

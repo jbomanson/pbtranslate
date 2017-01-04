@@ -25,8 +25,8 @@ struct PBTranslator::Network::DepthSlice(N, I)
     def initialize(@visitor : V, @range : Range(I, I))
     end
 
-    def visit(*args, **options, depth) : Void
-      (@range.includes? depth) && @visitor.visit(*args, **options, depth: depth)
+    def visit_gate(*args, **options, depth) : Void
+      (@range.includes? depth) && @visitor.visit_gate(*args, **options, depth: depth)
     end
   end
 end

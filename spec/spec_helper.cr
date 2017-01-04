@@ -12,11 +12,11 @@ class VisitCallCounter
     @h = Hash({Gate::Function, Gate::Form, String}, UInt32).new(0_u32)
   end
 
-  def visit(gate : Gate(A, B, _), way : Way, **options) : Void forall A, B
+  def visit_gate(g : Gate(A, B, _), way : Way, **options) : Void forall A, B
     @h[{A, B, way.to_s}] += 1
   end
 
-  def visit(*args, **options) : Void
+  def visit_region(*args, **options) : Void
     yield self
   end
 

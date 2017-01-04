@@ -23,7 +23,7 @@ class PBTranslator::Network::OEMerge(I)
   # Hosts a visit over the comparators in this network placed at an
   # *offset*.
   #
-  # The visit method of *visitor* is called for each comparator.
+  # The visit_gate method of *visitor* is called for each comparator.
   def host(visitor, way : Way, at offset = I.new(0)) : Void
     a, b = {I.new(0), half_width_log2}
     way.each_between(a, b) do |layer_index|
@@ -37,17 +37,17 @@ class PBTranslator::Network::OEMerge(I)
       partner_index = partner(half_width_log2, layer_index, wire_index)
       case wire_index <=> partner_index
       when -1
-        gate =
+        g =
           Gate
           .comparator_between(wire_index, partner_index)
           .shifted_by(offset)
-        visitor.visit(gate, way)
+        visitor.visit_gate(g, way)
       when 0
-        gate =
+        g =
           Gate
           .passthrough_at(wire_index)
           .shifted_by(offset)
-        visitor.visit(gate, way)
+        visitor.visit_gate(g, way)
       end
     end
   end

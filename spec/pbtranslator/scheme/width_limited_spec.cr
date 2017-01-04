@@ -17,19 +17,19 @@ direct_scheme =
 record WidthCheckingVisitor(I), width : I do
   include Gate::Restriction
 
-  def visit(gate : Gate, *args, **options) : Void
-    wires = gate.wires
+  def visit_gate(g : Gate, *args, **options) : Void
+    wires = g.wires
     unless wires.all? &.<(width)
       raise "Expected wires less than #{width}, got #{wires}"
     end
   end
 
-  def visit(gate : Gate, *args, **options) : Void
-    visit(gate, *args, **options)
+  def visit_gate(g : Gate, *args, **options) : Void
+    visit_gate(g, *args, **options)
     yield self
   end
 
-  def visit(layer : OOPSublayer.class, *args, **options) : Void
+  def visit_region(layer : OOPSublayer.class, *args, **options) : Void
     yield self
   end
 end

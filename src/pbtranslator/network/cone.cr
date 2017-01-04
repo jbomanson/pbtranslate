@@ -64,22 +64,22 @@ class PBTranslator::Network::Cone(N)
       @reverse_index = I.zero.as(I)
     end
 
-    def visit(gate : Gate(_, InPlace, _), way : Backward, *args, **options) : Void
+    def visit_gate(g : Gate(_, InPlace, _), way : Backward, *args, **options) : Void
       @reverse_index += 1
-      return unless visit_with_cone(gate, way, *args, **options)
-      input_wires = gate.wires
+      return unless visit_gate_with_cone(g, way, *args, **options)
+      input_wires = g.wires
       input_wires.each do |wire|
         @levels[wire] ||= @reverse_index
       end
     end
 
-    private def visit_with_cone(gate, way, *args, **options) : Bool
-      output_wires = gate.wires
+    private def visit_gate_with_cone(g, way, *args, **options) : Bool
+      output_wires = g.wires
       output_cone =
         @levels.values_at(*output_wires).map do |wire|
           wire ? true : false
         end
-      @visitor.visit(gate, way, *args, **options, output_cone: output_cone)
+      @visitor.visit_gate(g, way, *args, **options, output_cone: output_cone)
       output_cone.any?
     end
 
@@ -102,13 +102,13 @@ class PBTranslator::Network::Cone(N)
       @index = I.zero.as(I)
     end
 
-    def visit(gate : Gate(_, InPlace, _), way : Forward, *args, **options) : Void
-      output_wires = gate.wires
+    def visit_gate(g : Gate(_, InPlace, _), way : Forward, *args, **options) : Void
+      output_wires = g.wires
       output_cone =
         @levels.values_at(*output_wires).map do |wire|
           wire ? @index < wire : false
         end
-      @visitor.visit(gate, way, *args, **options, output_cone: output_cone)
+      @visitor.visit_gate(g, way, *args, **options, output_cone: output_cone)
       @index += 1
     end
   end

@@ -53,8 +53,8 @@ module PBTranslator::DepthTracking
   #     include PBTranslator
   #
   #     struct MyVisitor
-  #       def visit(gate, *args, depth) : Void
-  #         puts "#{gate.wires} @ #{depth}"
+  #       def visit_gate(g, *args, depth) : Void
+  #         puts "#{g.wires} @ #{depth}"
   #       end
   #     end
   #
@@ -88,11 +88,11 @@ module PBTranslator::DepthTracking
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
     # additional parameter _depth_.
-    def visit(gate g : Gate(_, InPlace, _), way w : Way, *args, **options) : Void
+    def visit_gate(g : Gate(_, InPlace, _), way w : Way, *args, **options) : Void
       input_wires = g.wires
       depth = @array.values_at(*input_wires).max
       depth += increment_before(w)
-      @visitor.visit(g, w, *args, **options, depth: depth)
+      @visitor.visit_gate(g, w, *args, **options, depth: depth)
       depth += increment_after(w)
       @depth = {@depth, depth}.max
       output_wires = g.wires

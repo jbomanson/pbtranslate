@@ -15,26 +15,26 @@ struct PBTranslator::Network::WidthLimited(N, I)
     def initialize(@visitor : V, @width : I)
     end
 
-    def visit(gate : Gate(Or, Input, _), *args, **options) : Void
-      limited_gate = typeof(gate).new?(Wires.new(wires, &.<(@width)))
-      return unless limited_gate
-      @visitor.visit(limited_gate, *args, **options)
+    def visit_gate(g : Gate(Or, Input, _), *args, **options) : Void
+      limited = typeof(g).new?(Wires.new(wires, &.<(@width)))
+      return unless limited
+      @visitor.visit_gate(limited, *args, **options)
     end
 
-    macro define_visit(please_yield)
-      def visit(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), *args, **options) : Void
-        return unless gate.wires.all? &.<(@width)
-        @visitor.visit(gate, *args, **options) {{
+    macro define_visit_gate(please_yield)
+      def visit_gate(g : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), *args, **options) : Void
+        return unless g.wires.all? &.<(@width)
+        @visitor.visit_gate(g, *args, **options) {{
           (please_yield ? "{ |v| yield Guide.new(v, @width) }" : "").id
         }}
       end
     end
 
-    define_visit false
-    define_visit true
+    define_visit_gate false
+    define_visit_gate true
 
-    def visit(layer : OOPSublayer.class, *args, **options) : Void
-      @visitor.visit(layer, *args, **options) { |v| yield Guide.new(v, @width) }
+    def visit_region(layer : OOPSublayer.class, *args, **options) : Void
+      @visitor.visit_region(layer, *args, **options) { |v| yield Guide.new(v, @width) }
     end
 
     private struct Wires(T, P)

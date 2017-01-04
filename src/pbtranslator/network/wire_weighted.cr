@@ -20,7 +20,7 @@ class PBTranslator::Network::WireWeighted(N, I)
     p = Propagator.new(visitor: visitor, weights: @weights)
     @network.host(p, way, *args, **options)
     @weights.each_with_index do |weight, wire|
-      visitor.visit(weight: weight, wire: wire)
+      visitor.visit_weighted_wire(weight: weight, wire: wire)
     end
   end
 
@@ -28,12 +28,12 @@ class PBTranslator::Network::WireWeighted(N, I)
     def initialize(*, @gate_visitor : G, @weight_visitor : W)
     end
 
-    def visit(gate, *args, **options) : Void
-      @gate_visitor.visit(gate, *args, **options)
+    def visit_gate(g, *args, **options) : Void
+      @gate_visitor.visit_gate(g, *args, **options)
     end
 
-    def visit(*, weight t, wire e)
-      @weight_visitor.visit(weight: t, wire: e)
+    def visit_weighted_wire(*, weight t, wire e)
+      @weight_visitor.visit_weighted_wire(weight: t, wire: e)
     end
   end
 
@@ -43,13 +43,13 @@ class PBTranslator::Network::WireWeighted(N, I)
     protected def initialize(*, @visitor : V, @weights : Array(I))
     end
 
-    def visit(gate : Gate(Comparator, InPlace, _), *args, **options) : Void
-      propagate_weights_at(gate.wires)
-      @visitor.visit(gate, *args, **options)
+    def visit_gate(g : Gate(Comparator, InPlace, _), *args, **options) : Void
+      propagate_weights_at(g.wires)
+      @visitor.visit_gate(g, *args, **options)
     end
 
-    def visit(gate : Gate(Passthrough, _, _), *args, **options) : Void
-      @visitor.visit(gate, *args, **options)
+    def visit_gate(g : Gate(Passthrough, _, _), *args, **options) : Void
+      @visitor.visit_gate(g, *args, **options)
     end
 
     private def propagate_weights_at(wires)
@@ -59,7 +59,7 @@ class PBTranslator::Network::WireWeighted(N, I)
       wires.each { |wire| weights[wire] = least }
       differences = wire_weights.map { |weight| weight - least }
       wires.each_with_index do |wire, i|
-        @visitor.visit(weight: differences[i], wire: wire)
+        @visitor.visit_weighted_wire(weight: differences[i], wire: wire)
       end
     end
   end
