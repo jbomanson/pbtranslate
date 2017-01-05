@@ -41,13 +41,13 @@ class PBTranslator::Network::OEMerge(I)
           Gate
           .comparator_between(wire_index, partner_index)
           .shifted_by(offset)
-        visitor.visit_gate(g, way)
+        visitor.visit_gate(g)
       when 0
         g =
           Gate
           .passthrough_at(wire_index)
           .shifted_by(offset)
-        visitor.visit_gate(g, way)
+        visitor.visit_gate(g)
       end
     end
   end

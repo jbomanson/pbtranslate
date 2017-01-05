@@ -20,7 +20,7 @@ class WirePairCollector
     @wire_pairs = Array({Int32, Int32}).new
   end
 
-  def visit_gate(g : Gate(_, _, {Int32, Int32}), way, *args, **options) : Void
+  def visit_gate(g : Gate(_, _, {Int32, Int32}), *args, **options) : Void
     @wire_pairs << g.wires
   end
 

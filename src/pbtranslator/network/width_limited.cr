@@ -22,9 +22,9 @@ struct PBTranslator::Network::WidthLimited(N, I)
     end
 
     macro define_visit_gate(please_yield)
-      def visit_gate(g : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), *args, **options) : Void
+      def visit_gate(g : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), **options) : Void
         return unless g.wires.all? &.<(@width)
-        @visitor.visit_gate(g, *args, **options) {{
+        @visitor.visit_gate(g, **options) {{
           (please_yield ? "{ |v| yield Guide.new(v, @width) }" : "").id
         }}
       end
@@ -33,8 +33,8 @@ struct PBTranslator::Network::WidthLimited(N, I)
     define_visit_gate false
     define_visit_gate true
 
-    def visit_region(layer : OOPSublayer.class, *args, **options) : Void
-      @visitor.visit_region(layer, *args, **options) { |v| yield Guide.new(v, @width) }
+    def visit_region(layer : OOPSublayer.class, **options) : Void
+      @visitor.visit_region(layer, **options) { |v| yield Guide.new(v, @width) }
     end
 
     private struct Wires(T, P)

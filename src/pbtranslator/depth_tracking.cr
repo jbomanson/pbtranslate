@@ -26,7 +26,7 @@ module PBTranslator::DepthTracking
 
     def host(visitor v, way y : Way) : Void
       d = initial_depth(y)
-      g = Guide.new(visitor: v, width: @width, initial_depth: d)
+      g = Guide.new(visitor: v, way: y, width: @width, initial_depth: d)
       @network.host(g, y)
       @computed_depth = g.depth
     end
@@ -73,7 +73,7 @@ module PBTranslator::DepthTracking
   #     # {0, 2} @ 1
   #     # {1, 3} @ 1
   #     # {1, 2} @ 2
-  class Guide(V)
+  class Guide(V, W)
     include Gate::Restriction
     include WithDepth::Visitor
 
@@ -81,19 +81,19 @@ module PBTranslator::DepthTracking
     getter depth
 
     # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
-    def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, width w : Int, initial_depth d = 0_u32)
+    def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, way : W, width w : Int, initial_depth d = 0_u32)
       @array = Array(UInt32).new(w, d.to_u32)
       @depth = 0_u32
     end
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
     # additional parameter _depth_.
-    def visit_gate(g : Gate(_, InPlace, _), way w : Way, *args, **options) : Void
+    def visit_gate(g : Gate(_, InPlace, _), *args, **options) : Void
       input_wires = g.wires
       depth = @array.values_at(*input_wires).max
-      depth += increment_before(w)
-      @visitor.visit_gate(g, w, *args, **options, depth: depth)
-      depth += increment_after(w)
+      depth += increment_before(W.new)
+      @visitor.visit_gate(g, *args, **options, depth: depth)
+      depth += increment_after(W.new)
       @depth = {@depth, depth}.max
       output_wires = g.wires
       output_wires.each do |index|

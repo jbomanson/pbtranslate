@@ -42,7 +42,7 @@ class PBTranslator::Network::Random(C)
         each_pair(a) do |i, j|
           x, y = i < j ? {i, j} : {j, i}
           g = Gate.comparator_between(x, y)
-          visitor.visit_gate(g, way, depth: d)
+          visitor.visit_gate(g, depth: d)
         end
       end
     end

@@ -11,10 +11,10 @@ class ArrayConeSwap(T)
 
   @cone_size = 0
 
-  def initialize(@array : Array(T))
+  def initialize(@array : Array(T), way : Forward)
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), way : Forward, **options, output_cone) : Void
+  def visit_gate(g : Gate(Comparator, InPlace, _), **options, output_cone) : Void
     i, j = g.wires
     x, y = output_cone
     a = @array[i]
@@ -25,7 +25,7 @@ class ArrayConeSwap(T)
     @cone_size += output_cone.count &.itself
   end
 
-  def visit_gate(g : Gate(Passthrough, _, _), way : Forward, **options) : Void
+  def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
   end
 end
 
@@ -38,7 +38,7 @@ private def host_with_cone(width_log2, wanted, array) : Int32
   w = Width.from_log2(width_log2)
   n = scheme.network(w)
   nn = Network::Cone.new(network: n, width: w.value, output: wanted)
-  visitor = ArrayConeSwap.new(array)
+  visitor = ArrayConeSwap.new(array, FORWARD)
   nn.host(visitor, FORWARD)
   visitor.cone_size
 end

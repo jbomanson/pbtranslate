@@ -20,7 +20,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     @accumulator = Accumulator(T).new
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), way : Forward, *args, **options, output_cone) : Void
+  def visit_gate(g : Gate(Comparator, InPlace, _), **options, output_cone) : Void
     i, j = g.wires
     a = @array[i]
     b = @array[j]
@@ -32,14 +32,14 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     end
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), way : Forward, *args, **options) : Void
-    visit_gate(g, way, *args, **options, output_cone: g.wires.map { true })
+  def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Void
+    visit_gate(g, **options, output_cone: g.wires.map { true })
   end
 
-  def visit_gate(g : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
+  def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
   end
 
-  def visit_region(f : OOPSublayer.class, way : Way) : Void
+  def visit_region(f : OOPSublayer.class) : Void
     @array.lag do |lagged|
       layer_visitor = LayerVisitor.new(lagged, @context, @accumulator)
       yield layer_visitor
@@ -68,7 +68,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @accumulator : Accumulator(T))
     end
 
-    def visit_gate(g : Gate(F, Output, _), way : Forward, *args, **options) : Void forall F
+    def visit_gate(g : Gate(F, Output, _), **options) : Void forall F
       index = g.wires.first
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
@@ -107,12 +107,12 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @storage : Array(T))
     end
 
-    def visit_gate(g : Gate(F, Input, _), way : Forward, *args, **options) : Void forall F
+    def visit_gate(g : Gate(F, Input, _), **options) : Void forall F
       operands = g.wires.map { |wire| @array[wire] }
       store(@context.operate(F, operands))
     end
 
-    def visit_gate(g : Gate(Passthrough, _, _), way : Forward, *args, **options) : Void
+    def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
     end
 
     private def store(t : T) : Void

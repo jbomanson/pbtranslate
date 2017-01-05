@@ -26,11 +26,11 @@ class PBTranslator::Network::LayerCache(G, O)
 
   def host(visitor, way : Way) : Void
     way.each_with_index_in(@layers) do |layer, index|
-      visitor.visit_region(Layer.new(index.to_u32), way) do |layer_visitor|
+      visitor.visit_region(Layer.new(index.to_u32)) do |layer_visitor|
         way.each_in(layer) do |element|
           next unless element
           gate, options = element
-          layer_visitor.visit_gate(gate, way, **options)
+          layer_visitor.visit_gate(gate, **options)
         end
       end
     end
@@ -40,7 +40,7 @@ class PBTranslator::Network::LayerCache(G, O)
     def initialize(@layers : Util::SliceMatrix(Nil | {G, O}))
     end
 
-    def visit_gate(g : G, way, **options : **O) : Void
+    def visit_gate(g : G, **options : **O) : Void
       w = g.wires.first
       d = options[:depth]
       r = @layers[d]

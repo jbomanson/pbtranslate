@@ -20,7 +20,7 @@ describe Network::Random do
       x = n.size
       v = VisitCallCounter.new
       n.host(v, FORWARD)
-      y = v.count(Comparator, InPlace, FORWARD)
+      y = v.count(Comparator, InPlace)
       y.should eq(x)
     end
   end
