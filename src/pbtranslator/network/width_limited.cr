@@ -33,8 +33,8 @@ struct PBTranslator::Network::WidthLimited(N, I)
     define_visit_gate false
     define_visit_gate true
 
-    def visit_region(layer : OOPSublayer.class, **options) : Void
-      @visitor.visit_region(layer, **options) { |v| yield Guide.new(v, @width) }
+    def visit_region(*args, **options) : Void
+      @visitor.visit_region(*args, **options) { |v| yield Guide.new(v, @width) }
     end
 
     private struct Wires(T, P)
