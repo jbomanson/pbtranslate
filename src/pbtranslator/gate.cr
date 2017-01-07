@@ -7,6 +7,8 @@ struct PBTranslator::Gate(F, S, T)
 
   module Restriction
     struct Layer
+      getter depth : UInt32
+
       def initialize(@depth : UInt32)
       end
     end
