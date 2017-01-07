@@ -9,6 +9,7 @@ class PBTranslator::Network::LayerCache(G, O)
     LayerCache(G, O)
   end
 
+  # Returns the size of the original network.
   getter size
 
   # Caches gates of _network_ and returns a network for enumerating them layer
@@ -18,10 +19,13 @@ class PBTranslator::Network::LayerCache(G, O)
     @layers = Collector(G, O).collect(network: n, width: w)
   end
 
+  # Returns the computed depth of the network of stored gates.
   def depth
     @layers.size
   end
 
+  # Hosts a visitor layer by layer through stored gates and generated
+  # `Passthrough` gates.
   def host(visitor, way : Way) : Void
     way.each_with_index_in(@layers) do |layer, index|
       visitor.visit_region(Layer.new(index.to_u32)) do |layer_visitor|
