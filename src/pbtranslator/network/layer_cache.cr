@@ -25,36 +25,55 @@ class PBTranslator::Network::LayerCache(G, O)
   def host(visitor, way : Way) : Void
     way.each_with_index_in(@layers) do |layer, index|
       visitor.visit_region(Layer.new(index.to_u32)) do |layer_visitor|
-        way.each_in(layer) do |element|
-          next unless element
-          gate, options = element
-          layer_visitor.visit_gate(gate, **options)
+        way.each_with_index_in(layer) do |element, index|
+          element_host(layer_visitor, element, index)
         end
       end
     end
   end
 
+  private def element_host(layer_visitor, element, index)
+    case element
+    when Tuple
+      gate, options = element
+      layer_visitor.visit_gate(gate, **options)
+    when Unused
+      layer_visitor.visit_gate(Gate.passthrough_at(index))
+    end
+  end
+
+  private struct Used
+  end
+
+  private struct Unused
+  end
+
   private struct Collector(G, O)
-    def self.collect(*, network n, width w) : Util::SliceMatrix(Nil | {G, O})
-      s = Util::SliceMatrix(Nil | {G, O}).new(n.depth, w.value) { nil }
+    def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | {G, O})
+      s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.depth, w.value) { Unused.new }
       n.host(self.new(s), FORWARD)
       s
     end
 
-    protected def initialize(@layers : Util::SliceMatrix(Nil | {G, O}))
+    protected def initialize(@layers : Util::SliceMatrix(Used | Unused | {G, O}))
     end
 
     def visit_gate(g : G, **options : **O) : Void
-      w = g.wires.first
+      f, t = first_and_rest(*g.wires)
       d = options[:depth]
       r = @layers[d]
-      if r[w]
-        raise "Internal error: two gates for wire #{w} at depth #{d}"
+      unless r[f].is_a? Unused
+        raise "Internal error: two gates for wire #{f} at depth #{d}"
       end
-      r[w] = {g, options}
+      r[f] = {g, options}
+      t.each { |i| r[i] = Used.new }
     end
 
     def visit_gate(*args, **options) : Void
+    end
+
+    private def first_and_rest(f, *t)
+      {f, t}
     end
   end
 end

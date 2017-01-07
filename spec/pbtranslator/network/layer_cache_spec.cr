@@ -16,15 +16,20 @@ cache_class =
     depth: 0_u32)
 
 class WirePairCollector
+  getter wire_count
+
   def initialize
     @wire_pairs = Array({Int32, Int32}).new
+    @wire_count = 0
   end
 
   def visit_gate(g : Gate(_, _, {Int32, Int32}), *args, **options) : Void
     @wire_pairs << g.wires
+    @wire_count += g.wires.size
   end
 
-  def visit_gate(*args, **options) : Void
+  def visit_gate(g, *args, **options) : Void
+    @wire_count += g.wires.size
   end
 
   def visit_region(*args, **options) : Void
@@ -52,6 +57,7 @@ describe Network::LayerCache do
         end
       p.size.should_not eq(0)
       q.should eq(p)
+      vv.wire_count.should eq(n.depth * w.value)
     end
   end
 end
