@@ -30,27 +30,14 @@ abstract struct PBTranslator::Way
     each_in(lo..hi) { |x| yield x }
   end
 
-  # Similar to Enumerable#each for _object_.
-  #
-  # The order of iteration is determined by the type of _self_.
-  def each_in(object)
-  end
-
-  # Similar to Enumerable#each for _object_.
-  #
-  # The order of iteration is determined by the type of _self_.
-  def each_in(object)
-    yield nil
-  end
-
-  # Similar to Indexable#each_index for _object_.
+  # Similar to `Indexable#each_index` for _object_.
   #
   # The order of iteration is determined by the type of _self_.
   def each_index_to(object)
     each_in(0...object.size) { |x| yield x }
   end
 
-  # Similar to Indexable#each_with_index for _object_.
+  # Similar to `Indexable#each_with_index` for _object_.
   #
   # The order of iteration is determined by the type of _self_.
   def each_with_index_in(object)
@@ -81,20 +68,24 @@ abstract struct PBTranslator::Way
     BACKWARD = Backward.new
 
     struct Forward < Way
+      # Similar to `Enumerable#each` for _object_.
       def each_in(object)
         object.each
       end
 
+      # Similar to `Enumerable#each` for _object_.
       def each_in(object)
         object.each { |x| yield x }
       end
     end
 
     struct Backward < Way
+      # Similar to `Indexable#reverse_each` for _object_.
       def each_in(object)
         object.reverse_each
       end
 
+      # Similar to `Indexable#reverse_each` for _object_.
       def each_in(object)
         object.reverse_each { |x| yield x }
       end
