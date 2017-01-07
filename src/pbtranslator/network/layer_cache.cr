@@ -14,10 +14,8 @@ class PBTranslator::Network::LayerCache(G, O)
   # Caches gates of _network_ and returns a network for enumerating them layer
   # by layer.
   def initialize(*, network n : WithDepth::Network, width w : Width)
-    d = n.depth
     @size = n.size.as(Int32)
-    @layers = Util::SliceMatrix(Nil | {G, O}).new(d, w.value) { nil }
-    n.host(Collector.new(@layers), FORWARD)
+    @layers = Collector(G, O).collect(network: n, width: w)
   end
 
   def depth
@@ -37,7 +35,13 @@ class PBTranslator::Network::LayerCache(G, O)
   end
 
   private struct Collector(G, O)
-    def initialize(@layers : Util::SliceMatrix(Nil | {G, O}))
+    def self.collect(*, network n, width w) : Util::SliceMatrix(Nil | {G, O})
+      s = Util::SliceMatrix(Nil | {G, O}).new(n.depth, w.value) { nil }
+      n.host(self.new(s), FORWARD)
+      s
+    end
+
+    protected def initialize(@layers : Util::SliceMatrix(Nil | {G, O}))
     end
 
     def visit_gate(g : G, **options : **O) : Void
