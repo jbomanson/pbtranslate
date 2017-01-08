@@ -1,7 +1,9 @@
 require "../../util/restrict"
 
 struct PBTranslator::Network::DepthSlice(N, I)
-    def initialize(*, @network : N, @width : I, @range : Range(I, I))
+  include WithDepth::Network
+
+  def initialize(*, @network : N, @width : I, @range : Range(I, I))
     Util.restrict(network, WithDepth::Network)
   end
 
