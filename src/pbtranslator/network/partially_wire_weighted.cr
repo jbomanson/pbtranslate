@@ -147,12 +147,12 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
       end
     end
 
-    def self.guide(network, layered_weights s, bit_array b, visitor v, way y) : Void
+    def self.guide(network n, layered_weights s, bit_array b, visitor v, way y) : Void
       g = LayerGuide.new(v, s.first, y.each_in(s), y.each_in(b))
       if y.is_a? Forward
         g.pass_sweep(y)
       end
-      network.host(g, y)
+      n.host(g, y)
       if y.is_a? Backward
         g.pass_sweep(y)
       end
