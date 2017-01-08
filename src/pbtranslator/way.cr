@@ -19,8 +19,8 @@
 #       end
 #     end
 #
-#     join(FORWARD)	# => "(100)(200)(300)"
-#     join(BACKWARD)	# => "(300)(200)(100)"
+#     join(FORWARD)   # => "(100)(200)(300)"
+#     join(BACKWARD)  # => "(300)(200)(100)"
 abstract struct PBTranslator::Way
   # Iterates over the integers in the given inclusive range,
   # passing each in turn to the given block.
