@@ -60,6 +60,7 @@ class PBTranslator::Command
     input_filename = nil
     output_filename = nil
     crop_depth = nil
+    weight_step = nil
 
     option_parser =
       OptionParser.parse(options) do |opts|
@@ -71,6 +72,10 @@ class PBTranslator::Command
 
         opts.on("--crop-depth <d>", "Use first <d> or last -<d> layers of a sorting network") do |d|
           crop_depth = d
+        end
+
+        opts.on("--weight-step <p>", "Place weights on every <p>th layer of a sorting network") do |p|
+          weight_step = p
         end
 
         opts.on("-o ", "Output filename") do |o|
@@ -107,6 +112,12 @@ class PBTranslator::Command
             error "the --crop-depth option is not supported with --type #{type}"
           end
           translator.crop_depth = d.to_i
+        end
+        if p = weight_step
+          unless translator.responds_to? :"weight_step="
+            error "the --weight-step option is not supported with --type #{type}"
+          end
+          translator.weight_step = p.to_i
         end
         translate(translator)
       end
