@@ -50,7 +50,6 @@ class PBTranslator::Network::Cone(N)
     PassingGuide.guide(visitor, way, @network, @levels)
   end
 
-  # :nodoc:
   private class ComputingGuide(V, I)
     include Gate::Restriction
 
@@ -94,8 +93,7 @@ class PBTranslator::Network::Cone(N)
     end
   end
 
-  # :nodoc:
-  class PassingGuide(V, I)
+  private class PassingGuide(V, I)
     include Gate::Restriction
 
     # A visitor that guides another and indicates to it which output wires

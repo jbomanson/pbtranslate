@@ -5,8 +5,7 @@ class PBTranslator::Network::MergeSort(S, M, I)
   def initialize(@sort_scheme : S, @merge_scheme : M, @width_log2 : I)
   end
 
-  # :nodoc:
-  macro three_cases(zero, one_call, else_expr)
+  private macro three_cases(zero, one_call, else_expr)
     less_value = @width_log2 - 1
     less = Width.from_log2(less_value)
     case @width_log2

@@ -130,13 +130,11 @@ class PBTranslator::ASPIF::Broker < PBTranslator::ASPIF::Reader
   #     Visit methods called by Reader
   #
 
-  # :nodoc:
-  def visit(*args) : Bool
+  protected def visit(*args) : Bool
     output(*args)
   end
 
-  # :nodoc:
-  def visit(*args) : Bool
+  protected def visit(*args) : Bool
     output(*args) { yield }
   end
 end
