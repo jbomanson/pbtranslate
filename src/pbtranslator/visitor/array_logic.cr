@@ -46,6 +46,10 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     end
   end
 
+  def visit_region(region) : Void
+    yield self
+  end
+
   private struct DefaultContext(T)
     include Context(T)
 
