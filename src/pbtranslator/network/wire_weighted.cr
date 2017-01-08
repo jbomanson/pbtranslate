@@ -16,40 +16,41 @@ class PBTranslator::Network::WireWeighted(N, I)
   # The weights are provided to _visitor_ by calling its _visit_ method with
   # named parameters _weight_ and _wire_.
   # The sum of visited wire weights equals the sum of the initial weights.
-  def host(visitor, way : Forward, *args, **options) : Void
-    p = Propagator.new(visitor: visitor, weights: @weights)
-    @network.host(p, way, *args, **options)
-    @weights.each_with_index do |weight, wire|
-      visitor.visit_weighted_wire(weight: weight, wire: wire)
-    end
+  def host(visitor v, way y : Way) : Void
+    PropagatingGuide.guide(@network, @weights, v, y)
   end
 
   private struct VisitorPair(G, W)
     def initialize(*, @gate_visitor : G, @weight_visitor : W)
     end
 
-    def visit_gate(g, *args, **options) : Void
+    def visit_gate(g, *args, **options, output_weights) : Void
       @gate_visitor.visit_gate(g, *args, **options)
-    end
-
-    def visit_weighted_wire(*, weight t, wire e)
-      @weight_visitor.visit_weighted_wire(weight: t, wire: e)
+      g.wires.zip(output_weights) do |wire, weight|
+        @weight_visitor.visit_weighted_wire(weight: weight, wire: wire)
+      end
     end
   end
 
-  private struct Propagator(V, I)
+  private struct PropagatingGuide(V, I)
     include Gate::Restriction
+
+    def self.guide(network n, weights w, visitor v, way : Forward)
+      p = self.new(visitor: v, weights: w)
+      n.host(p, FORWARD)
+      p.sweep
+    end
 
     protected def initialize(*, @visitor : V, @weights : Array(I))
     end
 
     def visit_gate(g : Gate(Comparator, InPlace, _), *args, **options) : Void
-      propagate_weights_at(g.wires)
-      @visitor.visit_gate(g, *args, **options)
+      o = propagate_weights_at(g.wires)
+      @visitor.visit_gate(g, *args, **options, output_weights: o)
     end
 
     def visit_gate(g : Gate(Passthrough, _, _), *args, **options) : Void
-      @visitor.visit_gate(g, *args, **options)
+      @visitor.visit_gate(g, *args, **options, output_weights: g.wires.map { I.zero })
     end
 
     private def propagate_weights_at(wires)
@@ -57,9 +58,12 @@ class PBTranslator::Network::WireWeighted(N, I)
       wire_weights = wires.map { |wire| weights[wire] }
       least = wire_weights.min
       wires.each { |wire| weights[wire] = least }
-      differences = wire_weights.map { |weight| weight - least }
-      wires.each_with_index do |wire, i|
-        @visitor.visit_weighted_wire(weight: differences[i], wire: wire)
+      wire_weights.map { |weight| weight - least }
+    end
+
+    protected def sweep
+      @weights.each_with_index do |weight, wire|
+        @visitor.visit_gate(Gate.passthrough_at(wire), output_weights: {weight})
       end
     end
   end
