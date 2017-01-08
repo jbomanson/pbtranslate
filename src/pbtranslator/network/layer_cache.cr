@@ -14,7 +14,7 @@ class PBTranslator::Network::LayerCache(G, O)
 
   # Caches gates of _network_ and returns a network for enumerating them layer
   # by layer.
-  def initialize(*, network n : WithDepth::Network, width w : Width)
+  def initialize(*, network n, width w : Width)
     @size = n.size.as(Int32)
     @layers = Collector(G, O).collect(network: n, width: w)
   end
@@ -55,7 +55,8 @@ class PBTranslator::Network::LayerCache(G, O)
   private struct Collector(G, O)
     def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | {G, O})
       s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.depth, w.value) { Unused.new }
-      n.host(self.new(s), FORWARD)
+      nn = DepthTracking::Network.wrap_if_needed(network: n, width: w.value)
+      nn.host(self.new(s), FORWARD)
       s
     end
 
