@@ -32,7 +32,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
     PassingGuide.guide(@network, @layered_weights, @bit_array, *args, **options, visitor: v, way: y)
   end
 
-  # A visitor that propagates weights through a network stores some of them.
+  # A visitor that propagates weights through a network and stores some of them.
   private class Propagator(I)
     def self.propagate(network n, bit_array b, zero : I, weights w) forall I
       s = Util::SliceMatrix(I).new(b.count(true) + 1, w.size) { zero }
