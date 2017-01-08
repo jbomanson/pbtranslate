@@ -30,6 +30,14 @@ class PBTranslator::Network::WireWeighted(N, I)
         @weight_visitor.visit_weighted_wire(weight: weight, wire: wire)
       end
     end
+
+    def visit_region(region) : Void
+      @gate_visitor.visit_region(region) do |region_visitor|
+        yield self.class.new(
+          gate_visitor: region_visitor,
+          weight_visitor: @weight_visitor)
+      end
+    end
   end
 
   private struct PropagatingGuide(V, I)
