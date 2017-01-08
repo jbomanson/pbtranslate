@@ -26,11 +26,11 @@ class GateWeightCountingVisitor(T)
   def initialize(@sum : T = T.zero)
   end
 
-  def visit_gate(*args, **options, output_weights) : Void
+  def visit_gate(*args, **options, output_weights) : Nil
     @sum += output_weights.sum
   end
 
-  def visit_region(region) : Void
+  def visit_region(region) : Nil
     yield self
   end
 end

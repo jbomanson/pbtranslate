@@ -40,7 +40,7 @@ struct PBTranslator::LagArray(T)
   #       lagged[1] = lagged[0]
   #     end
   #     a.to_a # => [:b, :a]
-  def lag : Void
+  def lag : Nil
     lagged = Lagged.new(self)
     yield lagged
     @updates.each do |index, value|

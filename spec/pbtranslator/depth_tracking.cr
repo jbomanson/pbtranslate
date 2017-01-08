@@ -7,7 +7,7 @@ struct MyVisitor
 
   @array = Array({UInt32, Int32} | {UInt32, Int32, Int32}).new
 
-  def visit_gate(g, *args, depth) : Void
+  def visit_gate(g, *args, depth) : Nil
     @array << {depth} + g.wires
   end
 end

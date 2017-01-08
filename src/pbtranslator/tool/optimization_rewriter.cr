@@ -141,7 +141,7 @@ class PBTranslator::Tool::OptimizationRewriter <
     true
   end
 
-  private def task_reset : Void
+  private def task_reset : Nil
     @task = Task::Pass
     unless {@input_visitor, @output_visitor}.all? &.empty?
       raise "Nonempty auxiliary visitor"
@@ -152,7 +152,7 @@ class PBTranslator::Tool::OptimizationRewriter <
     def initialize(@literals : Array(Literal(Util::BrokeredId(Int32))), @collector : WeightCollector)
     end
 
-    def visit_weighted_wire(*, wire, weight) : Void
+    def visit_weighted_wire(*, wire, weight) : Nil
       return if weight == 0
       @collector.add(literal: @literals[wire], weight: weight)
     end
@@ -162,7 +162,7 @@ class PBTranslator::Tool::OptimizationRewriter <
     @literals = Array(Literal(Util::BrokeredId(Int32))).new
     @weights  = Array(Int32).new
 
-    def add(*, literal, weight) : Void
+    def add(*, literal, weight) : Nil
       @literals << literal
       @weights << weight
     end

@@ -17,7 +17,7 @@ struct PBTranslator::Network::DepthSlice(N, I)
     {@network.depth, @range.size}.min
   end
 
-  def host(visitor v, way y : Way) : Void
+  def host(visitor v, way y : Way) : Nil
     vv = Guide.new(v, @range)
     @network.host(vv, y)
   end
@@ -26,7 +26,7 @@ struct PBTranslator::Network::DepthSlice(N, I)
     def initialize(@visitor : V, @range : Range(I, I))
     end
 
-    def visit_gate(*args, **options, depth) : Void
+    def visit_gate(*args, **options, depth) : Nil
       (@range.includes? depth) && @visitor.visit_gate(*args, **options, depth: depth)
     end
   end

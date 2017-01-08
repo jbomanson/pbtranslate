@@ -328,7 +328,7 @@ class PBTranslator::ASPIF::AbstractReader
     step
   end
 
-  def step(action : Skip.class) : Void
+  def step(action : Skip.class) : Nil
     @cursor_position = @cursor_position.bump(nilable_cursor.not_nil!)
     @cursor = @iterator.next
     @destined = true
@@ -360,7 +360,7 @@ class PBTranslator::ASPIF::AbstractReader
     r
   end
 
-  def problem(string) : Void
+  def problem(string) : Nil
     @problem_stack << PrescribedProblem.new(string)
   end
 
@@ -376,7 +376,7 @@ class PBTranslator::ASPIF::AbstractReader
     end
   end
 
-  private def note_problem(kind, context, position) : Void
+  private def note_problem(kind, context, position) : Nil
     return unless @destined
     @problem_stack << BasicProblem.new(kind, context, position)
   end

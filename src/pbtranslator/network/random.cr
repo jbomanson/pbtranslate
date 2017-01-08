@@ -30,7 +30,7 @@ class PBTranslator::Network::Random(C)
       (@width / 2) * @depth
     end
 
-    def host(visitor, way : Way) : Void
+    def host(visitor, way : Way) : Nil
       if @called
         raise "This Generator has already hosted"
       end

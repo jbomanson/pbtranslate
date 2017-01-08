@@ -35,7 +35,7 @@ class PBTranslator::Network::MergeSort(S, M, I)
     )
   end
 
-  private def helper_host(*args) : Void
+  private def helper_host(*args) : Nil
     three_cases(
       nil,
       host(*args),
@@ -43,7 +43,7 @@ class PBTranslator::Network::MergeSort(S, M, I)
     )
   end
 
-  def host(visitor, way : Forward, at offset = I.new(0)) : Void
+  def host(visitor, way : Forward, at offset = I.new(0)) : Nil
     helper_host(visitor, way, offset) do |less, more, sort_network|
       sort_network.host(visitor, way, offset)
       sort_network.host(visitor, way, offset + more)
@@ -51,7 +51,7 @@ class PBTranslator::Network::MergeSort(S, M, I)
     end
   end
 
-  def host(visitor, way : Backward, at offset = I.new(0)) : Void
+  def host(visitor, way : Backward, at offset = I.new(0)) : Nil
     helper_host(visitor, way, offset) do |less, more, sort_network|
       @merge_scheme.network(less).host(visitor, way, offset)
       sort_network.host(visitor, way, offset + more)

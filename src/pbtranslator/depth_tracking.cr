@@ -32,7 +32,7 @@ module PBTranslator::DepthTracking
     def initialize(*, @network : N, @width : I)
     end
 
-    def host(visitor v, way y : Way) : Void
+    def host(visitor v, way y : Way) : Nil
       d = initial_depth(y)
       g = Guide.new(visitor: v, way: y, width: @width, initial_depth: d)
       @network.host(g, y)
@@ -61,7 +61,7 @@ module PBTranslator::DepthTracking
   #     include PBTranslator
   #
   #     struct MyVisitor
-  #       def visit_gate(g, *args, depth) : Void
+  #       def visit_gate(g, *args, depth) : Nil
   #         puts "#{g.wires} @ #{depth}"
   #       end
   #     end
@@ -96,7 +96,7 @@ module PBTranslator::DepthTracking
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
     # additional parameter _depth_.
-    def visit_gate(g : Gate(_, InPlace, _), *args, **options) : Void
+    def visit_gate(g : Gate(_, InPlace, _), *args, **options) : Nil
       input_wires = g.wires
       depth = @array.values_at(*input_wires).max
       depth += increment_before(W.new)

@@ -14,7 +14,7 @@ struct RecordingVisitor
 
   @array = Array(Array(Int32)).new
 
-  def visit_gate(g, *args, **options) : Void
+  def visit_gate(g, *args, **options) : Nil
     @array << g.wires.to_a
   end
 end

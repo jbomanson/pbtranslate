@@ -16,7 +16,7 @@ class PBTranslator::Network::WireWeighted(N, I)
   # The weights are provided to _visitor_ by calling its _visit_ method with
   # named parameters _weight_ and _wire_.
   # The sum of visited wire weights equals the sum of the initial weights.
-  def host(visitor v, way y : Way) : Void
+  def host(visitor v, way y : Way) : Nil
     PropagatingGuide.guide(@network, @weights, v, y)
   end
 
@@ -24,14 +24,14 @@ class PBTranslator::Network::WireWeighted(N, I)
     def initialize(*, @gate_visitor : G, @weight_visitor : W)
     end
 
-    def visit_gate(g, **options, output_weights) : Void
+    def visit_gate(g, **options, output_weights) : Nil
       @gate_visitor.visit_gate(g, **options)
       g.wires.zip(output_weights) do |wire, weight|
         @weight_visitor.visit_weighted_wire(weight: weight, wire: wire)
       end
     end
 
-    def visit_region(region) : Void
+    def visit_region(region) : Nil
       @gate_visitor.visit_region(region) do |region_visitor|
         yield self.class.new(
           gate_visitor: region_visitor,
@@ -52,12 +52,12 @@ class PBTranslator::Network::WireWeighted(N, I)
     protected def initialize(*, @visitor : V, @weights : Array(I))
     end
 
-    def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Void
+    def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Nil
       o = propagate_weights_at(g.wires)
       @visitor.visit_gate(g, **options, output_weights: o)
     end
 
-    def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
+    def visit_gate(g : Gate(Passthrough, _, _), **options) : Nil
       @visitor.visit_gate(g, **options, output_weights: g.wires.map { I.zero })
     end
 

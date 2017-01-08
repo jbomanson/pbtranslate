@@ -26,7 +26,7 @@ class PBTranslator::Network::LayerCache(G, O)
 
   # Hosts a visitor layer by layer through stored gates and generated
   # `Passthrough` gates.
-  def host(visitor, way : Way) : Void
+  def host(visitor, way : Way) : Nil
     way.each_with_index_in(@layers) do |layer, index|
       visitor.visit_region(Layer.new(index.to_u32)) do |layer_visitor|
         way.each_with_index_in(layer) do |element, index|
@@ -63,7 +63,7 @@ class PBTranslator::Network::LayerCache(G, O)
     protected def initialize(@layers : Util::SliceMatrix(Used | Unused | {G, O}))
     end
 
-    def visit_gate(g : G, **options : **O) : Void
+    def visit_gate(g : G, **options : **O) : Nil
       f, t = first_and_rest(*g.wires)
       d = options[:depth]
       r = @layers[d]
@@ -74,7 +74,7 @@ class PBTranslator::Network::LayerCache(G, O)
       t.each { |i| r[i] = Used.new }
     end
 
-    def visit_gate(*args, **options) : Void
+    def visit_gate(*args, **options) : Nil
     end
 
     private def first_and_rest(f, *t)

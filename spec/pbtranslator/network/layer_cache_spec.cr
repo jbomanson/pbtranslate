@@ -23,16 +23,16 @@ class WirePairCollector
     @wire_count = 0
   end
 
-  def visit_gate(g : Gate(_, _, {Int32, Int32}), *args, **options) : Void
+  def visit_gate(g : Gate(_, _, {Int32, Int32}), *args, **options) : Nil
     @wire_pairs << g.wires
     @wire_count += g.wires.size
   end
 
-  def visit_gate(g, *args, **options) : Void
+  def visit_gate(g, *args, **options) : Nil
     @wire_count += g.wires.size
   end
 
-  def visit_region(region) : Void
+  def visit_region(region) : Nil
     yield self
   end
 

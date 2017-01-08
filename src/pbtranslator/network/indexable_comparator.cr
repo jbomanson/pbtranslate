@@ -21,7 +21,7 @@ struct PBTranslator::Network::IndexableComparator(T, I)
     pair_to_gate(@wire_pairs[index])
   end
 
-  def host(visitor, way : Way, at offset = I.new(0)) : Void
+  def host(visitor, way : Way, at offset = I.new(0)) : Nil
     way.each_in(@wire_pairs) do |pair|
       visitor.visit(pair_to_gate(pair).shifted_by(offset), way)
     end

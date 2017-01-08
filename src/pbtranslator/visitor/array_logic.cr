@@ -20,7 +20,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     @accumulator = Accumulator(T).new
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), **options, output_cone) : Void
+  def visit_gate(g : Gate(Comparator, InPlace, _), **options, output_cone) : Nil
     i, j = g.wires
     a = @array[i]
     b = @array[j]
@@ -32,21 +32,21 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     end
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Void
+  def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Nil
     visit_gate(g, **options, output_cone: g.wires.map { true })
   end
 
-  def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
+  def visit_gate(g : Gate(Passthrough, _, _), **options) : Nil
   end
 
-  def visit_region(f : OOPSublayer.class) : Void
+  def visit_region(f : OOPSublayer.class) : Nil
     @array.lag do |lagged|
       layer_visitor = LayerVisitor.new(lagged, @context, @accumulator)
       yield layer_visitor
     end
   end
 
-  def visit_region(region) : Void
+  def visit_region(region) : Nil
     yield self
   end
 
@@ -72,7 +72,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @accumulator : Accumulator(T))
     end
 
-    def visit_gate(g : Gate(F, Output, _), **options) : Void forall F
+    def visit_gate(g : Gate(F, Output, _), **options) : Nil forall F
       index = g.wires.first
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
@@ -111,15 +111,15 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       @storage : Array(T))
     end
 
-    def visit_gate(g : Gate(F, Input, _), **options) : Void forall F
+    def visit_gate(g : Gate(F, Input, _), **options) : Nil forall F
       operands = g.wires.map { |wire| @array[wire] }
       store(@context.operate(F, operands))
     end
 
-    def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
+    def visit_gate(g : Gate(Passthrough, _, _), **options) : Nil
     end
 
-    private def store(t : T) : Void
+    private def store(t : T) : Nil
       @storage << t
     end
   end

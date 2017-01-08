@@ -28,7 +28,7 @@ class PBTranslator::Network::Cone(N)
     @is_pending = true
   end
 
-  def host(visitor, way : Way) : Void
+  def host(visitor, way : Way) : Nil
     if @is_pending
       host_and_compute(visitor, way)
     else
@@ -36,17 +36,17 @@ class PBTranslator::Network::Cone(N)
     end
   end
 
-  private def host_and_compute(visitor, way : Forward) : Void
+  private def host_and_compute(visitor, way : Forward) : Nil
     host_and_compute(Visitor::Noop::INSTANCE, BACKWARD)
     host_and_pass(visitor, FORWARD)
   end
 
-  private def host_and_compute(visitor, way : Backward) : Void
+  private def host_and_compute(visitor, way : Backward) : Nil
     ComputingGuide.guide(visitor, way, @network, @levels)
     @is_pending = false
   end
 
-  private def host_and_pass(visitor, way : Way) : Void
+  private def host_and_pass(visitor, way : Way) : Nil
     PassingGuide.guide(visitor, way, @network, @levels)
   end
 
@@ -57,7 +57,7 @@ class PBTranslator::Network::Cone(N)
     # A visitor that propagates a cone through gates backward from output to
     # input wires while guiding another visitor through the network.
 
-    def self.guide(visitor, way : Backward, network, levels) : Void
+    def self.guide(visitor, way : Backward, network, levels) : Nil
       guide = ComputingGuide.new(visitor, levels)
       network.host(guide, way)
       guide.finish
@@ -67,7 +67,7 @@ class PBTranslator::Network::Cone(N)
       @reverse_index = I.zero.as(I)
     end
 
-    def visit_gate(g : Gate(_, InPlace, _), **options) : Void
+    def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
       @reverse_index += 1
       return unless visit_gate_with_cone(g, **options)
       input_wires = g.wires
@@ -86,7 +86,7 @@ class PBTranslator::Network::Cone(N)
       output_cone.any?
     end
 
-    protected def finish : Void
+    protected def finish : Nil
       last = @reverse_index
       @levels.map! do |value|
         value && last - value
@@ -101,7 +101,7 @@ class PBTranslator::Network::Cone(N)
     # A visitor that guides another and indicates to it which output wires
     # are in a cone.
 
-    def self.guide(visitor, way : Forward, network, levels) : Void
+    def self.guide(visitor, way : Forward, network, levels) : Nil
       guide = PassingGuide.new(visitor, levels)
       network.host(guide, way)
     end
@@ -110,7 +110,7 @@ class PBTranslator::Network::Cone(N)
       @index = I.zero.as(I)
     end
 
-    def visit_gate(g : Gate(_, InPlace, _), **options) : Void
+    def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
       output_wires = g.wires
       output_cone =
         @levels.values_at(*output_wires).map do |wire|

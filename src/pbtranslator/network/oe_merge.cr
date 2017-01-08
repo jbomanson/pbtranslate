@@ -24,7 +24,7 @@ class PBTranslator::Network::OEMerge(I)
   # *offset*.
   #
   # The visit_gate method of *visitor* is called for each comparator.
-  def host(visitor, way : Way, at offset = I.new(0)) : Void
+  def host(visitor, way : Way, at offset = I.new(0)) : Nil
     a, b = {I.new(0), half_width_log2}
     way.each_between(a, b) do |layer_index|
       layer_host(visitor, way, offset, layer_index)

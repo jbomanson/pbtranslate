@@ -28,7 +28,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
 
   # Hosts a visitor through `Layer` regions containing `Gate`s each together with
   # a named argument *output_weights* that is a tuple of `I`.
-  def host(visitor v, way y : Way) : Void
+  def host(visitor v, way y : Way) : Nil
     PassingGuide.guide(@network, @layered_weights, @bit_array, visitor: v, way: y)
   end
 
@@ -48,12 +48,12 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
       @index = 0
     end
 
-    def visit_region(layer : Layer) : Void
+    def visit_region(layer : Layer) : Nil
       yield self
       flush_weights(layer.depth)
     end
 
-    def visit_gate(g, *args, **options) : Void
+    def visit_gate(g, *args, **options) : Nil
       wires = g.wires
       scratch = @scratch
       parents = @parents
@@ -107,7 +107,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
     include Gate::Restriction
 
     private struct LayerGuide(V, I, L, B) < PassingGuide(V, I, L, B)
-      def visit_region(layer : Layer) : Void
+      def visit_region(layer : Layer) : Nil
         @current_weights = next_weights_or_nil
         @visitor.visit_region(Layer.new(layer.depth + 1)) do |v|
           yield GateGuide.new(v, @current_weights, @layer_iterator, @bit_iterator)
@@ -139,7 +139,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
     end
 
     private struct GateGuide(V, I, L, B) < PassingGuide(V, I, L, B)
-      def visit_gate(g : Gate, **options) : Void
+      def visit_gate(g : Gate, **options) : Nil
         e = g.wires
         c = @current_weights
         o = if c; c.values_at(*e) else e.map { I.zero } end
@@ -147,7 +147,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
       end
     end
 
-    def self.guide(network n, layered_weights s, bit_array b, visitor v, way y) : Void
+    def self.guide(network n, layered_weights s, bit_array b, visitor v, way y) : Nil
       g = LayerGuide.new(v, s.first, y.each_in(s), y.each_in(b))
       if y.is_a? Forward
         g.pass_sweep(y)
