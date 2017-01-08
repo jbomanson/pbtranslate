@@ -28,26 +28,26 @@ class PBTranslator::Network::Cone(N)
     @is_pending = true
   end
 
-  def host(visitor, way : Way, *args, **options) : Void
+  def host(visitor, way : Way) : Void
     if @is_pending
-      host_and_compute(visitor, way, *args, **options)
+      host_and_compute(visitor, way)
     else
-      host_and_pass(visitor, way, *args, **options)
+      host_and_pass(visitor, way)
     end
   end
 
-  private def host_and_compute(visitor, way : Forward, *args, **options) : Void
-    host_and_compute(Visitor::Noop::INSTANCE, BACKWARD, *args, **options)
-    host_and_pass(visitor, FORWARD, *args, **options)
+  private def host_and_compute(visitor, way : Forward) : Void
+    host_and_compute(Visitor::Noop::INSTANCE, BACKWARD)
+    host_and_pass(visitor, FORWARD)
   end
 
-  private def host_and_compute(visitor, way : Backward, *args, **options) : Void
-    ComputingGuide.guide(visitor, way, @network, @levels, *args, **options)
+  private def host_and_compute(visitor, way : Backward) : Void
+    ComputingGuide.guide(visitor, way, @network, @levels)
     @is_pending = false
   end
 
-  private def host_and_pass(visitor, way : Way, *args, **options) : Void
-    PassingGuide.guide(visitor, way, @network, @levels, *args, **options)
+  private def host_and_pass(visitor, way : Way) : Void
+    PassingGuide.guide(visitor, way, @network, @levels)
   end
 
   # :nodoc:
@@ -57,9 +57,9 @@ class PBTranslator::Network::Cone(N)
     # A visitor that propagates a cone through gates backward from output to
     # input wires while guiding another visitor through the network.
 
-    def self.guide(visitor, way : Backward, network, levels, *args, **options) : Void
-      guide = ComputingGuide.new(visitor, levels, *args, **options)
-      network.host(guide, way, *args, **options)
+    def self.guide(visitor, way : Backward, network, levels) : Void
+      guide = ComputingGuide.new(visitor, levels)
+      network.host(guide, way)
       guide.finish
     end
 
@@ -101,9 +101,9 @@ class PBTranslator::Network::Cone(N)
     # A visitor that guides another and indicates to it which output wires
     # are in a cone.
 
-    def self.guide(visitor, way : Forward, network, levels, *args, **options) : Void
+    def self.guide(visitor, way : Forward, network, levels) : Void
       guide = PassingGuide.new(visitor, levels)
-      network.host(guide, way, *args, **options)
+      network.host(guide, way)
     end
 
     def initialize(@visitor : V, @levels : Array(I?))

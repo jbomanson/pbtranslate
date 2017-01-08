@@ -28,8 +28,8 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
 
   # Hosts a visitor through `Layer` regions containing `Gate`s each together with
   # a named argument *output_weights* that is a tuple of `I`.
-  def host(visitor v, way y : Way, *args, **options) : Void
-    PassingGuide.guide(@network, @layered_weights, @bit_array, *args, **options, visitor: v, way: y)
+  def host(visitor v, way y : Way) : Void
+    PassingGuide.guide(@network, @layered_weights, @bit_array, visitor: v, way: y)
   end
 
   # A visitor that propagates weights through a network and stores some of them.

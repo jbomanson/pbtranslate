@@ -35,10 +35,10 @@ class PBTranslator::Network::MergeSort(S, M, I)
     )
   end
 
-  private def helper_host(*args, **options) : Void
+  private def helper_host(*args) : Void
     three_cases(
       nil,
-      host(*args, **options),
+      host(*args),
       yield less, I.new(1) << less_value, @sort_scheme.network(less)
     )
   end
