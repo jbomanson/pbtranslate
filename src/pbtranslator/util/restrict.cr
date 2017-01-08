@@ -29,4 +29,15 @@ module PBTranslator::Util
 
   private def self.restrict_reverse(type : E.class, value : E) : Void forall E
   end
+
+  def self.restrict_not(value, type)
+    restrict_not_reverse(type, value)
+  end
+
+  private def self.restrict_not_reverse(type : E.class, value : E) : Void forall E
+    -"Type restriction failed"
+  end
+
+  private def self.restrict_not_reverse(type, value) : Void
+  end
 end
