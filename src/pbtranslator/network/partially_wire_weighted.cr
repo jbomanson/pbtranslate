@@ -144,9 +144,6 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
         c = @current_weights
         o = if c; c.values_at(*e) else e.map { I.zero } end
         @visitor.visit_gate(g, **options, output_weights: o)
-        # DEBUG {
-        if c; e.each { |i| c[i] = -7777 } end
-        # }
       end
     end
 
