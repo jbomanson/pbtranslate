@@ -30,41 +30,41 @@ struct PBTranslator::ASPIF::LogicContext(T, I)
 
   def operate(f : And.class, head_literal, body_literals)
     b = @aspif_broker
-    b.visit(Statement::Rule) do
-      b.visit(Head::Disjunction) do
-        b.visit(IntegerListStart.new(1)) do
-          b.visit(head_literal)
+    b.output(Statement::Rule) do
+      b.output(Head::Disjunction) do
+        b.output(IntegerListStart.new(1)) do
+          b.output(head_literal)
         end
       end
-      b.visit(Body::Normal) do
+      b.output(Body::Normal) do
         n = body_literals.size
-        b.visit(IntegerListStart.new(n)) do
+        b.output(IntegerListStart.new(n)) do
           body_literals.each do |literal|
-            b.visit(literal)
+            b.output(literal)
           end
         end
       end
     end
-    b.visit(Newline)
+    b.output(Newline)
   end
 
   def operate(f : Or.class, head_literal, body_literals)
     b = @aspif_broker
     body_literals.each do |literal|
       b = @aspif_broker
-      b.visit(Statement::Rule) do
-        b.visit(Head::Disjunction) do
-          b.visit(IntegerListStart.new(1)) do
-            b.visit(head_literal)
+      b.output(Statement::Rule) do
+        b.output(Head::Disjunction) do
+          b.output(IntegerListStart.new(1)) do
+            b.output(head_literal)
           end
         end
-        b.visit(Body::Normal) do
-          b.visit(IntegerListStart.new(1)) do
-            b.visit(literal)
+        b.output(Body::Normal) do
+          b.output(IntegerListStart.new(1)) do
+            b.output(literal)
           end
         end
       end
-      b.visit(Newline)
+      b.output(Newline)
     end
   end
 end
