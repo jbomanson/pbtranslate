@@ -109,7 +109,8 @@ class PBTranslator::Tool::OptimizationRewriter <
       output(MinimizeStatement, @priority) do
         output(WeightedLiteralListStart.new(literals.size)) do
           literals.each_with_index do |literal, i|
-            output(literal, weights[i])
+            output(literal)
+            output(weights[i])
           end
         end
       end

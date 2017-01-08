@@ -100,8 +100,9 @@ class PBTranslator::Tool::CardinalityTranslator <
   protected def output_weight_rule
     output(Body::Weight, @lower_bound) do
       output(WeightedLiteralListStart.new(@literals.size)) do
-        @literals.each_with_index do |l, i|
-          output(l, @weights[i])
+        @literals.each_with_index do |literal, i|
+          output(literal)
+          output(@weights[i])
         end
       end
     end
