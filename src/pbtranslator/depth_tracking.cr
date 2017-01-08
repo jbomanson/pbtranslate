@@ -16,6 +16,14 @@ module PBTranslator::DepthTracking
   struct Network(N, I)
     include WithDepth::Network
 
+    def self.wrap_if_needed(network, width)
+      if network.is_a? WithDepth::Network
+        network
+      else
+        new(network: network, width: width)
+      end
+    end
+
     delegate size, depth, to: @network
     getter computed_depth
 
