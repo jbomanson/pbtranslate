@@ -29,7 +29,7 @@ record WidthCheckingVisitor(I), width : I do
     yield self
   end
 
-  def visit_region(layer : OOPSublayer.class, *args, **options) : Void
+  def visit_region(layer : OOPSublayer.class) : Void
     yield self
   end
 end

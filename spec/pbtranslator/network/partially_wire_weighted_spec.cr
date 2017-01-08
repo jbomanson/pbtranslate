@@ -30,7 +30,7 @@ class GateWeightCountingVisitor(T)
     @sum += output_weights.sum
   end
 
-  def visit_region(*args) : Void
+  def visit_region(region) : Void
     yield self
   end
 end

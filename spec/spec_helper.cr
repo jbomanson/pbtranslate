@@ -16,7 +16,7 @@ class VisitCallCounter
     @h[{A, B}] += 1
   end
 
-  def visit_region(*args, **options) : Void
+  def visit_region(region) : Void
     yield self
   end
 

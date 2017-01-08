@@ -32,7 +32,7 @@ class WirePairCollector
     @wire_count += g.wires.size
   end
 
-  def visit_region(*args, **options) : Void
+  def visit_region(region) : Void
     yield self
   end
 

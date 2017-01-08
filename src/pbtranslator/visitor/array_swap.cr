@@ -15,7 +15,7 @@ record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
   def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
   end
 
-  def visit_region(layer : Layer, **options) : Void
+  def visit_region(layer : Layer) : Void
     yield self
   end
 
