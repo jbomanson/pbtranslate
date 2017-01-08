@@ -24,8 +24,8 @@ class PBTranslator::Network::WireWeighted(N, I)
     def initialize(*, @gate_visitor : G, @weight_visitor : W)
     end
 
-    def visit_gate(g, *args, **options, output_weights) : Void
-      @gate_visitor.visit_gate(g, *args, **options)
+    def visit_gate(g, **options, output_weights) : Void
+      @gate_visitor.visit_gate(g, **options)
       g.wires.zip(output_weights) do |wire, weight|
         @weight_visitor.visit_weighted_wire(weight: weight, wire: wire)
       end
@@ -44,13 +44,13 @@ class PBTranslator::Network::WireWeighted(N, I)
     protected def initialize(*, @visitor : V, @weights : Array(I))
     end
 
-    def visit_gate(g : Gate(Comparator, InPlace, _), *args, **options) : Void
+    def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Void
       o = propagate_weights_at(g.wires)
-      @visitor.visit_gate(g, *args, **options, output_weights: o)
+      @visitor.visit_gate(g, **options, output_weights: o)
     end
 
-    def visit_gate(g : Gate(Passthrough, _, _), *args, **options) : Void
-      @visitor.visit_gate(g, *args, **options, output_weights: g.wires.map { I.zero })
+    def visit_gate(g : Gate(Passthrough, _, _), **options) : Void
+      @visitor.visit_gate(g, **options, output_weights: g.wires.map { I.zero })
     end
 
     private def propagate_weights_at(wires)
