@@ -8,12 +8,14 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   property crop_depth
+  property weight_step
 
   @task           = Task::Pass
   @priority       = 0
   @input_visitor  = WeightCollector.new
   @output_visitor = WeightCollector.new
-  @crop_depth     = nil.as(Int32?)
+  @crop_depth     = nil.as(Int32 | Nil)
+  @weight_step    = nil.as(Int32 | Nil)
 
   def visit(s : Statement) : Bool
     case {@task, s}
@@ -66,41 +68,62 @@ class PBTranslator::Tool::OptimizationRewriter <
       g = Visitor::ArrayLogic.new(literals, context)
       w = FilterVisitor.new(literals, @output_visitor)
       v = Network::WireWeighted.pair(gate_visitor: g, weight_visitor: w)
-      n = network_of_width(literals.size)
-      nn = Network::WireWeighted.new(network: n, weights: weights)
-      nn.host(v, FORWARD)
+      n = network_of_width(literals.size, weights)
+      n.host(v, FORWARD)
     end
     true
   end
 
-  private def network_of_width(n)
+  private def network_of_width(n, weights w)
     s =
       Scheme::MergeSort::Recursive.new(
         Scheme::OEMerge::INSTANCE
       )
     d = @crop_depth
-    ss =
+    ss = Scheme::WidthLimited.new(s)
+    sss =
       if d
         if d.not_nil! >= 0
           Scheme::DepthSlice.new(
-            scheme: DepthTracking::Scheme.new(s),
-            range_proc: ->(width: Width::Pw2(Int32), depth: Int32) {
+            scheme: DepthTracking::Scheme.new(ss),
+            range_proc: ->(width: Width::Free(Int32), depth: Int32) {
               0...d.not_nil!
             },
           )
         else
           Scheme::DepthSlice.new(
-            scheme: DepthTracking::Scheme.new(s),
-            range_proc: ->(width: Width::Pw2(Int32), depth: Int32) {
+            scheme: DepthTracking::Scheme.new(ss),
+            range_proc: ->(width: Width::Free(Int32), depth: Int32) {
               depth + d.not_nil!...depth
             },
           )
         end
       else
-        s
+        ss
       end
-    sss = Scheme::WidthLimited.new(ss)
-    sss.network(Width.from_value(n))
+    width = Width.from_value(n)
+    n = sss.network(width)
+    y = layer_bit_array(n.depth)
+    if y
+      nn = layer_cache_class.new(network: n, width: width)
+      Network::PartiallyWireWeighted.new(network: nn, weights: w, bit_array: y)
+    else
+      Network::WireWeighted.new(network: n, weights: w)
+    end
+  end
+
+  private def layer_cache_class
+    Network::LayerCache.class_for(
+      Gate.comparator_between(0, 0),
+      depth: 0_u32)
+  end
+
+  private def layer_bit_array(depth d) : BitArray | Nil
+    p = @weight_step
+    return nil unless p
+    y = BitArray.new(d)
+    y.each_index { |i| y[i] = (i + 1) % p == 0 }
+    y
   end
 
   private def task_write
