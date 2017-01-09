@@ -108,16 +108,21 @@ class PBTranslator::Command
         translator_class = translator_class_of(type)
         translator = translator_class.new(input_io, output_io)
         if d = crop_depth
+          d = d.to_i
           unless translator.responds_to? :"crop_depth="
             error "the --crop-depth option is not supported with --type #{type}"
           end
-          translator.crop_depth = d.to_i
+          translator.crop_depth = d
         end
         if p = weight_step
+          p = p.to_i
+          unless 1 <= p
+            error "nonpositive argument '#{p}' to --weight-step"
+          end
           unless translator.responds_to? :"weight_step="
             error "the --weight-step option is not supported with --type #{type}"
           end
-          translator.weight_step = p.to_i
+          translator.weight_step = p
         end
         translate(translator)
       end
