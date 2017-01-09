@@ -24,10 +24,15 @@ class PBTranslator::Network::WireWeighted(N, I)
     def initialize(*, @gate_visitor : G, @weight_visitor : W)
     end
 
-    def visit_gate(g, **options, output_weights) : Nil
+    def visit_gate(g, **options, input_weights = Tuple.new, output_weights = Tuple.new) : Nil
+      e = g.wires
+      v = @weight_visitor
+      input_weights.zip(e) do |weight, wire|
+        v.visit_weighted_wire(weight: weight, wire: wire)
+      end
       @gate_visitor.visit_gate(g, **options)
-      g.wires.zip(output_weights) do |wire, weight|
-        @weight_visitor.visit_weighted_wire(weight: weight, wire: wire)
+      output_weights.zip(e) do |weight, wire|
+        v.visit_weighted_wire(weight: weight, wire: wire)
       end
     end
 
@@ -54,11 +59,11 @@ class PBTranslator::Network::WireWeighted(N, I)
 
     def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Nil
       o = propagate_weights_at(g.wires)
-      @visitor.visit_gate(g, **options, output_weights: o)
+      @visitor.visit_gate(g, **options, input_weights: o)
     end
 
     def visit_gate(g : Gate(Passthrough, _, _), **options) : Nil
-      @visitor.visit_gate(g, **options, output_weights: g.wires.map { I.zero })
+      @visitor.visit_gate(g, **options, input_weights: g.wires.map { I.zero })
     end
 
     private def propagate_weights_at(wires)
@@ -71,7 +76,7 @@ class PBTranslator::Network::WireWeighted(N, I)
 
     protected def sweep
       @weights.each_with_index do |weight, wire|
-        @visitor.visit_gate(Gate.passthrough_at(wire), output_weights: {weight})
+        @visitor.visit_gate(Gate.passthrough_at(wire), input_weights: {weight})
       end
     end
   end
