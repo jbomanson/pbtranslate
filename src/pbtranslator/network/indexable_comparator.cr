@@ -3,6 +3,7 @@ struct PBTranslator::Network::IndexableComparator(T, I)
   include Gate::Restriction
 
   getter width : I
+  delegate size, to: @wire_pairs
 
   # Constructs a new comparator network based on the given wire pairs.
   #
@@ -23,7 +24,7 @@ struct PBTranslator::Network::IndexableComparator(T, I)
 
   def host(visitor, way : Way, at offset = I.new(0)) : Nil
     way.each_in(@wire_pairs) do |pair|
-      visitor.visit(pair_to_gate(pair).shifted_by(offset), way)
+      visitor.visit_gate(pair_to_gate(pair).shifted_by(offset))
     end
   end
 
