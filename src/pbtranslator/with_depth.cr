@@ -1,4 +1,4 @@
-module PBTranslator::WithDepth
+module PBTranslator::WithGateDepth
   module Scheme
   end
 

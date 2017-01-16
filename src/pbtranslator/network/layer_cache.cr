@@ -1,7 +1,7 @@
 # A network of gates stored explicitly for enumeration layer by layer.
 class PBTranslator::Network::LayerCache(G, O)
   include Gate::Restriction
-  include WithDepth::Network
+  include WithGateDepth::Network
 
   # Returns the appropriate LayerCache class for storing visit calls with
   # arguments of the types used here.

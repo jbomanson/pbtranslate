@@ -3,7 +3,7 @@ require "../../width"
 
 class PBTranslator::Scheme::DepthSlice(S, I, W)
   def initialize(*, @scheme : S, @range_proc : W, I -> Range(I, I))
-    Util.restrict(scheme, WithDepth::Scheme)
+    Util.restrict(scheme, WithGateDepth::Scheme)
   end
 
   def network(width w : W)

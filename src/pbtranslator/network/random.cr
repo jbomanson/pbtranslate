@@ -1,6 +1,6 @@
 # A comparator network of layers with maximal size and randomly connected wires.
 class PBTranslator::Network::Random(C)
-  include WithDepth::Network
+  include WithGateDepth::Network
 
   delegate depth, size, host, to: @cache
 
@@ -17,7 +17,7 @@ class PBTranslator::Network::Random(C)
   end
 
   private struct Generator(I)
-    include WithDepth::Network
+    include WithGateDepth::Network
 
     getter depth
 

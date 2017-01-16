@@ -1,10 +1,10 @@
 require "../../util/restrict"
 
 struct PBTranslator::Network::DepthSlice(N, I)
-  include WithDepth::Network
+  include WithGateDepth::Network
 
   def initialize(*, @network : N, @width : I, @range : Range(I, I))
-    Util.restrict(network, WithDepth::Network)
+    Util.restrict(network, WithGateDepth::Network)
   end
 
   # Returns an upper bound on the size of this network.

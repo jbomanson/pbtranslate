@@ -3,7 +3,7 @@ require "./with_depth"
 
 module PBTranslator::DepthTracking
   class Scheme(S)
-    include WithDepth::Scheme
+    include WithGateDepth::Scheme
 
     def initialize(@scheme : S)
     end
@@ -14,10 +14,10 @@ module PBTranslator::DepthTracking
   end
 
   struct Network(N, I)
-    include WithDepth::Network
+    include WithGateDepth::Network
 
     def self.wrap_if_needed(network, width)
-      if network.is_a? WithDepth::Network
+      if network.is_a? WithGateDepth::Network
         network
       else
         new(network: network, width: width)
@@ -83,7 +83,7 @@ module PBTranslator::DepthTracking
   #     # {1, 2} @ 2
   class Guide(V, W)
     include Gate::Restriction
-    include WithDepth::Visitor
+    include WithGateDepth::Visitor
 
     # Computes the depth of the network seen so far.
     getter depth
