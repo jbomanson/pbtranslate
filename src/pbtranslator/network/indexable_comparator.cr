@@ -3,6 +3,7 @@ struct PBTranslator::Network::IndexableComparator(T, I)
   include Gate::Restriction
 
   getter width : I
+  getter wire_pairs : T
   delegate size, to: @wire_pairs
 
   # Constructs a new comparator network based on the given wire pairs.
