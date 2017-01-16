@@ -64,6 +64,7 @@ class PBTranslator::Tool::OptimizationRewriter <
 
   private def refactor
     @input_visitor.devour do |literals, weights|
+      sort_by_weights(literals, weights)
       context = ASPIF::LogicContext.class_for(literals, Int32).new(self)
       g = Visitor::ArrayLogic.new(literals, context)
       w = FilterVisitor.new(literals, @output_visitor)
@@ -72,6 +73,15 @@ class PBTranslator::Tool::OptimizationRewriter <
       n.host(v, FORWARD)
     end
     true
+  end
+
+  private def sort_by_weights(literals, weights) : Nil
+    pairs = literals.zip(weights)
+    pairs.sort_by! &.last
+    pairs.each_with_index do |(x, y), index|
+      literals[index] = x
+      weights[index] = y
+    end
   end
 
   private def network_of_width(n, weights w)
