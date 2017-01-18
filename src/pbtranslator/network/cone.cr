@@ -57,7 +57,7 @@ class PBTranslator::Network::Cone(N)
     # input wires while guiding another visitor through the network.
 
     def self.guide(visitor, way : Backward, network, levels) : Nil
-      guide = ComputingGuide.new(visitor, levels)
+      guide = self.new(visitor, levels)
       network.host(guide, way)
       guide.finish
     end
@@ -100,7 +100,7 @@ class PBTranslator::Network::Cone(N)
     # are in a cone.
 
     def self.guide(visitor, way : Forward, network, levels) : Nil
-      guide = PassingGuide.new(visitor, levels)
+      guide = self.new(visitor, levels)
       network.host(guide, way)
     end
 
