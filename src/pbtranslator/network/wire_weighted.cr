@@ -3,10 +3,6 @@ require "../gate"
 # A network with weights on wires obtained by propagating given initial weights
 # through another network.
 class PBTranslator::Network::WireWeighted(N, I)
-  def self.pair(*, gate_visitor g = Visitor::Noop, weight_visitor w = Visitor::Noop)
-    VisitorPair.new(gate_visitor: g, weight_visitor: w)
-  end
-
   # Enhances a _network_ with _weights_ propagated through its gates.
   def initialize(*, @network : N, @weights : Array(I))
   end
@@ -18,31 +14,6 @@ class PBTranslator::Network::WireWeighted(N, I)
   # The sum of visited wire weights equals the sum of the initial weights.
   def host(visitor v, way y : Way) : Nil
     PropagatingGuide.guide(@network, @weights, v, y)
-  end
-
-  private struct VisitorPair(G, W)
-    def initialize(*, @gate_visitor : G, @weight_visitor : W)
-    end
-
-    def visit_gate(g, **options, input_weights = Tuple.new, output_weights = Tuple.new) : Nil
-      e = g.wires
-      v = @weight_visitor
-      input_weights.zip(e) do |weight, wire|
-        v.visit_weighted_wire(weight: weight, wire: wire)
-      end
-      @gate_visitor.visit_gate(g, **options)
-      output_weights.zip(e) do |weight, wire|
-        v.visit_weighted_wire(weight: weight, wire: wire)
-      end
-    end
-
-    def visit_region(region) : Nil
-      @gate_visitor.visit_region(region) do |region_visitor|
-        yield self.class.new(
-          gate_visitor: region_visitor,
-          weight_visitor: @weight_visitor)
-      end
-    end
   end
 
   private struct PropagatingGuide(V, I)

@@ -68,7 +68,7 @@ class PBTranslator::Tool::OptimizationRewriter <
       context = ASPIF::LogicContext.class_for(literals, Int32).new(self)
       g = Visitor::ArrayLogic.new(literals, context)
       w = FilterVisitor.new(literals, @output_visitor)
-      v = Network::WireWeighted.pair(gate_visitor: g, weight_visitor: w)
+      v = Visitor::GateAndWeightVisitorPair.new(gate_visitor: g, weight_visitor: w)
       n = network_of_width(literals.size, weights)
       n.host(v, FORWARD)
     end

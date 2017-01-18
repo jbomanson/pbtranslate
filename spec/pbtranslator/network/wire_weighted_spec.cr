@@ -28,7 +28,7 @@ describe Network::WireWeighted do
     random_width_array(network_count, random).each do |width|
       g = Visitor::Noop::INSTANCE
       w = WeightCountingVisitor(typeof(random.next_int)).new
-      visitor = Network::WireWeighted.pair(gate_visitor: g, weight_visitor: w)
+      visitor = Visitor::GateAndWeightVisitorPair.new(gate_visitor: g, weight_visitor: w)
       weights = Array.new(width) { random.next_int }
       backup_weights = weights.clone
       n = scheme.network(Width.from_value(width))
