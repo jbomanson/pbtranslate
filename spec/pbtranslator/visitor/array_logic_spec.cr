@@ -10,7 +10,7 @@ scheme =
 describe Visitor::ArrayLogic do
   it "sorts booleans in descending order with merge sorting networks" do
     random = Random.new(SEED)
-    (0..WIDTH_LOG2_MAX).each do |width_log2|
+    (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       a = Array.new(width) { random.next_bool }
       b = a.clone

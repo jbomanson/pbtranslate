@@ -20,7 +20,7 @@ module PBTranslator::DepthTracking
     end
   end
 
-  struct Network(N, I)
+  struct Network(N)
     include WithGateDepth::Network
 
     def self.wrap_if_needed(network, width)
@@ -34,9 +34,9 @@ module PBTranslator::DepthTracking
     delegate size, depth, to: @network
     getter computed_depth
 
-    @computed_depth : UInt32 = 0_u32
+    @computed_depth : Distance = Distance.zero
 
-    def initialize(*, @network : N, @width : I)
+    def initialize(*, @network : N, @width : Distance)
     end
 
     def host(visitor v, way y : Way) : Nil
@@ -96,9 +96,9 @@ module PBTranslator::DepthTracking
     getter depth
 
     # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
-    def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, way : W, width w : Int, initial_depth d = 0_u32)
-      @array = Array(UInt32).new(w, d.to_u32)
-      @depth = 0_u32
+    def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, way : W, width w : Int, initial_depth d = Distance.zero)
+      @array = Array(Distance).new(w, Distance.new(d))
+      @depth = Distance.zero
     end
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an

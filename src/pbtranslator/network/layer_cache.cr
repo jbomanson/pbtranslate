@@ -1,3 +1,5 @@
+require "../gate"
+
 # A network of gates stored explicitly for enumeration layer by layer.
 class PBTranslator::Network::LayerCache(G, O)
   include Gate::Restriction
@@ -15,20 +17,20 @@ class PBTranslator::Network::LayerCache(G, O)
   # Caches gates of _network_ and returns a network for enumerating them layer
   # by layer.
   def initialize(*, network n, width w : Width)
-    @size = n.size.as(Int32)
+    @size = n.size.as(Distance)
     @layers = Collector(G, O).collect(network: n, width: w)
   end
 
   # Returns the computed depth of the network of stored gates.
   def depth
-    @layers.size
+    Distance.new(@layers.size)
   end
 
   # Hosts a visitor layer by layer through stored gates and generated
   # `Passthrough` gates.
   def host(visitor, way : Way) : Nil
     way.each_with_index_in(@layers) do |layer, index|
-      visitor.visit_region(Layer.new(index.to_u32)) do |layer_visitor|
+      visitor.visit_region(Layer.new(Distance.new(index))) do |layer_visitor|
         way.each_with_index_in(layer) do |element, index|
           element_host(layer_visitor, element, index)
         end
@@ -42,7 +44,7 @@ class PBTranslator::Network::LayerCache(G, O)
       gate, options = element
       layer_visitor.visit_gate(gate, **options)
     when Unused
-      layer_visitor.visit_gate(Gate.passthrough_at(index))
+      layer_visitor.visit_gate(Gate.passthrough_at(Distance.new(index)))
     end
   end
 

@@ -3,21 +3,21 @@ require "bit_array"
 require "../gate"
 
 # A version of `WireWeighted` with weights on only a subset of layers.
-class PBTranslator::Network::PartiallyWireWeighted(C, I)
+class PBTranslator::Network::PartiallyWireWeighted(C, W)
   include Gate::Restriction
 
   delegate size, to: @cache
 
   # Enhances a _network_ with _weights_ propagated through its gates and placed
   # on the output wires of gates on layers _i_ for which `bit_array[i]` is true.
-  def initialize(*, @network : C, @bit_array : BitArray, weights : Array(I))
+  def initialize(*, @network : C, @bit_array : BitArray, weights : Array(W))
     Util.restrict(network, LayerCache)
     d = network.depth
     b = bit_array.size
     unless d == b
       raise ArgumentError.new("Missmatch between depth = #{d} and bits #{b}")
     end
-    @layered_weights = Propagator.propagate(network, bit_array, I.zero, weights).as(Util::SliceMatrix(I))
+    @layered_weights = Propagator.propagate(network, bit_array, W.zero, weights).as(Util::SliceMatrix(W))
   end
 
   # Returns the depth of this network that is the depth of the wrapped network
@@ -27,23 +27,23 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
   end
 
   # Hosts a visitor through `Layer` regions containing `Gate`s each together with
-  # a named argument *output_weights* that is a tuple of `I`.
+  # a named argument *output_weights* that is a tuple of `W`.
   def host(visitor v, way y : Way) : Nil
     PassingGuide.guide(@network, @layered_weights, @bit_array, visitor: v, way: y)
   end
 
   # A visitor that propagates weights through a network and stores some of them.
-  private class Propagator(I)
-    def self.propagate(network n, bit_array b, zero : I, weights w) forall I
-      s = Util::SliceMatrix(I).new(b.count(true) + 1, w.size) { zero }
+  private class Propagator(W)
+    def self.propagate(network n, bit_array b, zero : W, weights w) forall W
+      s = Util::SliceMatrix(W).new(b.count(true) + 1, w.size) { zero }
       p = self.new(layered_weights: s, bit_array: b, weights: w)
       n.host(p, FORWARD)
       p.flush_weights(b.size)
       s
     end
 
-    protected def initialize(*, @layered_weights : Util::SliceMatrix(I), @bit_array : BitArray, weights w)
-      @scratch = Array(I).new(w.size).concat(w).as(Array(I))
+    protected def initialize(*, @layered_weights : Util::SliceMatrix(W), @bit_array : BitArray, weights w)
+      @scratch = Array(W).new(w.size).concat(w).as(Array(W))
       @parents = Array(Int32).new(w.size, &.itself)
       @index = 0
     end
@@ -58,8 +58,8 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
       scratch = @scratch
       parents = @parents
       roots = wires.map { |i| root_of(i) }
-      least_root = roots.min_by { |i| scratch[i] }
-      (wires + roots).each { |i| parents[i] = least_root }
+      least_root_index = roots.min_by { |i| scratch[i] }.to_i
+      (wires + roots).each { |i| parents[i] = least_root_index }
     end
 
     protected def flush_weights(output_depth d)
@@ -90,7 +90,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
     end
 
     # Follows parent links up until a root node is found.
-    private def root_of(wire)
+    private def root_of(wire) : Distance
       parents = @parents
       i = ~wire
       j = wire
@@ -98,15 +98,15 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
         i = j
         j = parents[j]
       end
-      i
+      Distance.new(i)
     end
   end
 
   # A visitor that guides another and provides it with weights for output wires.
-  private abstract struct PassingGuide(V, I, L, B)
+  private abstract struct PassingGuide(V, W, L, B)
     include Gate::Restriction
 
-    private struct LayerGuide(V, I, L, B) < PassingGuide(V, I, L, B)
+    private struct LayerGuide(V, W, L, B) < PassingGuide(V, W, L, B)
       def visit_region(layer : Layer) : Nil
         @current_weights = next_weights_or_nil
         @visitor.visit_region(Layer.new(layer.depth + 1)) do |v|
@@ -118,7 +118,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
         c = next_weights
         @visitor.visit_region(Layer.new(0_u32)) do |v|
           y.each_with_index_in(c) do |weight, index|
-            v.visit_gate(Gate.passthrough_at(index), output_weights: {weight})
+            v.visit_gate(Gate.passthrough_at(Distance.new(index)), output_weights: {weight})
           end
         end
       end
@@ -129,7 +129,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
         end
       end
 
-      private def next_weights : Slice(I)
+      private def next_weights : Slice(W)
         c = @layer_iterator.next
         if c.is_a? Iterator::Stop
           raise "Iterated too many layers of weights"
@@ -138,11 +138,11 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
       end
     end
 
-    private struct GateGuide(V, I, L, B) < PassingGuide(V, I, L, B)
+    private struct GateGuide(V, W, L, B) < PassingGuide(V, W, L, B)
       def visit_gate(g : Gate, **options) : Nil
         e = g.wires
         c = @current_weights
-        o = if c; c.values_at(*e) else e.map { I.zero } end
+        o = if c; c.values_at(*e) else e.map { W.zero } end
         @visitor.visit_gate(g, **options, output_weights: o)
       end
     end
@@ -158,7 +158,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, I)
       end
     end
 
-    protected def initialize(@visitor : V, @current_weights : Slice(I) | Nil, @layer_iterator : L, @bit_iterator : B)
+    protected def initialize(@visitor : V, @current_weights : Slice(W) | Nil, @layer_iterator : L, @bit_iterator : B)
     end
   end
 end

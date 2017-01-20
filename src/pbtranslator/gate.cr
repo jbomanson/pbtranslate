@@ -1,5 +1,7 @@
+require "./number_types"
+
 struct PBTranslator::Gate(F, S, T)
-  module Function
+    module Function
   end
 
   module Form
@@ -7,9 +9,9 @@ struct PBTranslator::Gate(F, S, T)
 
   module Restriction
     struct Layer
-      getter depth : UInt32
+      getter depth : Distance
 
-      def initialize(@depth : UInt32)
+      def initialize(@depth : Distance)
       end
     end
 
@@ -47,11 +49,11 @@ struct PBTranslator::Gate(F, S, T)
 
   include Restriction
 
-  def self.passthrough_at(*wire)
+  def self.passthrough_at(*wire : Distance)
     Gate(Passthrough, InPlace, typeof(wire)).new(wire)
   end
 
-  def self.comparator_between(*wires)
+  def self.comparator_between(*wires : Distance)
     Gate(Comparator, InPlace, typeof(wires)).new(wires)
   end
 
@@ -59,11 +61,11 @@ struct PBTranslator::Gate(F, S, T)
     Gate(And, Input, typeof(wires)).new(wires)
   end
 
-  def self.and_of(*wires)
+  def self.and_of(*wires : Distance)
     and_of(tuple: wires)
   end
 
-  def self.or_as(*wires)
+  def self.or_as(*wires : Distance)
     Gate(Or, Output, typeof(wires)).new(wires)
   end
 

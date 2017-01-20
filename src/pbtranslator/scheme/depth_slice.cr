@@ -1,8 +1,8 @@
 require "../../util/restrict"
 require "../../width"
 
-class PBTranslator::Scheme::DepthSlice(S, I, W)
-  def initialize(*, @scheme : S, @range_proc : W, I -> Range(I, I))
+class PBTranslator::Scheme::DepthSlice(S, W)
+  def initialize(*, @scheme : S, @range_proc : W, Distance -> Range(Distance, Distance))
     Util.restrict(scheme, WithGateDepth::Scheme)
   end
 

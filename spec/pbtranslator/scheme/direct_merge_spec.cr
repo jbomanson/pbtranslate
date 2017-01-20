@@ -2,14 +2,14 @@ require "../../spec_helper"
 
 include PBTranslator
 
-half_width_log2_max = 3
+half_width_log2_max = Distance.new(3)
 half_width_max = 1 << half_width_log2_max
 
 scheme = Scheme::DirectMerge::INSTANCE
 
 describe typeof(scheme) do
   it "represents a network that merges up to #{half_width_max}^2 booleans" do
-    (0..half_width_log2_max).each do |half_width_log2|
+    (Distance.new(0)..half_width_log2_max).each do |half_width_log2|
       half_width = 1 << half_width_log2
       # Generate all sorted arrays of N booleans.
       x =

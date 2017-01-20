@@ -12,18 +12,18 @@ scheme =
 
 cache_class =
   Network::LayerCache.class_for(
-    Gate.comparator_between(0, 0),
-    depth: 0_u32)
+    Gate.comparator_between(Distance.zero, Distance.zero),
+    depth: Distance.zero)
 
 class WirePairCollector
   getter wire_count
 
   def initialize
-    @wire_pairs = Array({Int32, Int32}).new
+    @wire_pairs = Array({Distance, Distance}).new
     @wire_count = 0
   end
 
-  def visit_gate(g : Gate(_, _, {Int32, Int32}), *args, **options) : Nil
+  def visit_gate(g : Gate(_, _, {Distance, Distance}), *args, **options) : Nil
     @wire_pairs << g.wires
     @wire_count += g.wires.size
   end
@@ -45,7 +45,7 @@ end
 
 describe Network::LayerCache do
   it "preserves the comparators of sample merge sort networks" do
-    (1..WIDTH_LOG2_MAX - 1).each do |width_log2|
+    (Distance.new(1)..WIDTH_LOG2_MAX - 1).each do |width_log2|
       w = Width.from_log2(width_log2)
       n = scheme.network(w)
       nn = cache_class.new(network: n, width: w)

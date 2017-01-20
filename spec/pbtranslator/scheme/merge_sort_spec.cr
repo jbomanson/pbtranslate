@@ -13,7 +13,7 @@ class WidthPw2Range(R)
   end
 end
 
-range = WidthPw2Range.new(0..WIDTH_LOG2_MAX)
+range = WidthPw2Range.new(Distance.new(0)..WIDTH_LOG2_MAX)
 
 rounds = 5
 

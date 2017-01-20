@@ -1,4 +1,4 @@
-abstract struct PBTranslator::Width(I)
+abstract struct PBTranslator::Width
   def self.from_log2(l)
     Pw2.new(log2: l)
   end
@@ -11,70 +11,70 @@ abstract struct PBTranslator::Width(I)
     Free.new(value: v)
   end
 
-  abstract def value : I
-  abstract def pw2ceil : I
-  abstract def log2ceil : I
-  abstract def to_pw2 : Pw2(I)
-  abstract def to_free : Free(I)
+  abstract def value : Distance
+  abstract def pw2ceil : Distance
+  abstract def log2ceil : Distance
+  abstract def to_pw2 : Pw2
+  abstract def to_free : Free
 
-  struct Pw2(I) < Width(I)
-    getter log2 : I
+  struct Pw2 < Width
+    getter log2 : Distance
 
-    def self.new(*, pw2 : I) forall I
-      new(log2: I.zero + (pw2 - 1).popcount)
+    def self.new(*, pw2 : Distance)
+      new(log2: Distance.zero + (pw2 - 1).popcount)
     end
 
     def self.new(*, value)
       new(pw2: Math.pw2ceil(value))
     end
 
-    def initialize(*, @log2 : I)
+    def initialize(*, @log2 : Distance)
     end
 
     def pw2
-      I.new(1) << log2
+      Distance.new(1) << log2
     end
 
-    def value : I
+    def value : Distance
       pw2ceil
     end
 
-    def pw2ceil : I
+    def pw2ceil : Distance
       pw2
     end
 
-    def log2ceil : I
+    def log2ceil : Distance
       log2
     end
 
-    def to_pw2 : Pw2(I)
+    def to_pw2 : Pw2
       self
     end
 
-    def to_free : Free(I)
+    def to_free : Free
       Free.new(value: value)
     end
   end
 
-  struct Free(I) < Width(I)
-    getter value : I
+  struct Free < Width
+    getter value : Distance
 
-    def initialize(*, @value : I)
+    def initialize(*, @value : Distance)
     end
 
-    def pw2ceil : I
+    def pw2ceil : Distance
       Math.pw2ceil(value)
     end
 
-    def log2ceil : I
+    def log2ceil : Distance
       to_pw2.log2ceil
     end
 
-    def to_pw2 : Pw2(I)
+    def to_pw2 : Pw2
       Pw2.new(value: value)
     end
 
-    def to_free : Free(I)
+    def to_free : Free
       self
     end
   end

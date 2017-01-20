@@ -96,22 +96,22 @@ class PBTranslator::Tool::OptimizationRewriter <
         if d.not_nil! >= 0
           Scheme::DepthSlice.new(
             scheme: DepthTracking::Scheme.new(ss),
-            range_proc: ->(width: Width::Free(Int32), depth: Int32) {
-              0...d.not_nil!
+            range_proc: ->(width: Width::Free, depth: Distance) {
+              Distance.new(0)...Distance.new(d.not_nil!)
             },
           )
         else
           Scheme::DepthSlice.new(
             scheme: DepthTracking::Scheme.new(ss),
-            range_proc: ->(width: Width::Free(Int32), depth: Int32) {
-              depth + d.not_nil!...depth
+            range_proc: ->(width: Width::Free, depth: Distance) {
+              depth + Distance.new(d.not_nil!)...depth
             },
           )
         end
       else
         ss
       end
-    width = Width.from_value(n)
+    width = Width.from_value(Distance.new(n))
     n = sss.network(width)
     y = layer_bit_array(n.depth)
     if y
@@ -124,14 +124,14 @@ class PBTranslator::Tool::OptimizationRewriter <
 
   private def layer_cache_class
     Network::LayerCache.class_for(
-      Gate.comparator_between(0, 0),
-      depth: 0_u32)
+      Gate.comparator_between(Distance.zero, Distance.zero),
+      depth: Distance.zero)
   end
 
   private def layer_bit_array(depth d) : BitArray | Nil
     p = @weight_step
     return nil unless p
-    y = BitArray.new(d)
+    y = BitArray.new(d.to_i)
     y.each_index { |i| y[i] = (i + 1) % p == 0 }
     y
   end

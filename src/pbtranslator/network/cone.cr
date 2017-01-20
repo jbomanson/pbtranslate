@@ -9,7 +9,9 @@ require "../gate"
 #
 # There is no corresponding default scheme.
 class PBTranslator::Network::Cone(N)
-  @levels : Array(Int32?)
+  private alias Level = Area
+
+  @levels : Array(Level?)
 
   # Creates a version of a _network_ that augments visits with a named parameter
   # *output_cone*.
@@ -24,7 +26,7 @@ class PBTranslator::Network::Cone(N)
 
   # Like the other `new` but using a block for picking network outputs.
   def initialize(*, @network : N, width, &block : Int32 -> Bool)
-    @levels = Array.new(width) { |index| (yield index) ? Int32.zero : nil }
+    @levels = Array.new(width) { |index| (yield index) ? Level.zero : nil }
     @is_pending = true
   end
 
@@ -50,7 +52,7 @@ class PBTranslator::Network::Cone(N)
     PassingGuide.guide(visitor, way, @network, @levels)
   end
 
-  private class ComputingGuide(V, I)
+  private class ComputingGuide(V)
     include Gate::Restriction
 
     # A visitor that propagates a cone through gates backward from output to
@@ -62,8 +64,8 @@ class PBTranslator::Network::Cone(N)
       guide.finish
     end
 
-    protected def initialize(@visitor : V, @levels : Array(I?))
-      @reverse_index = I.zero.as(I)
+    protected def initialize(@visitor : V, @levels : Array(Level?))
+      @reverse_index = Level.zero.as(Level)
     end
 
     def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
@@ -93,7 +95,7 @@ class PBTranslator::Network::Cone(N)
     end
   end
 
-  private class PassingGuide(V, I)
+  private class PassingGuide(V)
     include Gate::Restriction
 
     # A visitor that guides another and indicates to it which output wires
@@ -104,8 +106,8 @@ class PBTranslator::Network::Cone(N)
       network.host(guide, way)
     end
 
-    def initialize(@visitor : V, @levels : Array(I?))
-      @index = I.zero.as(I)
+    def initialize(@visitor : V, @levels : Array(Level?))
+      @index = Level.zero.as(Level)
     end
 
     def visit_gate(g : Gate(_, InPlace, _), **options) : Nil

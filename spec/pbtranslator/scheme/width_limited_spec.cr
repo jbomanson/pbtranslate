@@ -14,7 +14,7 @@ direct_scheme =
     Scheme::DirectMerge::INSTANCE
   )
 
-record WidthCheckingVisitor(I), width : I do
+record WidthCheckingVisitor, width : Distance do
   include Gate::Restriction
 
   def visit_gate(g : Gate, *args, **options) : Nil

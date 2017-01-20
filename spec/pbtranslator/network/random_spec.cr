@@ -8,13 +8,13 @@ allowed_mean_square_error = 0.01
 seed = SEED ^ __FILE__.hash
 
 def pick_depth(w : Width)
-  10_u32 * w.log2ceil
+  Distance.new(10) * w.log2ceil
 end
 
 describe Network::Random do
   it "returns consistent sizes" do
     random = Random.new(seed)
-    (0..WIDTH_LOG2_MAX).each do |width_log2|
+    (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       w = Width.from_log2(width_log2)
       n = Network::Random.new(random: random, width: w, depth: pick_depth(w))
       x = n.size
@@ -27,7 +27,7 @@ describe Network::Random do
 
   it "represents some networks that at least almost sort" do
     random = Random.new(seed)
-    (0..WIDTH_LOG2_MAX).each do |width_log2|
+    (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       w = Width.from_log2(width_log2)
       a = Array.new(w.value) { random.rand }
       b = a.clone

@@ -3,7 +3,7 @@ require "../src/pbtranslator"
 
 include PBTranslator
 
-WIDTH_LOG2_MAX =        10
+WIDTH_LOG2_MAX = Distance.new(10)
 SEED           = 482382392
 
 # An object that counts the number of times its visit forward and backward.
@@ -39,7 +39,7 @@ module SpecHelper
   def random_width_array(n, random)
     a =
       Array.new(n) do
-        (2 ** (random.next_float * WIDTH_LOG2_MAX)).to_i
+        Distance.new(2 ** (random.next_float * WIDTH_LOG2_MAX))
       end
     a.sort
   end

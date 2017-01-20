@@ -4,13 +4,13 @@ require "../../visitor/array_logic"
 # gates are written in ASPIF::Reader.
 #
 # The type parameter `T` is the type used with ArrayLogic::Context.
-# The type parameter `I` is the integer type used to number literals.
-struct PBTranslator::ASPIF::LogicContext(T, I)
+# The type parameter `L` is the integer type used to number literals.
+struct PBTranslator::ASPIF::LogicContext(T, L)
   include Visitor::ArrayLogic::Context(T)
   include Gate::Restriction
 
-  def self.class_for(a : Array(T), i : I.class) forall T, I
-    LogicContext(T, I)
+  def self.class_for(a : Array(T), i : L.class) forall T, L
+    LogicContext(T, L)
   end
 
   def initialize(@aspif_broker : ASPIF::Broker)
@@ -23,7 +23,7 @@ struct PBTranslator::ASPIF::LogicContext(T, I)
   end
 
   private def broker_define_literal : T
-    Literal.new(@aspif_broker.fresh_id(I)).tap do |head_literal|
+    Literal.new(@aspif_broker.fresh_id(L)).tap do |head_literal|
       yield head_literal
     end
   end

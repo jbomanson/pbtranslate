@@ -115,7 +115,7 @@ class PBTranslator::Tool::CardinalityTranslator <
           Scheme::OEMerge::INSTANCE
         )
       )
-    n = scheme.network(Width.from_value(w))
+    n = scheme.network(Width.from_value(Distance.new(w)))
     b = @lower_bound - 1
     Network::Cone.new(network: n, width: w, &.==(b))
   end

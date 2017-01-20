@@ -1,8 +1,8 @@
-struct PBTranslator::Network::WidthLimited(N, I)
+struct PBTranslator::Network::WidthLimited(N)
 
   delegate size, depth, to: @network
 
-  def initialize(@network : N, @width : I)
+  def initialize(@network : N, @width : Distance)
   end
 
   def host(visitor v, way y : Way) : Nil
@@ -10,10 +10,10 @@ struct PBTranslator::Network::WidthLimited(N, I)
     @network.host(vv, y)
   end
 
-  private struct Guide(V, I)
+  private struct Guide(V)
     include Gate::Restriction
 
-    def initialize(@visitor : V, @width : I)
+    def initialize(@visitor : V, @width : Distance)
     end
 
     def visit_gate(g : Gate(Or, Input, _), *args, **options) : Nil

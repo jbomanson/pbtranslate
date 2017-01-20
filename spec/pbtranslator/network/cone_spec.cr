@@ -70,7 +70,7 @@ end
 describe Network::Cone do
   it "works with universally unwanted outputs and merge sorting networks" do
     random = Random.new(SEED)
-    (0..WIDTH_LOG2_MAX).each do |width_log2|
+    (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, false)
       size, computed, expected = compute(random, width_log2, wanted)
@@ -80,7 +80,7 @@ describe Network::Cone do
 
   it "works with universally wanted outputs and merge sorting networks" do
     random = Random.new(SEED)
-    (0..WIDTH_LOG2_MAX).each do |width_log2|
+    (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, true)
       size, computed, expected = compute(random, width_log2, wanted)
@@ -90,7 +90,7 @@ describe Network::Cone do
 
   it "works with single outputs and merge sorting networks" do
     random = Random.new(SEED)
-    (1..WIDTH_LOG2_MAX).each do |width_log2|
+    (Distance.new(1)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
 
       wanted_one = BitArray.new(width)

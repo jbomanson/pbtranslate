@@ -2,9 +2,9 @@ require "../gate"
 
 # A network with weights on wires obtained by propagating given initial weights
 # through another network.
-class PBTranslator::Network::WireWeighted(N, I)
+class PBTranslator::Network::WireWeighted(N, W)
   # Enhances a _network_ with _weights_ propagated through its gates.
-  def initialize(*, @network : N, @weights : Array(I))
+  def initialize(*, @network : N, @weights : Array(W))
   end
 
   # Hosts a visit to the underlying network and to propagated weights.
@@ -16,7 +16,7 @@ class PBTranslator::Network::WireWeighted(N, I)
     PropagatingGuide.guide(@network, @weights, v, y)
   end
 
-  private struct PropagatingGuide(V, I)
+  private struct PropagatingGuide(V, W)
     include Gate::Restriction
 
     def self.guide(network n, weights w, visitor v, way : Forward)
@@ -25,7 +25,7 @@ class PBTranslator::Network::WireWeighted(N, I)
       p.sweep
     end
 
-    protected def initialize(*, @visitor : V, @weights : Array(I))
+    protected def initialize(*, @visitor : V, @weights : Array(W))
     end
 
     def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Nil
@@ -34,7 +34,7 @@ class PBTranslator::Network::WireWeighted(N, I)
     end
 
     def visit_gate(g : Gate(Passthrough, _, _), **options) : Nil
-      @visitor.visit_gate(g, **options, input_weights: g.wires.map { I.zero })
+      @visitor.visit_gate(g, **options, input_weights: g.wires.map { W.zero })
     end
 
     private def propagate_weights_at(wires)
@@ -46,7 +46,8 @@ class PBTranslator::Network::WireWeighted(N, I)
     end
 
     protected def sweep
-      @weights.each_with_index do |weight, wire|
+      @weights.each_with_index do |weight, index|
+        wire = Distance.new(index)
         @visitor.visit_gate(Gate.passthrough_at(wire), input_weights: {weight})
       end
     end

@@ -1,9 +1,9 @@
 require "../../util/restrict"
 
-struct PBTranslator::Network::DepthSlice(N, I)
+struct PBTranslator::Network::DepthSlice(N)
   include WithGateDepth::Network
 
-  def initialize(*, @network : N, @width : I, @range : Range(I, I))
+  def initialize(*, @network : N, @width : Distance, @range : Range(Distance, Distance))
     Util.restrict(network, WithGateDepth::Network)
   end
 
@@ -22,8 +22,8 @@ struct PBTranslator::Network::DepthSlice(N, I)
     @network.host(vv, y)
   end
 
-  private struct Guide(V, I)
-    def initialize(@visitor : V, @range : Range(I, I))
+  private struct Guide(V)
+    def initialize(@visitor : V, @range : Range(Distance, Distance))
     end
 
     def visit_gate(*args, **options, depth) : Nil

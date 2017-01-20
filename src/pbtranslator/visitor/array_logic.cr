@@ -73,7 +73,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
     end
 
     def visit_gate(g : Gate(F, Output, _), **options) : Nil forall F
-      index = g.wires.first
+      index = g.wires.first.to_i
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
           yield output_visitor

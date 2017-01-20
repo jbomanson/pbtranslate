@@ -17,8 +17,8 @@ scheme =
 
 layer_cache_class =
   Network::LayerCache.class_for(
-    Gate.comparator_between(0, 0),
-    depth: 0_u32)
+    Gate.comparator_between(Distance.zero, Distance.zero),
+    depth: Distance.zero)
 
 class GateWeightCountingVisitor(T)
   getter sum
@@ -42,7 +42,7 @@ def test(network_count, scheme, layer_cache_class, random, weight_range, way)
     w = Array.new(width.value) { random.rand(weight_range) }
     ww = w.clone
     n = scheme.network(width)
-    y = BitArray.new(n.depth)
+    y = BitArray.new(n.depth.to_i)
     y.each_index { |i| y[i] = yield }
     nn = layer_cache_class.new(network: n, width: width)
     nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: ww)
