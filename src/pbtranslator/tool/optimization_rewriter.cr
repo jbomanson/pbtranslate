@@ -1,3 +1,5 @@
+require "./base_scheme"
+
 # An object that rewrites optimization statements using normal rules in ASPIF::Reader.
 class PBTranslator::Tool::OptimizationRewriter <
   PBTranslator::ASPIF::Broker
@@ -85,34 +87,30 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   private def network_of_width(n, weights w)
-    s =
-      Scheme::MergeSort::Recursive.new(
-        Scheme::OEMerge::INSTANCE
-      )
+    s = BASE_SCHEME
     d = @crop_depth
-    ss = Scheme::WidthLimited.new(s)
-    sss =
+    ss =
       if d
         if d.not_nil! >= 0
           Scheme::DepthSlice.new(
-            scheme: DepthTracking::Scheme.new(ss),
+            scheme: DepthTracking::Scheme.new(s),
             range_proc: ->(width: Width::Free, depth: Distance) {
               Distance.new(0)...Distance.new(d.not_nil!)
             },
           )
         else
           Scheme::DepthSlice.new(
-            scheme: DepthTracking::Scheme.new(ss),
+            scheme: DepthTracking::Scheme.new(s),
             range_proc: ->(width: Width::Free, depth: Distance) {
               depth + Distance.new(d.not_nil!)...depth
             },
           )
         end
       else
-        ss
+        s
       end
     width = Width.from_value(Distance.new(n))
-    n = sss.network(width)
+    n = ss.network(width)
     y = layer_bit_array(n.network_depth)
     if y
       nn = layer_cache_class.new(network: n, width: width)

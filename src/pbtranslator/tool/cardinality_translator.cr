@@ -1,4 +1,5 @@
 require "../network/cone"
+require "./base_scheme"
 require "../visitor/array_logic"
 
 # An object that translates cardinality rules into normal rules in ASPIF::Reader.
@@ -109,13 +110,8 @@ class PBTranslator::Tool::CardinalityTranslator <
   end
 
   private def network_of_width(w)
-    scheme =
-      Scheme::WidthLimited.new(
-        Scheme::MergeSort::Recursive.new(
-          Scheme::OEMerge::INSTANCE
-        )
-      )
-    n = scheme.network(Width.from_value(Distance.new(w)))
+    s = BASE_SCHEME
+    n = s.network(Width.from_value(Distance.new(w)))
     b = @lower_bound - 1
     Network::Cone.new(network: n, width: w, &.==(b))
   end
