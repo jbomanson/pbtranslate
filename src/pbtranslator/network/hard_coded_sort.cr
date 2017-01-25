@@ -5,11 +5,20 @@ module PBTranslator::Network::HardCodedSort
     Distance.new(0)..Distance.new(20)
   end
 
-  # Returns a good network of _width_ that must have a value in
-  # `.width_value_range`.
+  # Returns a good network of _width_.
+  #
+  # Raises an error for width values outside of `.width_value_range`.
   def self.network(width : Width)
-    value = width.value
-    case value
+    n = network? width
+    unless n
+      raise "Width #{width.value} is not in #{width_value_range}"
+    end
+    n
+  end
+
+  # Returns a good network of _width_ or nil.
+  def self.network?(width : Width)
+    case width.value
     when  0; NETWORK_00_EMPTY
     when  1; NETWORK_01_EMPTY
     when  2; NETWORK_02
