@@ -31,8 +31,8 @@ module PBTranslator::DepthTracking
       end
     end
 
-    delegate size, depth, to: @network
-    getter computed_depth
+    delegate network_depth, network_read_count, network_width, network_write_count, to: @network
+    getter computed_depth : Distance
 
     @computed_depth : Distance = Distance.zero
 
@@ -47,7 +47,7 @@ module PBTranslator::DepthTracking
     end
 
     private def initial_depth(way : Forward)
-      0
+      Distance.new(0)
     end
 
     private def initial_depth(way : Backward)

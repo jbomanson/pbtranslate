@@ -113,7 +113,7 @@ class PBTranslator::Tool::OptimizationRewriter <
       end
     width = Width.from_value(Distance.new(n))
     n = sss.network(width)
-    y = layer_bit_array(n.depth)
+    y = layer_bit_array(n.network_depth)
     if y
       nn = layer_cache_class.new(network: n, width: width)
       Network::PartiallyWireWeighted.new(network: nn, weights: w, bit_array: y)

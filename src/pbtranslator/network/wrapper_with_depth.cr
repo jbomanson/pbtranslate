@@ -1,11 +1,11 @@
 struct PBTranslator::Network::WrapperWithDepth(N)
-  getter depth : Distance
+  getter network_depth : Distance
 
   def self.new(network n, *, width w : Width, way y : Way = FORWARD)
-    self.new(n, depth: Network.compute_depth(n, width: w, way: y))
+    self.new(n, network_depth: Network.compute_depth(n, width: w, way: y))
   end
 
-  def initialize(@network : N, *, @depth : Distance)
+  def initialize(@network : N, *, @network_depth : Distance)
   end
 
   forward_missing_to @network

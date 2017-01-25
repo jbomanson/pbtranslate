@@ -2,6 +2,8 @@ require "../gate"
 
 # See `Scheme::OEMerge`.
 class PBTranslator::Network::OEMerge
+  include FirstClass
+
   # The binary logarithm of the width of the input halves of this network.
   getter half_width_log2
 
@@ -10,14 +12,24 @@ class PBTranslator::Network::OEMerge
   end
 
   # Returns the number of comparators in the network.
-  def size
-    (Distance.new(1) << half_width_log2) * half_width_log2 + 1
+  private def network_gate_count : Area
+    Area.new(Distance.new(1) << half_width_log2) * half_width_log2 + 1
   end
 
-  # Returns the number of comparators on the longest path from an input to
-  # an output.
-  def depth
+  def network_depth : Distance
     half_width_log2 + 1
+  end
+
+  def network_read_count : Area
+    network_write_count
+  end
+
+  def network_width : Distance
+    Distance.new(1) << network_depth
+  end
+
+  def network_write_count : Area
+    network_gate_count * 2
   end
 
   # Hosts a visit over the comparators in this network placed at an

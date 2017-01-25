@@ -2,7 +2,7 @@
 class PBTranslator::Network::Random(C)
   include WithGateDepth::Network
 
-  delegate depth, size, host, to: @cache
+  delegate network_depth, network_read_count, network_width, network_write_count, host, to: @cache
 
   private def self.layer_cache_class_for(w : Width)
     LayerCache.class_for(Gate.comparator_between(Distance.zero, Distance.zero), depth: Distance.zero)
@@ -19,15 +19,20 @@ class PBTranslator::Network::Random(C)
   private struct Generator
     include WithGateDepth::Network
 
-    getter depth
+    getter network_depth : Distance
+    getter network_width : Distance
 
-    def initialize(*, @random : ::Random, width w : Width, @depth : Distance)
-      @width = w.value.as(Distance)
+    def initialize(*, @random : ::Random, width w : Width, depth @network_depth : Distance)
+      @network_width = w.value.as(Distance)
       @called = false
     end
 
-    def size
-      (@width / 2) * @depth
+    def network_read_count : Area
+      Area.new(@network_width / 2) * @network_depth * 2
+    end
+
+    def network_write_count : Area
+      network_read_count
     end
 
     def host(visitor, way : Way) : Nil
@@ -35,9 +40,9 @@ class PBTranslator::Network::Random(C)
         raise "This Generator has already hosted"
       end
       @called = true
-      a = Array.new(@width) { |i| Distance.new(i) }
+      a = Array.new(@network_width) { |i| Distance.new(i) }
       r = @random
-      way.each_in(typeof(@depth).zero...@depth) do |d|
+      way.each_in(typeof(@network_depth).zero...@network_depth) do |d|
         a.shuffle! random: r
         each_pair(a) do |i, j|
           x, y = i < j ? {i, j} : {j, i}

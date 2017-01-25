@@ -12,7 +12,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, W)
   # on the output wires of gates on layers _i_ for which `bit_array[i]` is true.
   def initialize(*, @network : C, @bit_array : BitArray, weights : Array(W))
     Util.restrict(network, LayerCache)
-    d = network.depth
+    d = network.network_depth
     b = bit_array.size
     unless d == b
       raise ArgumentError.new("Missmatch between depth = #{d} and bits #{b}")
@@ -22,8 +22,8 @@ class PBTranslator::Network::PartiallyWireWeighted(C, W)
 
   # Returns the depth of this network that is the depth of the wrapped network
   # plus one.
-  def depth
-    @cache.depth + 1
+  def network_depth
+    @cache.network_depth + 1
   end
 
   # Hosts a visitor through `Layer` regions containing `Gate`s each together with

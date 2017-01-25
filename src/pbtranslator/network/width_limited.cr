@@ -1,8 +1,17 @@
 struct PBTranslator::Network::WidthLimited(N)
 
-  delegate size, depth, to: @network
+  delegate network_depth, network_read_count, to: @network
 
   def initialize(@network : N, @width : Distance)
+  end
+
+  def network_width : Distance
+    @width
+  end
+
+  # Returns an upper bound on the number of writes done by this network.
+  def network_write_count : Area
+    {@network.network_write_count, Area.new(network_depth) * network_width}.min
   end
 
   def host(visitor v, way y : Way) : Nil

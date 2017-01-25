@@ -2,20 +2,28 @@
 struct PBTranslator::Network::IndexableComparator(T)
   include Gate::Restriction
 
-  getter width : Distance
+  getter network_width : Distance
   getter wire_pairs : T
   delegate size, to: @wire_pairs
 
   # Constructs a new comparator network based on the given wire pairs.
   #
-  # Any _width_ given here is returned by `width`.
-  # If no width is specified, it is computed as the maximum wire index plus one.
+  # Any _width_ given here is returned by `network_width`.
+  # If no network_width is specified, it is computed as the maximum wire index plus one.
   def self.new(wire_pairs : Indexable(Tuple(Distance, Distance)), *, width : Distance? = nil)
     new(wire_pairs, width: width, init: nil)
   end
 
   protected def initialize(@wire_pairs : T, *, width : Distance? = nil, init : Nil)
-    @width = width || (@wire_pairs.map(&.max).max + 1)
+    @network_width = width || (@wire_pairs.map(&.max).max + 1)
+  end
+
+  def network_read_count : Area
+    Area.new(@wire_pairs.size) * 2
+  end
+
+  def network_write_count : Area
+    network_read_count
   end
 
   # Returns the `Gate` at _index_.

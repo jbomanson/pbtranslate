@@ -31,13 +31,12 @@ module PBTranslator::Network::HardCodedSort
     when 18; NETWORK_18
     when 19; NETWORK_19
     when 20; NETWORK_20
-    else     raise "Width #{value} is not in #{width_value_range}"
     end
   end
 
   private def self.create(*args, **options)
     n = Network::IndexableComparator.new(*args, **options)
-    w = Width.from_value(n.width)
+    w = Width.from_value(n.network_width)
     PBTranslator::Network::WrapperWithDepth.new(network: n, width: w)
   end
 

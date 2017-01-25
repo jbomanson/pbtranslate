@@ -11,18 +11,18 @@ class PBTranslator::Network::LayerCache(G, O)
     LayerCache(G, O)
   end
 
-  # Returns the size of the original network.
-  getter size
+  # Delegated to the original network.
+  getter network_write_count : Area
 
   # Caches gates of _network_ and returns a network for enumerating them layer
   # by layer.
   def initialize(*, network n, width w : Width)
-    @size = n.size.as(Distance)
+    @network_write_count = n.network_write_count.as(Area)
     @layers = Collector(G, O).collect(network: n, width: w)
   end
 
   # Returns the computed depth of the network of stored gates.
-  def depth
+  def network_depth
     Distance.new(@layers.size)
   end
 
@@ -56,7 +56,7 @@ class PBTranslator::Network::LayerCache(G, O)
 
   private struct Collector(G, O)
     def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | {G, O})
-      s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.depth, w.value) { Unused.new }
+      s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.network_depth, w.value) { Unused.new }
       nn = DepthTracking::Network.wrap_if_needed(network: n, width: w.value)
       nn.host(self.new(s), FORWARD)
       s

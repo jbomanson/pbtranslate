@@ -12,15 +12,15 @@ def pick_depth(w : Width)
 end
 
 describe Network::Random do
-  it "returns consistent sizes" do
+  it "returns consistent write counts" do
     random = Random.new(seed)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       w = Width.from_log2(width_log2)
       n = Network::Random.new(random: random, width: w, depth: pick_depth(w))
-      x = n.size
+      x = n.network_write_count
       v = VisitCallCounter.new
       n.host(v, FORWARD)
-      y = v.count(Comparator, InPlace)
+      y = v.wire_count(Comparator, InPlace)
       y.should eq(x)
     end
   end

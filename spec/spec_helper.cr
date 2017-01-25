@@ -8,12 +8,18 @@ SEED           = 482382392
 
 # An object that counts the number of times its visit forward and backward.
 class VisitCallCounter
+  record Pair, count : UInt64 = 0_u64, wire_count : UInt64 = 0_u64 do
+    def +(other)
+      Pair.new(count + other.count, wire_count + other.wire_count)
+    end
+  end
+
   def initialize
-    @h = Hash({Gate::Function, Gate::Form}, UInt32).new(0_u32)
+    @h = Hash({Gate::Function, Gate::Form}, Pair).new(Pair.new)
   end
 
   def visit_gate(g : Gate(A, B, _), **options) : Nil forall A, B
-    @h[{A, B}] += 1
+    @h[{A, B}] += Pair.new(1_u64, g.wires.size.to_u64)
   end
 
   def visit_region(region) : Nil
@@ -21,7 +27,11 @@ class VisitCallCounter
   end
 
   def count(a : Gate::Function, b : Gate::Form)
-    @h[{a, b}]
+    @h[{a, b}].count
+  end
+
+  def wire_count(a : Gate::Function, b : Gate::Form)
+    @h[{a, b}].wire_count
   end
 end
 

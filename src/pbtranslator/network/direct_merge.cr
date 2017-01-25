@@ -1,19 +1,46 @@
 require "../gate"
+require "./first_class"
 
 class PBTranslator::Network::DirectMerge
+  include FirstClass
   include Gate::Restriction
 
   def initialize(@half_width_log2 : Distance)
   end
 
-  def size : Distance
+  def network_depth : Distance
+    @half_width_log2 == 0 ? Distance.new(1) : Distance.new(2)
+  end
+
+  # The number of unary and binary conjunctions in the network.
+  private def network_conjunction_count : Area
     half_width = Distance.new(1) << @half_width_log2
     x = half_width + 1
     x * x - 1
   end
 
-  def depth : Distance
-    @half_width_log2 == 0 ? Distance.new(1) : Distance.new(2)
+  private def half_width : Distance
+    Distance.new(1) << @half_width_log2
+  end
+
+  private def network_unary_count : Area
+    Area.new(half_width) * 2
+  end
+
+  private def network_binary_count : Area
+    Area.new(half_width) * half_width
+  end
+
+  def network_read_count : Area
+    network_unary_count + network_binary_count * 2
+  end
+
+  def network_width : Distance
+    Distance.new(1) << (@half_width_log2 + 1)
+  end
+
+  def network_write_count : Area
+    network_width
   end
 
   # Arranges a visit over the AND and OR gates in this network placed at an

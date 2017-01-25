@@ -57,7 +57,7 @@ describe Network::LayerCache do
         end
       p.size.should_not eq(0)
       q.should eq(p)
-      vv.wire_count.should eq(n.depth * w.value)
+      vv.wire_count.should eq(n.network_depth * w.value)
     end
   end
 end

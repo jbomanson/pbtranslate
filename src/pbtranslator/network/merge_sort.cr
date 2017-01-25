@@ -2,6 +2,8 @@ require "../scheme/merge_sort"
 require "../scheme/oe_merge"
 
 class PBTranslator::Network::MergeSort(S, M)
+  include FirstClass
+
   def initialize(@sort_scheme : S, @merge_scheme : M, @width_log2 : Distance)
   end
 
@@ -18,20 +20,26 @@ class PBTranslator::Network::MergeSort(S, M)
     end
   end
 
-  def size
+  {% for count in [:network_write_count, :network_read_count] %}
+    def {{count.id}} : Area
+      three_cases(
+        Area.new(0),
+        {{count.id}},
+        @sort_scheme.network(less).{{count.id}} * 2 + @merge_scheme.network(less).{{count.id}},
+      )
+    end
+  {% end %}
+
+  def network_depth : Distance
     three_cases(
       Distance.new(0),
-      size,
-      @sort_scheme.network(less).size * 2 + @merge_scheme.network(less).size,
+      network_depth,
+      @sort_scheme.network(less).network_depth + @merge_scheme.network(less).network_depth,
     )
   end
 
-  def depth
-    three_cases(
-      Distance.new(0),
-      depth,
-      @sort_scheme.network(less).depth + @merge_scheme.network(less).depth,
-    )
+  def network_width : Distance
+    Distance.new(1) << @width_log2
   end
 
   private def helper_host(*args) : Nil

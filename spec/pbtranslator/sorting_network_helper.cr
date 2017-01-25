@@ -23,13 +23,13 @@ macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
     end
   end
 
-  it "returns consistent sizes" do
+  it "returns consistent write counts" do
     %range.each do |width|
       network = %scheme.network(width)
-      a = network.size
+      a = network.network_write_count
       visitor = VisitCallCounter.new
       network.host(visitor, FORWARD)
-      b = visitor.count(Comparator, InPlace)
+      b = visitor.wire_count(Comparator, InPlace)
       a.should eq(b)
     end
   end
@@ -54,7 +54,7 @@ macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
   it "returns consistent depths" do
     %range.each do |width|
       network = %scheme.network(width)
-      a = network.depth
+      a = network.network_depth
       visitor = PBTranslator::Visitor::Noop::INSTANCE
       nn = DepthTracking::Network.new(network: network, width: width.value)
       nn.host(visitor, FORWARD)
