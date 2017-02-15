@@ -10,6 +10,7 @@ class PBTranslator::Command
 
     Command:
         translate                translate a file
+        measure                  measure a translation
         help, --help, -h         show this help
         version, --version, -v   show version
     USAGE
@@ -31,6 +32,9 @@ class PBTranslator::Command
       when "translate".starts_with? command
         options.shift
         translate
+      when "measure".starts_with? command
+        options.shift
+        measure
       when "help".starts_with?(command), "--help" == command, "-h" == command
         puts USAGE
         exit
@@ -162,6 +166,56 @@ class PBTranslator::Command
       File.open(file, mode, &block)
     else
       block.call(io)
+    end
+  end
+
+  private def measure
+    subject = nil
+    output_filename = nil
+    parameters = Array(String).new
+
+    option_parser =
+      OptionParser.parse(options) do |opts|
+        opts.banner = "Usage: pbtranslator measure [options] [--] <parameters>\n\nOptions:"
+
+        opts.on("--subject 'sorting network'", "Measure the size and depth of a sorting network of width <parameters>") do |s|
+          subject = s
+        end
+
+        opts.on("-o ", "Output filename") do |o|
+          output_filename = o
+        end
+
+        opts.on("-h", "--help", "Show this message") do
+          puts opts
+          exit
+        end
+
+        opts.on("--no-color", "Disable colored output") do
+          @use_color = false
+        end
+        opts.unknown_args do |before, after|
+          parameters = before + after
+        end
+      end
+
+    c = parameters.size
+    unless c == 1
+      error "expected a single value for <parameter>, got #{c}"
+    end
+
+    unless subject == "sorting network"
+      error "subject can only be 'sorting network' at this time, not #{subject}"
+    end
+
+    with_file_or_io(output_filename, "w", STDOUT) do |output_io|
+      p = Distance.new(parameters.first)
+      w = Width.from_value(p)
+      n = Tool::BASE_SCHEME.network(w)
+      size = Network.compute_size(n)
+      depth = Network.compute_depth(n, width: w)
+      puts "size: #{size}"
+      puts "depth: #{depth}"
     end
   end
 

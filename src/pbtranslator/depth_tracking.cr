@@ -3,7 +3,7 @@ require "./with_depth"
 
 module PBTranslator::DepthTracking
   # Computes the depth of an arbitrary network.
-  def self.compute_depth(network n, *, width w : Width, way y : Way)
+  def self.compute_depth(network n, *, width w : Width, way y : Way = FORWARD)
     nn = Network.new(network: n, width: w.value)
     nn.host(Visitor::Noop::INSTANCE, y)
     nn.computed_depth
