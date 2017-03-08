@@ -30,12 +30,16 @@ module PBTranslator::Util
   private def self.restrict_reverse(type : E.class, value : E) : Nil forall E
   end
 
+  private def self.restrict_reverse(type, value) : Nil
+    {{ raise "Type restriction failed" }}
+  end
+
   def self.restrict_not(value, type)
     restrict_not_reverse(type, value)
   end
 
   private def self.restrict_not_reverse(type : E.class, value : E) : Nil forall E
-    -"Type restriction failed"
+    {{ raise "Negated type restriction failed" }}
   end
 
   private def self.restrict_not_reverse(type, value) : Nil
