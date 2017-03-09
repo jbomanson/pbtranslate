@@ -13,6 +13,14 @@ module PBTranslator::DepthTracking
   class Scheme(S)
     include WithGateDepth::Scheme
 
+    def self.wrap_if_needed(scheme)
+      if scheme.is_a? WithGateDepth::Scheme
+        scheme
+      else
+        new(scheme: scheme)
+      end
+    end
+
     def initialize(@scheme : S)
     end
 

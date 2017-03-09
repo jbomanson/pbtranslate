@@ -10,6 +10,7 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   property crop_depth
+  property scheme
   property weight_step
 
   @task           = Task::Pass
@@ -18,6 +19,7 @@ class PBTranslator::Tool::OptimizationRewriter <
   @output_visitor = WeightCollector.new
   @crop_depth     = nil.as(Int32 | Nil)
   @weight_step    = nil.as(Int32 | Nil)
+  @scheme         = BASE_SCHEME.as(Scheme)
 
   def visit(s : Statement) : Bool
     case {@task, s}
@@ -87,24 +89,26 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   private def network_of_width(n, weights w)
-    s = BASE_SCHEME
+    s = @scheme
     d = @crop_depth
     ss =
       if d
-        if d.not_nil! >= 0
-          Scheme::DepthSlice.new(
-            scheme: DepthTracking::Scheme.new(s),
-            range_proc: ->(width: Width::Free, depth: Distance) {
-              Distance.new(0)...Distance.new(d.not_nil!)
-            },
-          )
-        else
-          Scheme::DepthSlice.new(
-            scheme: DepthTracking::Scheme.new(s),
-            range_proc: ->(width: Width::Free, depth: Distance) {
-              depth + Distance.new(d.not_nil!)...depth
-            },
-          )
+        s.pbtranslator_as(Scheme::ParameterizedByDepth) do |x|
+          if d.not_nil! >= 0
+            Scheme::DepthSlice.new(
+              scheme: DepthTracking::Scheme.new(x),
+              range_proc: ->(width: Width::Free, depth: Distance) {
+                Distance.new(0)...Distance.new(d.not_nil!)
+              },
+            )
+          else
+            Scheme::DepthSlice.new(
+              scheme: DepthTracking::Scheme.new(x),
+              range_proc: ->(width: Width::Free, depth: Distance) {
+                depth + Distance.new(d.not_nil!)...depth
+              },
+            )
+          end
         end
       else
         s

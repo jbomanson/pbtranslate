@@ -1,4 +1,6 @@
 class PBTranslator::Scheme::WithFallback(A, B)
+  include Scheme
+
   def initialize(@scheme_a : A, @scheme_b : B)
   end
 

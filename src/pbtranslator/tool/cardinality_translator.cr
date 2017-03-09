@@ -5,11 +5,14 @@ require "../visitor/array_logic"
 # An object that translates cardinality rules into normal rules in ASPIF::Reader.
 class PBTranslator::Tool::CardinalityTranslator <
     PBTranslator::ASPIF::Broker
+
+  property scheme
     
   @in_weight_rule = false
   @lower_bound = 0
   @literals = Array(Literal(Util::BrokeredId(Int32))).new
   @weights = Array(Int32).new
+  @scheme = BASE_SCHEME.as(Scheme)
 
   def visit(b : Body, lower_bound : Int) : Bool
     unless Body::Weight == b
@@ -110,7 +113,7 @@ class PBTranslator::Tool::CardinalityTranslator <
   end
 
   private def network_of_width(w)
-    s = BASE_SCHEME
+    s = @scheme
     n = s.network(Width.from_value(Distance.new(w)))
     b = @lower_bound - 1
     Network::Cone.new(network: n, width: w, &.==(b))
