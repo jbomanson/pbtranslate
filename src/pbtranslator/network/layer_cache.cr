@@ -55,6 +55,8 @@ class PBTranslator::Network::LayerCache(G, O)
   end
 
   private struct Collector(G, O)
+    include Visitor::DefaultMethods
+
     def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | {G, O})
       s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.network_depth, w.value) { Unused.new }
       nn = DepthTracking::Network.wrap_if_needed(network: n, width: w.value)

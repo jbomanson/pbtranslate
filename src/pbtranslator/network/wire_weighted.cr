@@ -18,6 +18,7 @@ class PBTranslator::Network::WireWeighted(N, W)
 
   private struct PropagatingGuide(V, W)
     include Gate::Restriction
+    include Visitor::DefaultMethods
 
     def self.guide(network n, weights w, visitor v, way : Forward)
       p = self.new(visitor: v, weights: w)
