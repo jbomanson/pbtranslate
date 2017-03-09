@@ -65,10 +65,15 @@ class PBTranslator::Command
     output_filename = nil
     crop_depth = nil
     weight_step = nil
+    scheme_description = nil
 
     option_parser =
       OptionParser.parse(options) do |opts|
         opts.banner = "Usage: pbtranslator translate [options] [--] [input file]\n\nOptions:"
+
+        opts.on("--network-scheme sorting|random", "Use a sorting network or a random comparator network") do |s|
+          scheme_description = s
+        end
 
         opts.on("--type cardinality|optimization|nothing", "Translate cardinality rules, rewrite optimization statements or do nothing") do |t|
           type = t
@@ -107,6 +112,8 @@ class PBTranslator::Command
         end
       end
 
+    scheme = scheme_from_description(scheme_description, crop_depth)
+
     with_file_or_io(input_filename, "r", STDIN) do |input_io|
       with_file_or_io(output_filename, "w", STDOUT) do |output_io|
         translator_class = translator_class_of(type)
@@ -117,6 +124,9 @@ class PBTranslator::Command
             error "the --crop-depth option is not supported with --type #{type}"
           end
           translator.crop_depth = d
+        end
+        if translator.responds_to? :"scheme="
+          translator.scheme = scheme
         end
         if p = weight_step
           p = p.to_i
@@ -130,6 +140,22 @@ class PBTranslator::Command
         end
         translate(translator)
       end
+    end
+  end
+
+  private def scheme_from_description(s : String?, crop_depth d)
+    case
+    when !s
+      Tool::BASE_SCHEME
+    when "sorting".starts_with? s
+      Tool::BASE_SCHEME
+    when "random".starts_with? s
+      unless d && (d = d.to_i)
+        error "the --network-scheme random option works only with --crop-depth"
+      end
+      Scheme::RandomFromDepth.new(random: Random.new, depth: Distance.new(d))
+    else
+      error "unknown argument '#{s}' to --scheme"
     end
   end
 
