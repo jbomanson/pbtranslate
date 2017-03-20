@@ -1,4 +1,6 @@
 require "../gate"
+require "../visitor/default_methods"
+require "../visitor/of_no_yielded_content"
 
 # A network with weights on wires obtained by propagating given initial weights
 # through another network.
@@ -19,6 +21,7 @@ class PBTranslator::Network::WireWeighted(N, W)
   private struct PropagatingGuide(V, W)
     include Gate::Restriction
     include Visitor::DefaultMethods
+    include Visitor::OfNoYieldedContent
 
     def self.guide(network n, weights w, visitor v, way : Forward)
       p = self.new(visitor: v, weights: w)

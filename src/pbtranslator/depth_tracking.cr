@@ -1,6 +1,7 @@
 require "./gate"
 require "./gate_options"
 require "./visitor/default_methods"
+require "./visitor/of_no_yielded_content"
 require "./with_depth"
 
 module PBTranslator::DepthTracking
@@ -79,6 +80,7 @@ module PBTranslator::DepthTracking
     include Gate::Restriction
     include WithGateDepth::Visitor
     include Visitor::DefaultMethods
+    include Visitor::OfNoYieldedContent
 
     # Computes the depth of the network seen so far.
     getter depth

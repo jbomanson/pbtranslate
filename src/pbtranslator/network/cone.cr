@@ -1,5 +1,6 @@
 require "../gate"
 require "../visitor/default_methods"
+require "../visitor/of_no_yielded_content"
 
 # A network that computes a _cone of influence_ for another network on-the-fly.
 #
@@ -56,6 +57,7 @@ class PBTranslator::Network::Cone(N)
   private class ComputingGuide(V)
     include Gate::Restriction
     include Visitor::DefaultMethods
+    include Visitor::OfNoYieldedContent
 
     # A visitor that propagates a cone through gates backward from output to
     # input wires while guiding another visitor through the network.
@@ -100,6 +102,7 @@ class PBTranslator::Network::Cone(N)
   private class PassingGuide(V)
     include Gate::Restriction
     include Visitor::DefaultMethods
+    include Visitor::OfNoYieldedContent
 
     # A visitor that guides another and indicates to it which output wires
     # are in a cone.
