@@ -40,7 +40,7 @@ class PBTranslator::Network::DirectMerge
   end
 
   def network_write_count : Area
-    network_width
+    Area.new(network_width)
   end
 
   # Arranges a visit over the AND and OR gates in this network placed at an
