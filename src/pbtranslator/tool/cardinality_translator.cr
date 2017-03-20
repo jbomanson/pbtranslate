@@ -12,7 +12,7 @@ class PBTranslator::Tool::CardinalityTranslator <
   @lower_bound = 0
   @literals = Array(Literal(Util::BrokeredId(Int32))).new
   @weights = Array(Int32).new
-  @scheme = BASE_SCHEME.as(Scheme)
+  @scheme = BASE_SCHEME.as(Scheme::OfAnyWidth)
 
   def visit(b : Body, lower_bound : Int) : Bool
     unless Body::Weight == b

@@ -1,12 +1,16 @@
+require "../gate_options"
 require "./parameterized_by_depth"
 require "../../util/restrict"
 require "../../width"
 
 class PBTranslator::Scheme::DepthSlice(S, W)
-  include Scheme::ParameterizedByDepth
+  include GateOptions::Module
+  include ParameterizedByDepth
+
+  delegate gate_options, to: @scheme
 
   def initialize(*, @scheme : S, @range_proc : W, Distance -> Range(Distance, Distance))
-    Util.restrict(scheme, WithGateDepth::Scheme)
+    gate_options &.restrict(depth: true)
   end
 
   def network(width w : W)

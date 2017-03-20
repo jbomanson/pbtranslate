@@ -55,10 +55,7 @@ macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
     %range.each do |width|
       network = %scheme.network(width)
       a = network.network_depth
-      visitor = PBTranslator::Visitor::Noop::INSTANCE
-      nn = DepthTracking::Network.new(network: network, width: width.value)
-      nn.host(visitor, FORWARD)
-      b = nn.computed_depth
+      b = %scheme.compute_depth(width)
       a.should eq(b)
     end
   end

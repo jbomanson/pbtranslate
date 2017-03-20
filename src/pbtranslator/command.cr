@@ -5,6 +5,8 @@ require "option_parser"
 #
 # This is based on `Crystal::Command`.
 class PBTranslator::Command
+  RANDOM_SEED_DEFAULT = 0
+
   USAGE = <<-USAGE
     Usage: pbtranslator [command] [options] [--] [input file]
 
@@ -20,6 +22,8 @@ class PBTranslator::Command
   end
 
   private getter options
+
+  @random_seed_for_random_from_depth = 0
 
   def initialize(@options : Array(String))
     @use_color = true
@@ -66,6 +70,7 @@ class PBTranslator::Command
     crop_depth = nil
     weight_step = nil
     scheme_description = nil
+    random_seed = RANDOM_SEED_DEFAULT
 
     option_parser =
       OptionParser.parse(options) do |opts|
@@ -79,12 +84,16 @@ class PBTranslator::Command
           type = t
         end
 
-        opts.on("--crop-depth <d>", "Use first <d> or last -<d> layers of a sorting network") do |d|
-          crop_depth = d
+        opts.on("--crop-depth <d>", "Use first <d> or last -<d> layers of a comparator network") do |d|
+          crop_depth = string_to_i32(d, label: "--crop-depth")
         end
 
-        opts.on("--weight-step <p>", "Place weights on every <p>th layer of a sorting network") do |p|
-          weight_step = p
+        opts.on("--weight-step <p>", "Place weights on every <p>th layer of a comparator network") do |p|
+          weight_step = string_to_i32(p, label: "--weight-step", min: 1)
+        end
+
+        opts.on("--random-seed <s>", "Use <s> as a seed for random number generation") do |s|
+          random_seed = string_to_i32(s, label: "--random-seed")
         end
 
         opts.on("-o ", "Output filename") do |o|
@@ -100,26 +109,30 @@ class PBTranslator::Command
           @use_color = false
         end
         opts.unknown_args do |before, after|
-          filenames = before + after
+          remaining = before + after
+          unknown_options, filenames = remaining.partition &.starts_with? "--"
+          unless unknown_options.empty?
+            error "unknown options: #{unknown_options.join(", ")}"
+          end
           case filenames.size
           when 0
           when 1
             input_filename = filenames.first
           else
-            s = filenames.join(",")
-            error "ambiguous input files: #{s}"
+            error "ambiguous input files: #{filenames.join(", ")}"
           end
         end
       end
 
-    scheme = scheme_from_description(scheme_description, crop_depth)
+    initialize_random_seeds(random_seed)
+
+    scheme = scheme_from_description(scheme_description, crop_depth: crop_depth)
 
     with_file_or_io(input_filename, "r", STDIN) do |input_io|
       with_file_or_io(output_filename, "w", STDOUT) do |output_io|
         translator_class = translator_class_of(type)
         translator = translator_class.new(input_io, output_io)
         if d = crop_depth
-          d = d.to_i
           unless translator.responds_to? :"crop_depth="
             error "the --crop-depth option is not supported with --type #{type}"
           end
@@ -129,31 +142,36 @@ class PBTranslator::Command
           translator.scheme = scheme
         end
         if p = weight_step
-          p = p.to_i
-          unless 1 <= p
-            error "nonpositive argument '#{p}' to --weight-step"
-          end
           unless translator.responds_to? :"weight_step="
             error "the --weight-step option is not supported with --type #{type}"
           end
           translator.weight_step = p
+        end
+        if translator.responds_to? :quick_dry_test
+          translator.quick_dry_test
         end
         translate(translator)
       end
     end
   end
 
-  private def scheme_from_description(s : String?, crop_depth d)
+  private def initialize_random_seeds(random_seed)
+    random = Random.new(random_seed)
+    @random_seed_for_random_from_depth = random.next_int
+  end
+
+  private def scheme_from_description(s : String?, *, crop_depth d)
     case
     when !s
       Tool::BASE_SCHEME
     when "sorting".starts_with? s
       Tool::BASE_SCHEME
     when "random".starts_with? s
-      unless d && (d = d.to_i)
+      unless d
         error "the --network-scheme random option works only with --crop-depth"
       end
-      Scheme::RandomFromDepth.new(random: Random.new, depth: Distance.new(d))
+      r = Random.new(@random_seed_for_random_from_depth)
+      Scheme::RandomFromDepth.new(random: r, depth: Distance.new(d))
     else
       error "unknown argument '#{s}' to --scheme"
     end
@@ -202,9 +220,9 @@ class PBTranslator::Command
 
     option_parser =
       OptionParser.parse(options) do |opts|
-        opts.banner = "Usage: pbtranslator measure [options] [--] <parameters>\n\nOptions:"
+        opts.banner = "Usage: pbtranslator measure [options] [--] <parameter>\n\nOptions:"
 
-        opts.on("--subject 'sorting network'", "Measure the size and depth of a sorting network of width <parameters>") do |s|
+        opts.on("--subject 'sorting network'", "Measure the size and depth of a sorting network of width <parameter>") do |s|
           subject = s
         end
 
@@ -225,24 +243,42 @@ class PBTranslator::Command
         end
       end
 
-    c = parameters.size
-    unless c == 1
-      error "expected a single value for <parameter>, got #{c}"
+    unless subject
+      error "expected a --subject option"
     end
 
     unless subject == "sorting network"
       error "subject can only be 'sorting network' at this time, not #{subject}"
     end
 
+    c = parameters.size
+    unless c == 1
+      error "expected a single mass argument, got #{c}"
+    end
+
     with_file_or_io(output_filename, "w", STDOUT) do |output_io|
       p = Distance.new(parameters.first)
       w = Width.from_value(p)
-      n = Tool::BASE_SCHEME.network(w)
+      s = Tool::BASE_SCHEME
+      n = s.network(w)
       size = Network.compute_size(n)
-      depth = Network.compute_depth(n, width: w)
+      depth = s.compute_depth(w)
       puts "size: #{size}"
       puts "depth: #{depth}"
     end
+  end
+
+  private def string_to_i32(s : String, *, label : String, min bound : Int32 | Nil = nil) : Int32
+    unless (i = s.to_i?) && (!bound || bound <= i)
+      x =
+        case bound
+        when 1 then "positive integer"
+        when 0 then "nonnegative integer"
+        else "signed integer"
+        end
+      error "#{label} must be a 32 bit #{x}, not \"#{s}\""
+    end
+    i
   end
 
   private def error(msg, *, extra = "", exit_code = 1, stderr = STDERR)

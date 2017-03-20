@@ -19,7 +19,11 @@ class PBTranslator::Tool::OptimizationRewriter <
   @output_visitor = WeightCollector.new
   @crop_depth     = nil.as(Int32 | Nil)
   @weight_step    = nil.as(Int32 | Nil)
-  @scheme         = BASE_SCHEME.as(Scheme)
+  @scheme         = BASE_SCHEME.as(Scheme::OfAnyWidth)
+
+  def quick_dry_test : Nil
+    network_of_width(1, [Int32.new(0)]).host(Visitor::Noop::INSTANCE, FORWARD)
+  end
 
   def visit(s : Statement) : Bool
     case {@task, s}
@@ -88,54 +92,81 @@ class PBTranslator::Tool::OptimizationRewriter <
     end
   end
 
-  private def network_of_width(n, weights w)
+  private struct TailoredPartiallyWireWeightedScheme(S)
+    def self.new(scheme, weight_step)
+      new(layer_cache_class_for(scheme).new(scheme), weight_step, overload: nil)
+    end
+
+    private def self.layer_cache_class_for(scheme)
+      Scheme::LayerCache.class_for(
+        scheme,
+        Gate.comparator_between(Distance.zero, Distance.zero),
+        depth: Distance.zero)
+    end
+
+    private def initialize(@scheme : S, @weight_step : Int32, *, overload)
+    end
+
+    def network(width : Width, *, weights)
+      n = @scheme.network(width)
+      y = layer_bit_array(n.network_depth)
+      Network::PartiallyWireWeighted.new(network: n, weights: weights, bit_array: y)
+    end
+
+    private def layer_bit_array(depth d) : BitArray
+      p = @weight_step
+      BitArray.new(d.to_i).tap do |y|
+        y.each_index { |i| y[i] = (i + 1) % p == 0 }
+      end
+    end
+  end
+
+  private struct WireWeightedScheme(S)
+    def initialize(@scheme : S)
+    end
+
+    def network(width : Width, *, weights)
+      n = @scheme.network(width)
+      Network::WireWeighted.new(network: n, weights: weights)
+    end
+  end
+
+  private def wire_weighted_scheme
     s = @scheme
-    d = @crop_depth
     ss =
-      if d
+      if d = @crop_depth
         s.pbtranslator_as(Scheme::ParameterizedByDepth) do |x|
-          if d.not_nil! >= 0
-            Scheme::DepthSlice.new(
-              scheme: DepthTracking::Scheme.new(x),
-              range_proc: ->(width: Width::Free, depth: Distance) {
-                Distance.new(0)...Distance.new(d.not_nil!)
-              },
-            )
-          else
-            Scheme::DepthSlice.new(
-              scheme: DepthTracking::Scheme.new(x),
-              range_proc: ->(width: Width::Free, depth: Distance) {
-                depth + Distance.new(d.not_nil!)...depth
-              },
-            )
-          end
+          Scheme::DepthSlice.new(
+            scheme: x.with_depth,
+            range_proc: depth_range_proc(d),
+          )
         end
       else
         s
       end
-    width = Width.from_value(Distance.new(n))
-    n = ss.network(width)
-    y = layer_bit_array(n.network_depth)
-    if y
-      nn = layer_cache_class.new(network: n, width: width)
-      Network::PartiallyWireWeighted.new(network: nn, weights: w, bit_array: y)
+    if p = @weight_step
+      TailoredPartiallyWireWeightedScheme.new(ss, p)
     else
-      Network::WireWeighted.new(network: n, weights: w)
+      WireWeightedScheme.new(ss)
     end
   end
 
-  private def layer_cache_class
-    Network::LayerCache.class_for(
-      Gate.comparator_between(Distance.zero, Distance.zero),
-      depth: Distance.zero)
+  private def depth_range_proc(d : Int32)
+    if d >= 0
+      ->(width: Width, depth: Distance) {
+        Distance.new(0)...Distance.new(d)
+      }
+    else
+      ->(width: Width, depth: Distance) {
+        depth + Distance.new(d)...depth
+      }
+    end
   end
 
-  private def layer_bit_array(depth d) : BitArray | Nil
-    p = @weight_step
-    return nil unless p
-    y = BitArray.new(d.to_i)
-    y.each_index { |i| y[i] = (i + 1) % p == 0 }
-    y
+  private def network_of_width(n, weights w)
+    width = Width.from_value(Distance.new(n))
+    s = wire_weighted_scheme
+    s.network(width, weights: w)
   end
 
   private def task_write

@@ -6,6 +6,6 @@ class PBTranslator::Tool
         Scheme::MergeSort::Recursive.new(
           Scheme::OEMerge::INSTANCE
         )
-      )
-    )
+      ).as(Scheme::OfAnyWidthMarker)
+    ).as(Scheme::OfAnyWidth)
 end

@@ -1,25 +1,13 @@
 require "./gate"
+require "./gate_options"
 require "./visitor/default_methods"
 require "./with_depth"
 
 module PBTranslator::DepthTracking
-  # Computes the depth of an arbitrary network.
-  def self.compute_depth(network n, *, width w : Width, way y : Way = FORWARD)
-    nn = Network.new(network: n, width: w.value)
-    nn.host(Visitor::Noop::INSTANCE, y)
-    nn.computed_depth
-  end
-
   class Scheme(S)
-    include WithGateDepth::Scheme
+    include GateOptions::Module
 
-    def self.wrap_if_needed(scheme)
-      if scheme.is_a? WithGateDepth::Scheme
-        scheme
-      else
-        new(scheme: scheme)
-      end
-    end
+    delegate_and_declare_gate_options @scheme, depth
 
     def initialize(@scheme : S)
     end
@@ -27,23 +15,14 @@ module PBTranslator::DepthTracking
     def network(width w : Width)
       Network.new(network: @scheme.network(w), width: w.value)
     end
+
+    def network?(width w : Width)
+      @scheme.network?(w).try { |n| Network.new(network: n, width: w.value) }
+    end
   end
 
   struct Network(N)
-    include WithGateDepth::Network
-
-    def self.wrap_if_needed(network, width)
-      if network.is_a? WithGateDepth::Network
-        network
-      else
-        new(network: network, width: width)
-      end
-    end
-
-    delegate network_depth, network_read_count, network_width, network_write_count, to: @network
-    getter computed_depth : Distance
-
-    @computed_depth : Distance = Distance.zero
+    delegate network_depth, network_read_count, network_width, network_write_count, wire_pairs, to: @network
 
     def initialize(*, @network : N, @width : Distance)
     end
@@ -52,7 +31,6 @@ module PBTranslator::DepthTracking
       d = initial_depth(y)
       g = Guide.new(visitor: v, way: y, width: @width, initial_depth: d)
       @network.host(g, y)
-      @computed_depth = g.depth
     end
 
     private def initial_depth(way : Forward)

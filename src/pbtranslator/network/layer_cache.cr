@@ -1,9 +1,10 @@
 require "../gate"
+require "../gate_options"
+require "../named_tuple"
 
 # A network of gates stored explicitly for enumeration layer by layer.
 class PBTranslator::Network::LayerCache(G, O)
   include Gate::Restriction
-  include WithGateDepth::Network
 
   # Returns the appropriate LayerCache class for storing visit calls with
   # arguments of the types used here.
@@ -29,22 +30,25 @@ class PBTranslator::Network::LayerCache(G, O)
   # Hosts a visitor layer by layer through stored gates and generated
   # `Passthrough` gates.
   def host(visitor, way : Way) : Nil
-    way.each_with_index_in(@layers) do |layer, index|
-      visitor.visit_region(Layer.new(Distance.new(index))) do |layer_visitor|
+    way.each_with_index_in(@layers) do |layer, depth_i|
+      depth = Distance.new(depth_i)
+      visitor.visit_region(Layer.new(depth)) do |layer_visitor|
         way.each_with_index_in(layer) do |element, index|
-          element_host(layer_visitor, element, index)
+          element_host(depth, layer_visitor, element, index)
         end
       end
     end
   end
 
-  private def element_host(layer_visitor, element, index)
+  private def element_host(depth, layer_visitor, element, index)
     case element
     when Tuple
       gate, options = element
       layer_visitor.visit_gate(gate, **options)
     when Unused
-      layer_visitor.visit_gate(Gate.passthrough_at(Distance.new(index)))
+      gate = Gate.passthrough_at(Distance.new(index))
+      options = {depth: depth}
+      layer_visitor.visit_gate(gate, **options)
     end
   end
 
@@ -59,8 +63,7 @@ class PBTranslator::Network::LayerCache(G, O)
 
     def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | {G, O})
       s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.network_depth, w.value) { Unused.new }
-      nn = DepthTracking::Network.wrap_if_needed(network: n, width: w.value)
-      nn.host(self.new(s), FORWARD)
+      n.host(self.new(s), FORWARD)
       s
     end
 

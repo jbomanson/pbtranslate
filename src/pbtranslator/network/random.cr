@@ -17,8 +17,6 @@ class PBTranslator::Network::Random(C)
   end
 
   private struct Generator
-    include WithGateDepth::Network
-
     getter network_depth : Distance
     getter network_width : Distance
 

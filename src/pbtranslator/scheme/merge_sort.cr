@@ -1,3 +1,4 @@
+require "../gate_options"
 require "../network/merge_sort"
 
 # A MergeSort scheme implements traditional merge sorting using a scheme of
@@ -6,6 +7,10 @@ require "../network/merge_sort"
 class PBTranslator::Scheme::MergeSort(S, M)
   # A MergeSort scheme for sorting via recursive merging.
   struct Recursive(M)
+    include GateOptions::Module
+
+    delegate gate_options, to: @merge_scheme
+
     # Creates a MergeSort scheme that sorts subsequences by recursively
     # merging them according to *merge_scheme*.
     def initialize(@merge_scheme : M)
@@ -15,6 +20,10 @@ class PBTranslator::Scheme::MergeSort(S, M)
       Network::MergeSort.new(self, @merge_scheme, width.log2)
     end
   end
+
+  include GateOptions::Module
+
+  delegate gate_options, to: (true ? @sort_scheme : @merge_scheme)
 
   # Creates a MergeSort scheme that sorts subsequences according to
   # *sort_scheme* and merges them according to *merge_scheme*.

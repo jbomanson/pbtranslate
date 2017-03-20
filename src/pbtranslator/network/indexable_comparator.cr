@@ -40,4 +40,8 @@ struct PBTranslator::Network::IndexableComparator(T)
   private def pair_to_gate(pair)
     Gate.comparator_between(*pair)
   end
+
+  def scheme
+    Scheme::IndexableComparator.new(self)
+  end
 end

@@ -1,3 +1,4 @@
+require "../gate_options"
 require "../network/oe_merge"
 
 # An OEMerge scheme represents Batcher's odd-even merging networks.
@@ -6,10 +7,14 @@ require "../network/oe_merge"
 # The gates in these networks are comparators.
 # Instances of these networks are obtained via `#network`.
 class PBTranslator::Scheme::OEMerge
+  include GateOptions::Module
+
   # The only instance of the OEMerge scheme that needs to be used.
   #
   # To obtain instances of networks, use `#network`.
   INSTANCE = new
+
+  declare_gate_options
 
   # Returns a `Network::OEMerge` instance for merging pairs of consecutive
   # sequences of of the same width that is a power of two.

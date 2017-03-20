@@ -2,12 +2,6 @@ require "../sorting_network_helper"
 
 include PBTranslator
 
-class HardCodedSortScheme
-  def network(width : Width)
-    Network::HardCodedSort.network(width)
-  end
-end
-
 class WidthRange(R)
   def initialize(@value_range : R)
   end
@@ -25,8 +19,8 @@ rounds = 400
 
 seed = SEED ^ __FILE__.hash
 
-scheme = HardCodedSortScheme.new
+scheme = Network::HardCodedSort
 
-describe Scheme::MergeSort do
+describe Network::HardCodedSort do
   it_passes_as_a_sorting_network(scheme, seed, range, rounds)
 end

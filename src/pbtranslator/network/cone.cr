@@ -82,8 +82,8 @@ class PBTranslator::Network::Cone(N)
     private def visit_gate_with_cone(g, **options) : Bool
       output_wires = g.wires
       output_cone =
-        @levels.values_at(*output_wires).map do |wire|
-          wire ? true : false
+        @levels.values_at(*output_wires).map do |level|
+          level || false
         end
       @visitor.visit_gate(g, **options, output_cone: output_cone)
       output_cone.any?
@@ -116,8 +116,8 @@ class PBTranslator::Network::Cone(N)
     def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
       output_wires = g.wires
       output_cone =
-        @levels.values_at(*output_wires).map do |wire|
-          wire ? @index < wire : false
+        @levels.values_at(*output_wires).map do |level|
+          (level && @index < level) || false
         end
       @visitor.visit_gate(g, **options, output_cone: output_cone)
       @index += 1

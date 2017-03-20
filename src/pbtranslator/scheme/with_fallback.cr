@@ -1,14 +1,26 @@
-class PBTranslator::Scheme::WithFallback(A, B)
-  include Scheme
+require "../gate_options"
 
-  def initialize(@scheme_a : A, @scheme_b : B)
+class PBTranslator::Scheme::WithFallback(A, B)
+  include GateOptions::Module
+
+  delegate gate_options, to: (true ? @schemes.first : @schemes.last)
+
+  # @schemes : {A, B}
+
+  def initialize(a : A, b : B)
+    @schemes = {a, b}
   end
 
   def network(width : Width)
-    (@scheme_a.network? width) || (@scheme_b.network(width))
+    (@schemes.first.network? width) || (@schemes.last.network(width))
   end
 
   def network?(width : Width)
-    (@scheme_a.network? width) || (@scheme_b.network?(width))
+    (@schemes.first.network? width) || (@schemes.last.network?(width))
+  end
+
+  def with_depth
+    a, b = @schemes
+    WithFallback.new(a.with_depth, b.with_depth)
   end
 end

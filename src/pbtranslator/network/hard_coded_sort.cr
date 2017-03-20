@@ -1,5 +1,12 @@
+require "../gate_options"
+
 # A collection of good networks of fixed widths.
 module PBTranslator::Network::HardCodedSort
+  include GateOptions::Module
+  extend self
+
+  declare_gate_options
+
   # The range of width values for which `.network` is defined.
   def self.width_value_range
     Distance.new(0)..Distance.new(20)
@@ -45,8 +52,10 @@ module PBTranslator::Network::HardCodedSort
 
   private def self.create(*args, **options)
     n = Network::IndexableComparator.new(*args, **options)
+    s = n.scheme
     w = Width.from_value(n.network_width)
-    PBTranslator::Network::WrapperWithDepth.new(network: n, width: w)
+    d = s.compute_depth(w)
+    nnn = PBTranslator::Network::WrapperWithDepth.new(network: n, network_depth: d)
   end
 
   private def self.with_limited_width(network n, width w)
