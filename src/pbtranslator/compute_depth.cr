@@ -13,16 +13,19 @@ module PBTranslator::Network
     def self.compute(network n, way y : Way) : Distance
       v = ComputeDepthVisitor.new
       n.host(v, FORWARD)
-      v.depth + 1
+      v.result
     end
 
-    getter depth : Distance = Distance.new(0)
+    @depth = Distance::MIN
+    @bonus = Distance.new(0)
 
-    def initialize
+    protected def result
+      @depth + @bonus
     end
 
     def visit_gate(gate, *, **options, depth) : Nil
       @depth = {@depth, depth}.max
+      @bonus = Distance.new(1)
     end
   end
 end
