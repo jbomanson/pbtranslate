@@ -1,7 +1,7 @@
 require "../gate"
 
 # See `Scheme::OEMerge`.
-class PBTranslator::Network::OEMerge
+struct PBTranslator::Network::OEMerge
   include FirstClass
 
   # The binary logarithm of the width of the input halves of this network.

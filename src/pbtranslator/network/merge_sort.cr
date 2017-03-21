@@ -1,7 +1,7 @@
 require "../scheme/merge_sort"
 require "../scheme/oe_merge"
 
-class PBTranslator::Network::MergeSort(S, M)
+struct PBTranslator::Network::MergeSort(S, M)
   include FirstClass
 
   def initialize(@sort_scheme : S, @merge_scheme : M, @width_log2 : Distance)
