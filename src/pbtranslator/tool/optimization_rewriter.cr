@@ -10,6 +10,7 @@ class PBTranslator::Tool::OptimizationRewriter <
   end
 
   property crop_depth
+  property crop_depth_unit
   property scheme
   property weight_step
 
@@ -18,6 +19,7 @@ class PBTranslator::Tool::OptimizationRewriter <
   @input_visitor  = WeightCollector.new
   @output_visitor = WeightCollector.new
   @crop_depth     = nil.as(Int32 | Nil)
+  @crop_depth_unit = nil.as(Int32 | Nil)
   @weight_step    = nil.as(Int32 | Nil)
   @scheme         = BASE_SCHEME.as(Scheme::OfAnyWidth)
 
@@ -154,13 +156,17 @@ class PBTranslator::Tool::OptimizationRewriter <
   private def depth_range_proc(d : Int32)
     if d >= 0
       ->(width: Width, depth: Distance) {
-        Distance.new(0)...Distance.new(d)
+        Distance.new(0)...Distance.new(preprocess_depth(d, depth))
       }
     else
       ->(width: Width, depth: Distance) {
-        depth + Distance.new(d)...depth
+        depth + Distance.new(preprocess_depth(d, depth))...depth
       }
     end
+  end
+
+  private def preprocess_depth(want : Int32, got : UInt32)
+    (u = @crop_depth_unit) ? got * want / u : want
   end
 
   private def network_of_width(n, weights w)

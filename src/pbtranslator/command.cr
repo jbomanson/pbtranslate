@@ -71,6 +71,7 @@ class PBTranslator::Command
     weight_step = nil
     scheme_description = nil
     random_seed = RANDOM_SEED_DEFAULT
+    crop_depth_unit = nil
 
     option_parser =
       OptionParser.parse(options) do |opts|
@@ -84,7 +85,11 @@ class PBTranslator::Command
           type = t
         end
 
-        opts.on("--crop-depth <d>", "Use first <d> or last -<d> layers of a comparator network") do |d|
+        opts.on("--crop-depth <d>", "Use first <d> or last -<d> layers of a comparator network. The value <d> can be given as a percentage as well.") do |d|
+          if d.ends_with? '%'
+            d = d.rchop
+            crop_depth_unit = 100
+          end
           crop_depth = string_to_i32(d, label: "--crop-depth")
         end
 
@@ -137,6 +142,12 @@ class PBTranslator::Command
             error "the --crop-depth option is not supported with --type #{type}"
           end
           translator.crop_depth = d
+        end
+        if u = crop_depth_unit
+          unless translator.responds_to? :"crop_depth_unit="
+            error "the --crop-depth option must be absolute with --type #{type}"
+          end
+          translator.crop_depth_unit = u
         end
         if translator.responds_to? :"scheme="
           translator.scheme = scheme
