@@ -27,3 +27,13 @@ scheme =
 describe Scheme::MergeSort do
   it_passes_as_a_sorting_network(scheme, seed, range, rounds)
 end
+
+scheme =
+  Scheme::MergeSort::RecursiveFallback.new(
+    Network::HardCodedSort,
+    Scheme::OEMerge::INSTANCE
+  )
+
+describe Scheme::MergeSort::RecursiveFallback do
+  it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+end

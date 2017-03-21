@@ -3,7 +3,8 @@ class PBTranslator::Tool
     Scheme::WithFallback.new(
       Network::HardCodedSort,
       Scheme::WidthLimited.new(
-        Scheme::MergeSort::Recursive.new(
+        Scheme::MergeSort::RecursiveFallback.new(
+          Network::HardCodedSort,
           Scheme::OEMerge::INSTANCE
         )
       ).as(Scheme::OfAnyWidthMarker)
