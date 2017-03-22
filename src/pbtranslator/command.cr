@@ -131,7 +131,7 @@ class PBTranslator::Command
 
     initialize_random_seeds(random_seed)
 
-    scheme = scheme_from_description(scheme_description, crop_depth: crop_depth)
+    scheme = scheme_from_description(scheme_description, crop_depth: crop_depth, crop_depth_unit: crop_depth_unit)
 
     with_file_or_io(input_filename, "r", STDIN) do |input_io|
       with_file_or_io(output_filename, "w", STDOUT) do |output_io|
@@ -171,7 +171,7 @@ class PBTranslator::Command
     @random_seed_for_random_from_depth = random.next_int
   end
 
-  private def scheme_from_description(s : String?, *, crop_depth d)
+  private def scheme_from_description(s : String?, *, crop_depth d, crop_depth_unit u)
     case
     when !s
       Tool::BASE_SCHEME
@@ -181,10 +181,13 @@ class PBTranslator::Command
       unless d
         error "the --network-scheme random option works only with --crop-depth"
       end
+      if u
+        error "the --network-scheme random option works only with an absolute --crop-depth"
+      end
       r = Random.new(@random_seed_for_random_from_depth)
       Scheme::RandomFromDepth.new(random: r, depth: Distance.new(d))
     else
-      error "unknown argument '#{s}' to --scheme"
+      error "unknown argument '#{s}' to --network-scheme"
     end
   end
 
