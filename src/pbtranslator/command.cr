@@ -284,7 +284,7 @@ class PBTranslator::Command
   end
 
   private def string_to_i32(s : String, *, label : String, min bound : Int32 | Nil = nil) : Int32
-    unless (i = s.to_i?) && (!bound || bound <= i)
+    unless (i = s.to_i? underscore: true) && (!bound || bound <= i)
       x =
         case bound
         when 1 then "positive integer"
