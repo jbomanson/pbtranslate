@@ -8,14 +8,14 @@ module PBTranslator::Network::HardCodedSort
   declare_gate_options
 
   # The range of width values for which `.network` is defined.
-  def self.width_value_range
+  def width_value_range
     Distance.new(0)..Distance.new(20)
   end
 
   # Returns a good network of _width_.
   #
   # Raises an error for width values outside of `.width_value_range`.
-  def self.network(width : Width)
+  def network(width : Width)
     n = network? width
     unless n
       raise "Width #{width.value} is not in #{width_value_range}"
@@ -24,7 +24,7 @@ module PBTranslator::Network::HardCodedSort
   end
 
   # Returns a good network of _width_ or nil.
-  def self.network?(width : Width)
+  def network?(width : Width)
     case width.value
     when  0; NETWORK_00_EMPTY
     when  1; NETWORK_01_EMPTY
@@ -50,7 +50,7 @@ module PBTranslator::Network::HardCodedSort
     end
   end
 
-  private def self.create(*args, **options)
+  private def create(*args, **options)
     n = Network::IndexableComparator.new(*args, **options)
     s = n.scheme
     w = Width.from_value(n.network_width)
@@ -58,7 +58,7 @@ module PBTranslator::Network::HardCodedSort
     nnn = PBTranslator::Network::WrapperWithDepth.new(network: n, network_depth: d)
   end
 
-  private def self.with_limited_width(network n, width w)
+  private def with_limited_width(network n, width w)
     create(n.wire_pairs.select &.all? &.< w)
   end
 
