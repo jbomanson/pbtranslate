@@ -270,9 +270,10 @@ class PBTranslator::Command
       error "expected a single mass argument, got #{c}"
     end
 
+    parameter = string_to_i32(parameters.first, label: "<parameter>", min: 0)
+
     with_file_or_io(output_filename, "w", STDOUT) do |output_io|
-      p = Distance.new(parameters.first)
-      w = Width.from_value(p)
+      w = Width.from_value(Distance.new(parameter))
       s = Tool::BASE_SCHEME
       n = s.network(w)
       size = Network.compute_size(n)
