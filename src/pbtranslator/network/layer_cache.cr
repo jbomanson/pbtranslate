@@ -23,8 +23,13 @@ class PBTranslator::Network::LayerCache(G, O)
   end
 
   # Returns the computed depth of the network of stored gates.
-  def network_depth
+  def network_depth : Distance
     Distance.new(@layers.size)
+  end
+
+  # Returns the given width of the network.
+  def network_width : Distance
+    Distance.new(@layers.columns)
   end
 
   # Hosts a visitor layer by layer through stored gates and generated
