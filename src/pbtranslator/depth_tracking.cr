@@ -2,7 +2,6 @@ require "./gate"
 require "./gate_options"
 require "./visitor/default_methods"
 require "./visitor/of_no_yielded_content"
-require "./with_depth"
 
 module PBTranslator::DepthTracking
   class Scheme(S)
@@ -78,7 +77,6 @@ module PBTranslator::DepthTracking
   #     # {1, 2} @ 2
   class Guide(V, W)
     include Gate::Restriction
-    include WithGateDepth::Visitor
     include Visitor::DefaultMethods
     include Visitor::OfNoYieldedContent
 

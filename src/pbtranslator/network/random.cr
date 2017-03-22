@@ -1,7 +1,5 @@
 # A comparator network of layers with maximal size and randomly connected wires.
 struct PBTranslator::Network::Random(C)
-  include WithGateDepth::Network
-
   delegate network_depth, network_read_count, network_width, network_write_count, host, to: @cache
 
   private def self.layer_cache_class_for(w : Width)
