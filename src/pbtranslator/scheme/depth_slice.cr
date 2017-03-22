@@ -17,6 +17,6 @@ class PBTranslator::Scheme::DepthSlice(S, W)
     n = @scheme.network(w)
     d = n.network_depth
     r = @range_proc.call(w, d)
-    Network::DepthSlice.new(network: n, width: w.value, range: r)
+    Network::DepthSlice.new(network: n, range: r)
   end
 end

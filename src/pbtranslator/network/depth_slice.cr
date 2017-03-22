@@ -1,16 +1,14 @@
 require "../../util/restrict"
 
 struct PBTranslator::Network::DepthSlice(N)
-  def initialize(*, @network : N, @width : Distance, @range : Range(Distance, Distance))
+  delegate network_width, to: @network
+
+  def initialize(*, @network : N, @range : Range(Distance, Distance))
   end
 
   # Returns an upper bound on the depth of this network.
   def network_depth : Distance
     {@network.network_depth, Distance.new(@range.size)}.min
-  end
-
-  def network_width : Distance
-    @width
   end
 
   # Returns an upper bound on the number of writes done by this network.
