@@ -4,7 +4,8 @@ require "../scheme/oe_merge"
 struct PBTranslator::Network::MergeSort(S, M)
   include FirstClass
 
-  def initialize(@sort_scheme : S, @merge_scheme : M, @width_log2 : Distance)
+  def initialize(@sort_scheme : S, @merge_scheme : M, @width : Width::Pw2)
+    @width_log2 = width.log2.as(Distance)
   end
 
   private macro three_cases(zero, one_call, else_expr)

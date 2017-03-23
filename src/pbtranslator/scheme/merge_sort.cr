@@ -17,7 +17,7 @@ class PBTranslator::Scheme::MergeSort(S, M)
     end
 
     def network(width : Width::Pw2)
-      Network::MergeSort.new(self, @merge_scheme, width.log2)
+      Network::MergeSort.new(self, @merge_scheme, width)
     end
   end
 
@@ -32,7 +32,7 @@ class PBTranslator::Scheme::MergeSort(S, M)
 
     def network(width : Width::Pw2)
       (@primary_scheme.network? width) ||
-        Network::MergeSort.new(self, @merge_scheme, width.log2)
+        Network::MergeSort.new(self, @merge_scheme, width)
     end
   end
 
@@ -46,6 +46,6 @@ class PBTranslator::Scheme::MergeSort(S, M)
   end
 
   def network(width : Width::Pw2)
-    Network::MergeSort.new(@sort_scheme, @merge_scheme, width.log2)
+    Network::MergeSort.new(@sort_scheme, @merge_scheme, width)
   end
 end
