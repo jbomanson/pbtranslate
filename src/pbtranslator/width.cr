@@ -31,7 +31,7 @@ abstract struct PBTranslator::Width
     def initialize(*, @log2 : Distance)
     end
 
-    def pw2
+    def pw2 : Distance
       Distance.new(1) << log2
     end
 
