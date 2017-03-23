@@ -10,6 +10,6 @@ struct PBTranslator::Scheme::WidthLimited(S)
   end
 
   def network(width : Width)
-    Network::WidthLimited.new(@scheme.network(width.to_pw2), width.value)
+    Network::WidthSlice.new(@scheme.network(width.to_pw2), width.value)
   end
 end

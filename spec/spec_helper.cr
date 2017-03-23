@@ -35,6 +35,31 @@ class VisitCallCounter
   end
 end
 
+# A visitor that checks that all wire indices are nonnegative and not larger
+# than a given threshold.
+record WidthCheckingVisitor, width : Distance do
+  include Gate::Restriction
+
+  def visit_gate(g : Gate, *args, **options) : Nil
+    wires = g.wires
+    unless wires.all? &.>=(0)
+      raise "Expected nonnegative wires, got #{wires}"
+    end
+    unless wires.all? &.<(width)
+      raise "Expected wires less than #{width}, got #{wires}"
+    end
+  end
+
+  def visit_gate(g : Gate, *args, **options) : Nil
+    visit_gate(g, *args, **options)
+    yield self
+  end
+
+  def visit_region(layer : OOPSublayer.class) : Nil
+    yield self
+  end
+end
+
 module SpecHelper
   include PBTranslator
 

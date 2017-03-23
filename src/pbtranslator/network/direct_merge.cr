@@ -59,7 +59,7 @@ class PBTranslator::Network::DirectMerge
           way.each_between(a, b) do |left_value|
             right_value = out_value - left_value
             g = and_input_gate(base, half_width, left_value, right_value)
-            or_visitor.visit_gate(g)
+            or_visitor.visit_gate(g, drop_true: nil)
           end
         end
       end
