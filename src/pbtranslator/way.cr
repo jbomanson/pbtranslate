@@ -44,6 +44,11 @@ abstract struct PBTranslator::Way
     each_index_to(object) { |index| yield object[index], index }
   end
 
+  # Returns `+1` when going forward and `-1` when going backward.
+  def sign
+    first(+1, -1)
+  end
+
   # A convenience macro for defining argumentless _each_ and *reverse_each*
   # methods for an object that defines *each_in* with a single `Way` argument.
   macro define_each
@@ -77,6 +82,11 @@ abstract struct PBTranslator::Way
       def each_in(object)
         object.each { |x| yield x }
       end
+
+      # Returns _f_.
+      def first(f, b)
+        f
+      end
     end
 
     struct Backward < Way
@@ -88,6 +98,11 @@ abstract struct PBTranslator::Way
       # Similar to `Indexable#reverse_each` for _object_.
       def each_in(object)
         object.reverse_each { |x| yield x }
+      end
+
+      # Returns _b_.
+      def first(f, b)
+        b
       end
     end
   end
