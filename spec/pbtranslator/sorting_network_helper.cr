@@ -3,7 +3,7 @@ require "../../spec_helper"
 include PBTranslator
 include Gate::Restriction
 
-macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+macro it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
   %scheme = {{scheme}}
   %seed = {{seed}}
   %range = {{range}}
@@ -23,17 +23,6 @@ macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
     end
   end
 
-  it "returns consistent write counts" do
-    %range.each do |width|
-      network = %scheme.network(width)
-      a = network.network_write_count
-      visitor = VisitCallCounter.new
-      network.host(visitor, FORWARD)
-      b = visitor.wire_count(Comparator, InPlace)
-      a.should eq(b)
-    end
-  end
-
   it "represents matching numbers of gates going forward and backward" do
     %range.each do |width|
       network = %scheme.network(width)
@@ -50,6 +39,24 @@ macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
       ff.should eq(bb)
     end
   end
+end
+
+macro it_reports_like_a_sorting_network(scheme, seed, range, rounds)
+  %scheme = {{scheme}}
+  %seed = {{seed}}
+  %range = {{range}}
+  %rounds = {{rounds}}
+
+  it "returns consistent write counts" do
+    %range.each do |width|
+      network = %scheme.network(width)
+      a = network.network_write_count
+      visitor = VisitCallCounter.new
+      network.host(visitor, FORWARD)
+      b = visitor.wire_count(Comparator, InPlace)
+      a.should eq(b)
+    end
+  end
 
   it "returns consistent depths" do
     %range.each do |width|
@@ -59,4 +66,9 @@ macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
       a.should eq(b)
     end
   end
+end
+
+macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+  it_hosts_like_a_sorting_network({{scheme}}, {{seed}}, {{range}}, {{rounds}})
+  it_reports_like_a_sorting_network({{scheme}}, {{seed}}, {{range}}, {{rounds}})
 end
