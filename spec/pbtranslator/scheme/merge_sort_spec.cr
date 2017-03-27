@@ -20,8 +20,10 @@ rounds = 5
 seed = SEED ^ __FILE__.hash
 
 scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::OEMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::OEMerge::INSTANCE
+    )
   )
 
 describe Scheme::MergeSort do
@@ -29,9 +31,11 @@ describe Scheme::MergeSort do
 end
 
 scheme =
-  Scheme::MergeSort::RecursiveFallback.new(
-    Network::HardCodedSort,
-    Scheme::OEMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::RecursiveFallback.new(
+      Network::HardCodedSort,
+      Scheme::OEMerge::INSTANCE
+    )
   )
 
 describe Scheme::MergeSort::RecursiveFallback do

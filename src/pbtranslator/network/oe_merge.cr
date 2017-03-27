@@ -32,34 +32,25 @@ struct PBTranslator::Network::OEMerge
     network_gate_count * 2
   end
 
-  # Hosts a visit over the comparators in this network placed at an
-  # *offset*.
+  # Hosts a visit over the comparators in this network.
   #
   # The visit_gate method of *visitor* is called for each comparator.
-  def host(visitor, way : Way, at offset = Distance.new(0)) : Nil
+  def host(visitor, way : Way) : Nil
     a, b = {Distance.new(0), half_width_log2}
     way.each_between(a, b) do |layer_index|
-      layer_host(visitor, way, offset, layer_index)
+      layer_host(visitor, way, layer_index)
     end
   end
 
-  private def layer_host(visitor, way, at offset, layer_index)
+  private def layer_host(visitor, way, layer_index)
     a, b = {Distance.new(0), (Distance.new(1) << (half_width_log2 + 1)) - 1}
     way.each_between(a, b) do |wire_index|
       partner_index = partner(half_width_log2, layer_index, wire_index)
       case wire_index <=> partner_index
       when -1
-        g =
-          Gate
-          .comparator_between(wire_index, partner_index)
-          .shifted_by(offset)
-        visitor.visit_gate(g)
+        visitor.visit_gate(Gate.comparator_between(wire_index, partner_index))
       when 0
-        g =
-          Gate
-          .passthrough_at(wire_index)
-          .shifted_by(offset)
-        visitor.visit_gate(g)
+        visitor.visit_gate(Gate.passthrough_at(wire_index))
       end
     end
   end

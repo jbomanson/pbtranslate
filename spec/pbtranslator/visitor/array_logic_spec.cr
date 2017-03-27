@@ -3,8 +3,10 @@ require "../../spec_helper"
 include PBTranslator
 
 scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::OEMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::OEMerge::INSTANCE
+    )
   )
 
 describe Visitor::ArrayLogic do

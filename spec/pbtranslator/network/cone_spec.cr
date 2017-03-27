@@ -32,8 +32,10 @@ end
 # Hosts a visitor through a network with a cone and returns the size of the cone
 private def host_with_cone(width_log2, wanted, array) : Int32
   scheme =
-    Scheme::MergeSort::Recursive.new(
-      Scheme::OEMerge::INSTANCE
+    Scheme::OffsetResolution.new(
+      Scheme::MergeSort::Recursive.new(
+        Scheme::OEMerge::INSTANCE
+      )
     )
   w = Width.from_log2(width_log2)
   n = scheme.network(w)

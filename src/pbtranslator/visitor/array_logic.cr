@@ -1,10 +1,12 @@
 require "../gate"
 require "../lag_array"
+require "./default_methods"
 
 # A visitor that operates on an array while visiting in place gates as well as
 # gates arranged in layers.
 struct PBTranslator::Visitor::ArrayLogic(T)
   include Gate::Restriction
+  include DefaultMethods
 
   # An interface for objects that perform logic operations on arrays.
   module Context(T)
@@ -44,10 +46,6 @@ struct PBTranslator::Visitor::ArrayLogic(T)
       layer_visitor = LayerVisitor.new(lagged, @context, @accumulator)
       yield layer_visitor
     end
-  end
-
-  def visit_region(region) : Nil
-    yield self
   end
 
   private struct DefaultContext(T)

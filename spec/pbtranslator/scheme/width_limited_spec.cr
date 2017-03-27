@@ -5,13 +5,17 @@ include SpecHelper
 network_count = 10
 
 oe_scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::OEMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::OEMerge::INSTANCE
+    )
   )
 
 direct_scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::DirectMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::DirectMerge::INSTANCE
+    )
   )
 
 def test_limits_with_sub_scheme(sub_scheme, network_count)

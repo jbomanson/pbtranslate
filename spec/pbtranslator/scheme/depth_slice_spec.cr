@@ -4,8 +4,10 @@ include PBTranslator
 
 scheme =
   DepthTracking::Scheme.new(
-    Scheme::MergeSort::Recursive.new(
-      Scheme::OEMerge::INSTANCE
+    Scheme::OffsetResolution.new(
+      Scheme::MergeSort::Recursive.new(
+        Scheme::OEMerge::INSTANCE
+      )
     )
   )
 

@@ -22,8 +22,10 @@ seed = SEED ^ __FILE__.hash
 scheme_a = Network::HardCodedSort
 
 scheme_b =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::OEMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::OEMerge::INSTANCE
+    )
   )
 
 scheme = Scheme::WithFallback.new(scheme_a, scheme_b)

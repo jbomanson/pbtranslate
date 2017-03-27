@@ -5,13 +5,17 @@ include SpecHelper
 network_count = 10
 
 oe_scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::OEMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::OEMerge::INSTANCE
+    )
   )
 
 direct_scheme =
-  Scheme::MergeSort::Recursive.new(
-    Scheme::DirectMerge::INSTANCE
+  Scheme::OffsetResolution.new(
+    Scheme::MergeSort::Recursive.new(
+      Scheme::DirectMerge::INSTANCE
+    )
   )
 
 # Randomly partitions a range of numbers into three parts so that the middle

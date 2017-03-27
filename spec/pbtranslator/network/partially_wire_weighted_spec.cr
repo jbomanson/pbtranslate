@@ -9,8 +9,10 @@ seed = SEED ^ __FILE__.hash
 scheme =
   DepthTracking::Scheme.new(
     Scheme::WidthLimited.new(
-      Scheme::MergeSort::Recursive.new(
-        Scheme::OEMerge::INSTANCE
+      Scheme::OffsetResolution.new(
+        Scheme::MergeSort::Recursive.new(
+          Scheme::OEMerge::INSTANCE
+        )
       )
     )
   )
