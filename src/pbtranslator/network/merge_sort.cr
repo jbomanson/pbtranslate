@@ -20,23 +20,15 @@ struct PBTranslator::Network::MergeSort(S, M)
     end
   end
 
-  {% for count in [:network_write_count, :network_read_count] %}
-    def {{count.id}} : Area
+  {% for tuple in [{:network_write_count, :Area, 2}, {:network_read_count, :Area, 2}, {:network_depth, :Distance, 1}] %}
+    def {{tuple[0].id}} : {{tuple[1].id}}
       three_cases(
-        Area.new(0),
-        {{count.id}},
-        @sort_scheme.network(less).{{count.id}} * 2 + @merge_scheme.network(less).{{count.id}},
+        {{tuple[1].id}}.new(0),
+        {{tuple[0].id}},
+        @sort_scheme.network(less).{{tuple[0].id}} * {{tuple[2].id}} + @merge_scheme.network(less).{{tuple[0].id}},
       )
     end
   {% end %}
-
-  def network_depth : Distance
-    three_cases(
-      Distance.new(0),
-      network_depth,
-      @sort_scheme.network(less).network_depth + @merge_scheme.network(less).network_depth,
-    )
-  end
 
   def network_width : Distance
     Distance.new(1) << @width_log2
