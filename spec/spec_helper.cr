@@ -82,10 +82,10 @@ module SpecHelper
     a.sort
   end
 
-  def random_width_array(n, random)
+  def random_width_array(n, random, log_max = WIDTH_LOG2_MAX)
     a =
       Array.new(n) do
-        Distance.new(2 ** (random.next_float * WIDTH_LOG2_MAX))
+        Distance.new(2 ** (random.next_float * log_max))
       end
     a.sort
   end
