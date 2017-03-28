@@ -4,5 +4,6 @@ module PBTranslator::Scheme
   end
 
   alias OfAnyWidth = OfAnyWidthMarker |
+                     OffsetResolution(BestSplitMergeSort(Network::HardCodedSort.class, FlexibleMerge(OEMerge))) |
                      WithFallback(Network::HardCodedSort.class, OfAnyWidthMarker)
 end

@@ -12,4 +12,8 @@ class PBTranslator::Scheme::OffsetResolution(S)
   def network(width : Width)
     Network::OffsetResolution.new(@scheme.network(width))
   end
+
+  def with_depth
+    raise NotImplementedError.new
+  end
 end

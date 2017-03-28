@@ -1,14 +1,13 @@
 class PBTranslator::Tool
   BASE_SCHEME =
-    Scheme::WithFallback.new(
-      Network::HardCodedSort,
-      Scheme::WidthLimited.new(
-        Scheme::OffsetResolution.new(
-          Scheme::MergeSort::RecursiveFallback.new(
-            Network::HardCodedSort,
+    Scheme::OffsetResolution.new(
+      Scheme::BestSplitMergeSort.new(
+        base_scheme:
+          Network::HardCodedSort,
+        merge_scheme:
+          Scheme::FlexibleMerge.new(
             Scheme::OEMerge::INSTANCE
-          )
-        )
-      ).as(Scheme::OfAnyWidthMarker)
+          ),
+      )
     ).as(Scheme::OfAnyWidth)
 end
