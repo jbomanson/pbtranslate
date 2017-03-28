@@ -14,6 +14,8 @@ class PBTranslator::Scheme::OffsetResolution(S)
   end
 
   def with_depth
-    raise NotImplementedError.new
+    @scheme.with_depth do |without|
+      OffsetResolution.new(without).with_depth_added
+    end
   end
 end
