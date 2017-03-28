@@ -10,6 +10,7 @@ module PBTranslator::DepthTracking
     delegate_and_declare_gate_options @scheme, depth
 
     def initialize(@scheme : S)
+      scheme.gate_options.restrict(depth: nil)
     end
 
     def network(width w : Width)
