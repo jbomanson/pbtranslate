@@ -37,7 +37,7 @@ scheme =
   Scheme::OffsetResolution.new(
     MergeSortByDivideAndConquerScheme.new(
       Scheme::FlexibleMerge.new(
-        Scheme::OEMerge::INSTANCE
+        Scheme::OddEvenMerge::INSTANCE
       )
     )
   )

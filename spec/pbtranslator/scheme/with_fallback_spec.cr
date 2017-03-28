@@ -24,7 +24,7 @@ scheme_a = Network::HardCodedSort
 scheme_b =
   Scheme::OffsetResolution.new(
     Scheme::MergeSort::Recursive.new(
-      Scheme::OEMerge::INSTANCE
+      Scheme::OddEvenMerge::INSTANCE
     )
   )
 

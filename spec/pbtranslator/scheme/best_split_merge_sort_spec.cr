@@ -7,7 +7,7 @@ scheme =
   Scheme::OffsetResolution.new(
     Scheme::BestSplitMergeSort.new(
       Scheme::FlexibleMerge.new(
-        Scheme::OEMerge::INSTANCE
+        Scheme::OddEvenMerge::INSTANCE
       )
     )
   )

@@ -7,7 +7,7 @@ network_count = 10
 oe_scheme =
   Scheme::OffsetResolution.new(
     Scheme::MergeSort::Recursive.new(
-      Scheme::OEMerge::INSTANCE
+      Scheme::OddEvenMerge::INSTANCE
     )
   )
 

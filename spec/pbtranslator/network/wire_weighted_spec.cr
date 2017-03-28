@@ -8,7 +8,7 @@ scheme =
   Scheme::WidthLimited.new(
     Scheme::OffsetResolution.new(
       Scheme::MergeSort::Recursive.new(
-        Scheme::OEMerge::INSTANCE
+        Scheme::OddEvenMerge::INSTANCE
       )
     )
   )

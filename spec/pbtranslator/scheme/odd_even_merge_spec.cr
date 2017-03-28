@@ -2,9 +2,9 @@ require "../../spec_helper"
 
 include PBTranslator
 
-scheme = Scheme::OEMerge::INSTANCE
+scheme = Scheme::OddEvenMerge::INSTANCE
 
-describe Scheme::OEMerge do
+describe Scheme::OddEvenMerge do
   it "represents a network that merges 2 and 2 wires" do
     # Collect all sorted pairs of values in [0, ..., 3].
     x = Array.new(4, &.itself).permutations(2)

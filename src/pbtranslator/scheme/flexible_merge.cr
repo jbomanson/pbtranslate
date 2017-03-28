@@ -7,7 +7,7 @@ struct PBTranslator::Scheme::FlexibleMerge(S)
 
   delegate gate_options, to: @merge_scheme
 
-  def initialize(@merge_scheme : S = OEMerge)
+  def initialize(@merge_scheme : S = OddEvenMerge)
   end
 
   def network(widths : {Width, Width})

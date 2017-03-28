@@ -4,7 +4,7 @@ include SpecHelper
 
 scheme =
   Scheme::FlexibleMerge.new(
-    Scheme::OEMerge::INSTANCE
+    Scheme::OddEvenMerge::INSTANCE
   )
 
 macro it_merges(l, r, visitor_factory)

@@ -11,7 +11,7 @@ seed = SEED ^ __FILE__.hash
 scheme =
   Scheme::OffsetResolution.new(
     Scheme::MergeSort::Recursive.new(
-      Scheme::OEMerge::INSTANCE
+      Scheme::OddEvenMerge::INSTANCE
     )
   )
 
@@ -23,7 +23,7 @@ scheme =
   Scheme::OffsetResolution.new(
     Scheme::MergeSort::RecursiveFallback.new(
       Network::HardCodedSort,
-      Scheme::OEMerge::INSTANCE
+      Scheme::OddEvenMerge::INSTANCE
     )
   )
 

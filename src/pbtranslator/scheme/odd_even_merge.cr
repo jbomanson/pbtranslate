@@ -1,27 +1,27 @@
 require "../scheme"
-require "../network/oe_merge"
+require "../network/odd_even_merge"
 
-# An OEMerge scheme represents Batcher's odd-even merging networks.
+# An OddEvenMerge scheme represents Batcher's odd-even merging networks.
 #
 # They are _comparator networks_.
 # The gates in these networks are comparators.
 # Instances of these networks are obtained via `#network`.
-class PBTranslator::Scheme::OEMerge
+class PBTranslator::Scheme::OddEvenMerge
   include Scheme
 
-  # The only instance of the OEMerge scheme that needs to be used.
+  # The only instance of the OddEvenMerge scheme that needs to be used.
   #
   # To obtain instances of networks, use `#network`.
   INSTANCE = new
 
   declare_gate_options
 
-  # Returns a `Network::OEMerge` instance for merging pairs of consecutive
+  # Returns a `Network::OddEvenMerge` instance for merging pairs of consecutive
   # sequences of of the same width that is a power of two.
   #
   # The binary logarithm of the width of both of these halves is
   # *half_width_log2*.
   def network(half_width : Width::Pw2)
-    Network::OEMerge.new(half_width.log2)
+    Network::OddEvenMerge.new(half_width.log2)
   end
 end

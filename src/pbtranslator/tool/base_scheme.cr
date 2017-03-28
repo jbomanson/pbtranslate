@@ -6,7 +6,7 @@ class PBTranslator::Tool
           Network::HardCodedSort,
         merge_scheme:
           Scheme::FlexibleMerge.new(
-            Scheme::OEMerge::INSTANCE
+            Scheme::OddEvenMerge::INSTANCE
           ),
       )
     ).as(Scheme::OfAnyWidth)
