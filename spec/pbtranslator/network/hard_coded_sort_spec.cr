@@ -22,5 +22,5 @@ seed = SEED ^ __FILE__.hash
 scheme = Network::HardCodedSort
 
 describe Network::HardCodedSort do
-  it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+  it_acts_like_a_sorting_network(scheme, seed, range, rounds)
 end

@@ -68,7 +68,7 @@ macro it_reports_like_a_sorting_network(scheme, seed, range, rounds)
   end
 end
 
-macro it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+macro it_acts_like_a_sorting_network(scheme, seed, range, rounds)
   it_hosts_like_a_sorting_network({{scheme}}, {{seed}}, {{range}}, {{rounds}})
   it_reports_like_a_sorting_network({{scheme}}, {{seed}}, {{range}}, {{rounds}})
 end

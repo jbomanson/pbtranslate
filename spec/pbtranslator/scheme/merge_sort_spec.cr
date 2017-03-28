@@ -16,7 +16,7 @@ scheme =
   )
 
 describe Scheme::MergeSort do
-  it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+  it_acts_like_a_sorting_network(scheme, seed, range, rounds)
 end
 
 scheme =
@@ -28,5 +28,5 @@ scheme =
   )
 
 describe Scheme::MergeSort::RecursiveFallback do
-  it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+  it_acts_like_a_sorting_network(scheme, seed, range, rounds)
 end

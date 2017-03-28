@@ -31,5 +31,5 @@ scheme_b =
 scheme = Scheme::WithFallback.new(scheme_a, scheme_b)
 
 describe Scheme::WithFallback do
-  it_passes_as_a_sorting_network(scheme, seed, range, rounds)
+  it_acts_like_a_sorting_network(scheme, seed, range, rounds)
 end
