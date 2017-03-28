@@ -1,4 +1,11 @@
 struct PBTranslator::Network::DivideAndConquer(P, R, E)
+  {% for message in [:network_depth, :network_write_count] %}
+    def {{message.id}} : NoReturn
+      s = "Network::DivideAndConquer\#{{message.id}} is not implemented"
+      raise NotImplementedError.new(s)
+    end
+  {% end %}
+
   def initialize(*, @widths : P, @conquer_scheme : R, @combine_scheme : E)
     Util.restrict(widths, Enumerable(Width))
   end
