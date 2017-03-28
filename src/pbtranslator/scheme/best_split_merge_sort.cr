@@ -1,10 +1,10 @@
-require "../gate_options"
+require "../scheme"
 require "./flexible_merge"
 
 # A recursive merge sorting network parameterized by a scheme for base cases
 # and a scheme for merging.
 class PBTranslator::Scheme::BestSplitMergeSort(B, M)
-  include GateOptions::Module
+  include Scheme
 
   IMBALANCE_LIMIT = Distance.new(3)
 

@@ -1,8 +1,8 @@
-require "../gate_options"
+require "../scheme"
 require "../network/offset_resolution"
 
 class PBTranslator::Scheme::OffsetResolution(S)
-  include GateOptions::Module
+  include Scheme
 
   delegate gate_options, to: @scheme
 

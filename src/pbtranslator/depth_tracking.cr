@@ -1,11 +1,11 @@
 require "./gate"
-require "./gate_options"
+require "./scheme"
 require "./visitor/default_methods"
 require "./visitor/of_no_yielded_content"
 
 module PBTranslator::DepthTracking
   class Scheme(S)
-    include GateOptions::Module
+    include PBTranslator::Scheme
 
     delegate_and_declare_gate_options @scheme, depth
 

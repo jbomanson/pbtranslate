@@ -1,3 +1,5 @@
+require "./gate_options/scheme"
+
 # This module contains schemes for generating networks.
 #
 # Each scheme represents some class of networks parametrized by some property.

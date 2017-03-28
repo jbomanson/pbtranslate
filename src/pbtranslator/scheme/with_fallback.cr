@@ -1,7 +1,7 @@
-require "../gate_options"
+require "../scheme"
 
 class PBTranslator::Scheme::WithFallback(A, B)
-  include GateOptions::Module
+  include Scheme
 
   delegate gate_options, to: (true ? @schemes.first : @schemes.last)
 

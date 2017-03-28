@@ -1,4 +1,4 @@
-require "../gate_options"
+require "../scheme"
 require "../network/oe_merge"
 
 # An OEMerge scheme represents Batcher's odd-even merging networks.
@@ -7,7 +7,7 @@ require "../network/oe_merge"
 # The gates in these networks are comparators.
 # Instances of these networks are obtained via `#network`.
 class PBTranslator::Scheme::OEMerge
-  include GateOptions::Module
+  include Scheme
 
   # The only instance of the OEMerge scheme that needs to be used.
   #

@@ -1,5 +1,5 @@
 class PBTranslator::Scheme::LayerCache(S, G, O)
-  include GateOptions::Module
+  include Scheme
 
   def gate_options(**extra)
     ::PBTranslator::GateOptions.new(**extra, {{@type.type_vars.last.keys.join(", ").id}})

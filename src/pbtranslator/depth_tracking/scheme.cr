@@ -1,7 +1,7 @@
 require "../depth_tracking"
-require "../gate_options"
+require "../scheme"
 
-module PBTranslator::GateOptions::Module
+module PBTranslator::Scheme
   # Converts this scheme into one that has the gate option _depth_.
   def with_gate_depth_added
     DepthTracking::Scheme.new(self)

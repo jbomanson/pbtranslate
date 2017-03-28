@@ -1,9 +1,9 @@
-require "../gate_options"
+require "../scheme"
 require "../network/empty"
 require "../network/width_slice"
 
 struct PBTranslator::Scheme::FlexibleMerge(S)
-  include GateOptions::Module
+  include Scheme
 
   delegate gate_options, to: @merge_scheme
 
@@ -25,7 +25,7 @@ struct PBTranslator::Scheme::FlexibleMerge(S)
   end
 
   private struct ForTwo(S)
-    include GateOptions::Module
+    include Scheme
 
     delegate gate_options, to: @scheme
 

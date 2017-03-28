@@ -1,10 +1,10 @@
-require "../gate_options"
+require "../scheme"
 require "./parameterized_by_depth"
 require "../../util/restrict"
 require "../../width"
 
 class PBTranslator::Scheme::DepthSlice(S, W)
-  include GateOptions::Module
+  include Scheme
   include ParameterizedByDepth
 
   delegate gate_options, to: @scheme

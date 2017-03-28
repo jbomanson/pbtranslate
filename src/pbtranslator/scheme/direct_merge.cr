@@ -6,7 +6,7 @@ require "../network/direct_merge"
 # The methods of this scheme are parametrized by the logarithm of the half
 # width of the produced networks.
 class PBTranslator::Scheme::DirectMerge
-  include GateOptions::Module
+  include Scheme
 
   INSTANCE = new
 

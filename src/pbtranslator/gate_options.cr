@@ -29,28 +29,6 @@ struct NamedTuple
 end
 
 struct PBTranslator::GateOptions(O)
-  module Module
-    macro delegate_and_declare_gate_options(other, *args)
-      def gate_options(**extra)
-        {{other.id}}.gate_options(**extra, {{args.map { |key| "#{key}: true" }.join(", ").id}}) { |o| yield o }
-      end
-
-      def gate_options(**extra)
-        gate_options(**extra, &.itself)
-      end
-    end
-
-    macro declare_gate_options(*args)
-      def gate_options(**extra)
-        yield ::PBTranslator::GateOptions.new(**extra, {{args.map { |key| "#{key}: true" }.join(", ").id}})
-      end
-
-      def gate_options(**extra)
-        gate_options(**extra, &.itself)
-      end
-    end
-  end
-
   alias Element = Bool | Nil
 
   getter named_tuple : O

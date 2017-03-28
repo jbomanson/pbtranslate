@@ -1,7 +1,7 @@
-require "../gate_options"
+require "../scheme"
 
 struct PBTranslator::Scheme::WidthLimited(S)
-  include GateOptions::Module
+  include Scheme
   include OfAnyWidthMarker
 
   delegate gate_options, to: @scheme

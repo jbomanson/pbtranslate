@@ -1,8 +1,8 @@
-require "../gate_options"
+require "../scheme"
 
 # A collection of good networks of fixed widths.
 module PBTranslator::Network::HardCodedSort
-  include GateOptions::Module
+  include Scheme
   extend self
 
   declare_gate_options

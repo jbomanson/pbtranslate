@@ -1,7 +1,7 @@
-require "../gate_options"
+require "../scheme"
 
 struct PBTranslator::Scheme::IndexableComparator(T)
-  include GateOptions::Module
+  include Scheme
 
   declare_gate_options
 

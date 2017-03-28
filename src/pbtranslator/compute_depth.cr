@@ -1,4 +1,4 @@
-require "./gate_options"
+require "./scheme"
 require "./visitor/default_methods"
 
 module PBTranslator::Network
@@ -30,7 +30,7 @@ module PBTranslator::Network
   end
 end
 
-module PBTranslator::GateOptions::Module
+module PBTranslator::Scheme
   # Computes the depth of a network from this scheme.
   def compute_depth(width, *args) : Distance
     Network.compute_depth(with_gate_depth.network(width), *args)

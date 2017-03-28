@@ -1,7 +1,7 @@
-require "../gate_options"
+require "../scheme"
 
 class PBTranslator::Scheme::RandomFromDepth
-  include GateOptions::Module
+  include Scheme
   include OfAnyWidthMarker
   include ParameterizedByDepth
 
