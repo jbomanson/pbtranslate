@@ -276,7 +276,7 @@ class PBTranslator::Command
       w = Width.from_value(Distance.new(parameter))
       s = Tool::BASE_SCHEME
       n = s.network(w)
-      size = Network.compute_size(n)
+      size = Network.compute_gate_count(n)
       depth = s.compute_depth(w)
       puts "size: #{size}"
       puts "depth: #{depth}"

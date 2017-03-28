@@ -8,7 +8,7 @@ class PBTranslator::Scheme::BestSplitMergeSort(B, M)
 
   IMBALANCE_LIMIT = Distance.new(3)
 
-  record Details, point : Distance, size : Area
+  record Details, point : Distance, cost : Area
 
   delegate gate_options, to: (true ? @base_scheme : @merge_scheme)
 
@@ -64,24 +64,24 @@ class PBTranslator::Scheme::BestSplitMergeSort(B, M)
       r = w - l
       break unless l < r * IMBALANCE_LIMIT
       s = evaluate(l, r)
-      next unless s < best.size
+      next unless s < best.cost
       best = Details.new(l, s)
     end
     best
   end
 
-  # Returns the size of a merge sorter that merges `l + r` wires.
+  # Returns the cost of a merge sorter that merges `l + r` wires.
   private def evaluate(l, r) : Area
-    sort_size(l) + sort_size(r) + merge_size(l, r)
+    sort_cost(l) + sort_cost(r) + merge_cost(l, r)
   end
 
-  private def sort_size(w : Distance) : Area
+  private def sort_cost(w : Distance) : Area
     n = (@base_scheme.network? Width.from_value(w))
-    n ? Network.compute_size(n) : details(w).size
+    n ? Network.compute_gate_count(n) : details(w).cost
   end
 
-  private def merge_size(l : Distance, r : Distance) : Area
-    Network.compute_size(@merge_scheme.network(widths(l, r)))
+  private def merge_cost(l : Distance, r : Distance) : Area
+    Network.compute_gate_count(@merge_scheme.network(widths(l, r)))
   end
 
   private def widths(*args)
