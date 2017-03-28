@@ -33,6 +33,6 @@ end
 module PBTranslator::GateOptions::Module
   # Computes the depth of a network from this scheme.
   def compute_depth(width, *args) : Distance
-    Network.compute_depth(with_depth.network(width), *args)
+    Network.compute_depth(with_gate_depth.network(width), *args)
   end
 end

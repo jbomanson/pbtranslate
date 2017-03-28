@@ -19,8 +19,8 @@ class PBTranslator::Scheme::WithFallback(A, B)
     (@schemes.first.network? width) || (@schemes.last.network?(width))
   end
 
-  def with_depth
+  def with_gate_depth
     a, b = @schemes
-    WithFallback.new(a.with_depth, b.with_depth)
+    WithFallback.new(a.with_gate_depth, b.with_gate_depth)
   end
 end

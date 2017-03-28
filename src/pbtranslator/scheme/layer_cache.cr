@@ -10,7 +10,7 @@ class PBTranslator::Scheme::LayerCache(S, G, O)
   end
 
   protected def self.preprocess(scheme)
-    scheme.with_depth
+    scheme.with_gate_depth
     # DepthTracking::Scheme.wrap_if_needed(scheme)
   end
 
