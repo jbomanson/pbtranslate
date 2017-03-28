@@ -6,8 +6,6 @@ require "./flexible_merge"
 class PBTranslator::Scheme::BestSplitMergeSort(B, M)
   include GateOptions::Module
 
-  REPORTED = Set(Distance).new
-
   IMBALANCE_LIMIT = Distance.new(3)
 
   record Details, point : Distance, size : Area
@@ -30,10 +28,6 @@ class PBTranslator::Scheme::BestSplitMergeSort(B, M)
   private def recursive_network(width)
     w = width.value
     l = split_point(w)
-    unless REPORTED.includes? w
-      REPORTED << w
-      STDERR.puts "w => #{l} + #{w - l}"
-    end
     Network::DivideAndConquer.new(
       widths: widths(l, w - l),
       conquer_scheme: self,
