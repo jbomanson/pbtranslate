@@ -9,24 +9,7 @@ module PBTranslator::GateOptions::Module
 
   # Converts this scheme into one that has the gate option _depth_, if needed.
   def with_gate_depth
-    s = with_gate_depth_helper(**gate_options.named_tuple)
-    s.tap &.gate_options.restrict(depth: true)
-  end
-
-  private def with_gate_depth_helper(**options, depth : Bool)
-    self
-  end
-
-  private def with_gate_depth_helper(**options, depth : Nil)
-    with_gate_depth_added
-  end
-
-  private def with_gate_depth_helper(**options, depth : Bool | Nil)
-    {{ raise "Ambiguity error: depth is and is not provided by #{@type}" }}
-  end
-
-  private def with_gate_depth_helper(**options)
-    with_gate_depth_added
+    with_gate_depth &.with_gate_depth_added
   end
 
   # Returns this scheme object if it has the gate option _depth_ and
