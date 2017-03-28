@@ -27,7 +27,7 @@ def partition_in_three(n, random)
   {left, right + 1}
 end
 
-def for_some_network_with_random_width(network_count, random, sub_scheme)
+def for_some_networks_of_random_width(network_count, random, sub_scheme)
   random_width_array(network_count, random).each do |width|
     sub_width = Math.pw2ceil(width)
     sub_network = sub_scheme.network(Width.from_pw2(sub_width))
@@ -39,7 +39,7 @@ end
 
 def test_limits_with_sub_scheme(sub_scheme, network_count)
   random = Random.new(SEED)
-  for_some_network_with_random_width(network_count, random, sub_scheme) do |network, width|
+  for_some_networks_of_random_width(network_count, random, sub_scheme) do |network, width|
     visitor = WidthCheckingVisitor.new(width)
     network.host(visitor, FORWARD)
   end
@@ -47,7 +47,7 @@ end
 
 def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
   random = Random.new(SEED)
-  for_some_network_with_random_width(network_count, random, sub_scheme) do |network, width|
+  for_some_networks_of_random_width(network_count, random, sub_scheme) do |network, width|
     a = Array.new(width) { yield random }
     b = a.clone
     c = sort(a)
