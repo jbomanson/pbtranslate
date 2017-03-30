@@ -10,8 +10,7 @@ struct PBTranslator::Visitor::ArrayLogic(T)
 
   # An interface for objects that perform logic operations on arrays.
   module Context(T)
-    abstract def operate(f : Class, args : Tuple(*T)) : T
-    abstract def operate(f : Class, args : Array(T)) : T
+    abstract def operate(f : Class, args : Enumerable(T)) : T
   end
 
   def initialize(
