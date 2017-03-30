@@ -48,8 +48,6 @@ module PBTranslator::DepthTracking
   # The depth of a gate refers to the distance to the input furthest from it.
   # Here distance is counted in terms of gates properly between them, so that
   # the destination gate is excluded from the count.
-  # The depth of an entire network is the longest distance between an input and
-  # an output.
   #
   # ### Example
   #
@@ -67,7 +65,6 @@ module PBTranslator::DepthTracking
   #     visitor = MyVisitor.new
   #     wrapper = DepthTracking::Guide.new(width: width, visitor: visitor)
   #     network.host(wrapper, FORWARD)
-  #     wrapper.depth # => 3
   #
   #     # Output
   #     #
@@ -81,13 +78,9 @@ module PBTranslator::DepthTracking
     include Visitor::DefaultMethods
     include Visitor::OfNoYieldedContent
 
-    # Computes the depth of the network seen so far.
-    getter depth
-
     # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
     def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, way : W, width w : Int, initial_depth d = Distance.zero)
       @array = Array(Distance).new(w, Distance.new(d))
-      @depth = Distance.zero
     end
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
@@ -98,7 +91,6 @@ module PBTranslator::DepthTracking
       depth += W.new.first(0, -1)
       @visitor.visit_gate(g, *args, **options, depth: depth)
       depth += W.new.first(+1, 0)
-      @depth = {@depth, depth}.max
       output_wires = g.wires
       output_wires.each do |index|
         @array[index] = depth
