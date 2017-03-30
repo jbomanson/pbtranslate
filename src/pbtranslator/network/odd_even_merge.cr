@@ -36,15 +36,13 @@ struct PBTranslator::Network::OddEvenMerge
   #
   # The visit_gate method of *visitor* is called for each comparator.
   def host(visitor, way : Way) : Nil
-    a, b = {Distance.new(0), half_width_log2}
-    way.each_between(a, b) do |layer_index|
+    way.times(network_depth) do |layer_index|
       layer_host(visitor, way, layer_index)
     end
   end
 
   private def layer_host(visitor, way, layer_index)
-    a, b = {Distance.new(0), (Distance.new(1) << (half_width_log2 + 1)) - 1}
-    way.each_between(a, b) do |wire_index|
+    way.times(network_width) do |wire_index|
       partner_index = partner(half_width_log2, layer_index, wire_index)
       case wire_index <=> partner_index
       when -1
@@ -56,7 +54,7 @@ struct PBTranslator::Network::OddEvenMerge
   end
 
   private def partner(half_width_log2, layer_index, wire_index)
-    if Distance.new(0) == layer_index
+    if layer_index == 0
       wire_index ^ (Distance.new(1) << half_width_log2)
     else
       r = half_width_log2 - layer_index

@@ -49,6 +49,11 @@ abstract struct PBTranslator::Way
     first(+1, -1)
   end
 
+  # Similar to `Int#times` for _n_.
+  def times(n)
+    each_between(typeof(n).new(0), n - 1) { |x| yield x }
+  end
+
   # A convenience macro for defining argumentless _each_ and *reverse_each*
   # methods for an object that defines *each_in* with a single `Way` argument.
   macro define_each
