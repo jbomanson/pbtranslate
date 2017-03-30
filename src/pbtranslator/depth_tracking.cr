@@ -28,10 +28,10 @@ module PBTranslator::DepthTracking
     def initialize(*, @network : N, @width : Distance)
     end
 
-    def host(visitor v, way y : Way) : Nil
-      d = initial_depth(y)
-      g = Guide.new(visitor: v, way: y, width: @width, initial_depth: d)
-      @network.host(g, y)
+    def host(visitor v) : Nil
+      d = initial_depth(v.way)
+      g = Guide.new(visitor: v, width: @width, initial_depth: d)
+      @network.host(g)
     end
 
     private def initial_depth(way : Forward)
@@ -54,6 +54,8 @@ module PBTranslator::DepthTracking
   #     include PBTranslator
   #
   #     struct MyVisitor
+  #       include Visitor
+  #
   #       def visit_gate(g, *args, depth) : Nil
   #         puts "#{g.wires} @ #{depth}"
   #       end
@@ -64,7 +66,7 @@ module PBTranslator::DepthTracking
   #     width = network.width # => 4
   #     visitor = MyVisitor.new
   #     wrapper = DepthTracking::Guide.new(width: width, visitor: visitor)
-  #     network.host(wrapper, FORWARD)
+  #     network.host(wrapper)
   #
   #     # Output
   #     #
@@ -73,13 +75,16 @@ module PBTranslator::DepthTracking
   #     # {0, 2} @ 1
   #     # {1, 3} @ 1
   #     # {1, 2} @ 2
-  class Guide(V, W)
+  class Guide(V)
     include Gate::Restriction
+    include Visitor
     include Visitor::DefaultMethods
     include Visitor::OfNoYieldedContent
 
+    delegate way, to: @visitor
+
     # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
-    def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, way : W, width w : Int, initial_depth d = Distance.zero)
+    def initialize(*, @visitor : V = PBTranslator::Visitor::Noop::INSTANCE, width w : Int, initial_depth d = Distance.zero)
       @array = Array(Distance).new(w, Distance.new(d))
     end
 
@@ -88,9 +93,9 @@ module PBTranslator::DepthTracking
     def visit_gate(g : Gate(_, InPlace, _), *args, **options) : Nil
       input_wires = g.wires
       depth = @array.values_at(*input_wires).max
-      depth += W.new.first(0, -1)
+      depth += way.first(0, -1)
       @visitor.visit_gate(g, *args, **options, depth: depth)
-      depth += W.new.first(+1, 0)
+      depth += way.first(+1, 0)
       output_wires = g.wires
       output_wires.each do |index|
         @array[index] = depth

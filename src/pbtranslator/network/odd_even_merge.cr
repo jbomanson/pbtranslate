@@ -35,14 +35,14 @@ struct PBTranslator::Network::OddEvenMerge
   # Hosts a visit over the comparators in this network.
   #
   # The visit_gate method of *visitor* is called for each comparator.
-  def host(visitor, way : Way) : Nil
-    way.times(network_depth) do |layer_index|
-      layer_host(visitor, way, layer_index)
+  def host(visitor) : Nil
+    visitor.way.times(network_depth) do |layer_index|
+      layer_host(visitor, layer_index)
     end
   end
 
-  private def layer_host(visitor, way, layer_index)
-    way.times(network_width) do |wire_index|
+  private def layer_host(visitor, layer_index)
+    visitor.way.times(network_width) do |wire_index|
       partner_index = partner(half_width_log2, layer_index, wire_index)
       case wire_index <=> partner_index
       when -1

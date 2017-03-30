@@ -3,6 +3,8 @@ require "../../spec_helper"
 include PBTranslator
 
 struct MyVisitor
+  include Visitor
+
   getter array
 
   @array = Array({Distance, Distance} | {Distance, Distance, Distance}).new
@@ -21,7 +23,7 @@ describe DepthTracking do
     width = network.network_width # => 4
     visitor = MyVisitor.new
     nn = DepthTracking::Network.new(network: network, width: width)
-    nn.host(visitor, FORWARD)
+    nn.host(visitor)
     visitor.array.select {|t| t.size == 3}.should eq(e)
   end
 end

@@ -12,6 +12,8 @@ scheme =
   )
 
 struct RecordingVisitor
+  include Visitor
+
   getter array
 
   @array = Array(Array(Distance)).new
@@ -35,10 +37,10 @@ describe Scheme::DepthSlice do
       visitor_x = RecordingVisitor.new
       visitor_y = RecordingVisitor.new
 
-      scheme.network(Width.from_log2(width_log2)).host(visitor_x, FORWARD)
+      scheme.network(Width.from_log2(width_log2)).host(visitor_x)
 
-      scheme_a.network(Width.from_log2(width_log2)).host(visitor_y, FORWARD)
-      scheme_b.network(Width.from_log2(width_log2)).host(visitor_y, FORWARD)
+      scheme_a.network(Width.from_log2(width_log2)).host(visitor_y)
+      scheme_b.network(Width.from_log2(width_log2)).host(visitor_y)
 
       visitor_x.array.sort.should eq(visitor_y.array.sort)
     end

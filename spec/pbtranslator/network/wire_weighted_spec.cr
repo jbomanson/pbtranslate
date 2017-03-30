@@ -35,7 +35,7 @@ describe Network::WireWeighted do
       backup_weights = weights.clone
       n = scheme.network(Width.from_value(width))
       nn = Network::WireWeighted.new(network: n, weights: weights)
-      nn.host(visitor, FORWARD)
+      nn.host(visitor)
       a, b = {w, backup_weights}.map &.sum
       a.should eq(b)
     end

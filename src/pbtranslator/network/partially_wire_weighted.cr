@@ -28,16 +28,18 @@ class PBTranslator::Network::PartiallyWireWeighted(C, W)
 
   # Hosts a visitor through `Layer` regions containing `Gate`s each together with
   # a named argument *output_weights* that is a tuple of `W`.
-  def host(visitor v, way y : Way) : Nil
-    PassingGuide.guide(@network, @layered_weights, @bit_array, visitor: v, way: y)
+  def host(visitor v) : Nil
+    PassingGuide.guide(@network, @layered_weights, @bit_array, visitor: v)
   end
 
   # A visitor that propagates weights through a network and stores some of them.
   private class Propagator(W)
+    include Visitor
+
     def self.propagate(network n, bit_array b, zero : W, weights w) forall W
       s = Util::SliceMatrix(W).new(b.count(true) + 1, w.size) { zero }
       p = self.new(layered_weights: s, bit_array: b, weights: w)
-      n.host(p, FORWARD)
+      n.host(p)
       p.flush_weights(b.size)
       s
     end
@@ -104,6 +106,7 @@ class PBTranslator::Network::PartiallyWireWeighted(C, W)
 
   # A visitor that guides another and provides it with weights for output wires.
   private abstract struct PassingGuide(V, W, L, B)
+    include Visitor
     include Gate::Restriction
 
     private struct LayerGuide(V, W, L, B) < PassingGuide(V, W, L, B)
@@ -147,12 +150,15 @@ class PBTranslator::Network::PartiallyWireWeighted(C, W)
       end
     end
 
-    def self.guide(network n, layered_weights s, bit_array b, visitor v, way y) : Nil
+    delegate way, to: @visitor
+
+    def self.guide(network n, layered_weights s, bit_array b, visitor v) : Nil
+      y = v.way
       g = LayerGuide.new(v, s.first, y.each_in(s), y.each_in(b))
       if y.is_a? Forward
         g.pass_sweep(y)
       end
-      n.host(g, y)
+      n.host(g)
       if y.is_a? Backward
         g.pass_sweep(y)
       end

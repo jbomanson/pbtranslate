@@ -17,7 +17,7 @@ macro it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
         b = a.clone
         c = a.sort
         visitor = Visitor::ArraySwap.new(b)
-        %scheme.network(width).host(visitor, FORWARD)
+        %scheme.network(width).host(visitor)
         {a, b}.should eq({a, c})
       end
     end
@@ -30,8 +30,8 @@ macro it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
       vf, vb = Array.new(2) { VisitCallCounter.new }
       wf, wb = {FORWARD, BACKWARD}
       
-      network.host(vf, wf)
-      network.host(vb, wb)
+      network.host(vf.going(wf))
+      network.host(vb.going(wb))
 
       ff = vf.count(Comparator, InPlace)
       bb = vb.count(Comparator, InPlace)
@@ -52,7 +52,7 @@ macro it_reports_like_a_sorting_network(scheme, seed, range, rounds)
       network = %scheme.network(width)
       a = network.network_write_count
       visitor = VisitCallCounter.new
-      network.host(visitor, FORWARD)
+      network.host(visitor)
       b = visitor.wire_count(Comparator, InPlace)
       a.should eq(b)
     end

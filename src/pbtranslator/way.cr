@@ -54,6 +54,11 @@ abstract struct PBTranslator::Way
     each_between(typeof(n).new(0), n - 1) { |x| yield x }
   end
 
+  # Returns the way forward if this and `way` agree, and backward otherwise.
+  def compose(way)
+    first(way, way.reverse)
+  end
+
   # A convenience macro for defining argumentless _each_ and *reverse_each*
   # methods for an object that defines *each_in* with a single `Way` argument.
   macro define_each
@@ -92,6 +97,10 @@ abstract struct PBTranslator::Way
       def first(f, b)
         f
       end
+
+      def reverse
+        BACKWARD
+      end
     end
 
     struct Backward < Way
@@ -108,6 +117,10 @@ abstract struct PBTranslator::Way
       # Returns _b_.
       def first(f, b)
         b
+      end
+
+      def reverse
+        FORWARD
       end
     end
   end

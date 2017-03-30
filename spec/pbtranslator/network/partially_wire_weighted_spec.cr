@@ -23,6 +23,8 @@ layer_cache_class =
     depth: Distance.zero)
 
 class GateWeightCountingVisitor(T)
+  include Visitor
+
   getter sum
 
   def initialize(@sum : T = T.zero)
@@ -48,7 +50,7 @@ def test(network_count, scheme, layer_cache_class, random, weight_range, way)
     y.each_index { |i| y[i] = yield }
     nn = layer_cache_class.new(network: n, width: width)
     nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: ww)
-    nnn.host(v, way)
+    nnn.host(v.going(way))
     a, b = {v, w}.map &.sum
     a.should eq(b)
   end

@@ -7,11 +7,12 @@ module PBTranslator::Network
   end
 
   private class ComputeGateCountVisitor
+    include Visitor
     include Visitor::DefaultMethods
 
     def self.compute(network n, way y : Way)
       v = self.new
-      n.host(v, y)
+      n.host(v.going(y))
       v.count
     end
 

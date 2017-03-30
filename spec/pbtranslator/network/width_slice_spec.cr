@@ -41,7 +41,7 @@ def test_limits_with_sub_scheme(sub_scheme, network_count)
   random = Random.new(SEED)
   for_some_networks_of_random_width(network_count, random, sub_scheme) do |network, width|
     visitor = WidthCheckingVisitor.new(width)
-    network.host(visitor, FORWARD)
+    network.host(visitor)
   end
 end
 
@@ -52,7 +52,7 @@ def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
     b = a.clone
     c = sort(a)
     visitor = visitor_factory.new(b)
-    network.host(visitor, FORWARD)
+    network.host(visitor)
     b.should eq(c)
   end
 end

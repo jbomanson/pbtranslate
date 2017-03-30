@@ -34,17 +34,21 @@ struct PBTranslator::Network::MergeSort(S, M)
     Distance.new(1) << @width_log2
   end
 
-  def host(visitor, way : Forward) : Nil
-    helper_host(visitor, way) do |less|
-      pair_host(visitor, way, less)
-      @merge_scheme.network(less).host(visitor, way)
+  def host(visitor) : Nil
+    host(visitor, visitor.way)
+  end
+
+  private def host(visitor, way : Forward)
+    helper_host(visitor) do |less|
+      pair_host(visitor, less)
+      @merge_scheme.network(less).host(visitor)
     end
   end
 
-  def host(visitor, way : Backward) : Nil
-    helper_host(visitor, way) do |less|
-      @merge_scheme.network(less).host(visitor, way)
-      pair_host(visitor, way, less)
+  private def host(visitor, way : Backward)
+    helper_host(visitor) do |less|
+      @merge_scheme.network(less).host(visitor)
+      pair_host(visitor, less)
     end
   end
 
@@ -52,11 +56,11 @@ struct PBTranslator::Network::MergeSort(S, M)
     three_cases(nil, host(*args), yield less)
   end
 
-  private def pair_host(visitor, way, less)
+  private def pair_host(visitor, less)
     sort_network = @sort_scheme.network(less)
-    way.each_in({typeof(less.value).new(0), less.value}) do |amount|
+    visitor.way.each_in({typeof(less.value).new(0), less.value}) do |amount|
       visitor.visit_region(Offset.new(amount)) do |region_visitor|
-        sort_network.host(region_visitor, way)
+        sort_network.host(region_visitor)
       end
     end
   end

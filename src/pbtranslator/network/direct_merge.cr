@@ -45,18 +45,18 @@ class PBTranslator::Network::DirectMerge
 
   # Arranges a visit over the AND and OR gates in this network placed at an
   # *offset*.
-  def host(visitor, way : Way, at offset : Distance = Distance.new(0)) : Nil
+  def host(visitor, at offset : Distance = Distance.new(0)) : Nil
     visitor.visit_region(OOPSublayer) do |layer_visitor|
       base = Int64.new(offset - 1)
       half_width = Int64.new(1) << @half_width_log2
       a = Int64.new(1)
       b = half_width << 1
-      way.each_between(a, b) do |out_value| # This is one indexed.
+      visitor.way.each_between(a, b) do |out_value| # This is one indexed.
         wire = Distance.new(out_value + base)
         layer_visitor.visit_gate(Gate.or_as(Distance.new(wire))) do |or_visitor|
           a = {Int64.new(0), out_value - half_width}.max
           b = {half_width, out_value}.min
-          way.each_between(a, b) do |left_value|
+          visitor.way.each_between(a, b) do |left_value|
             right_value = out_value - left_value
             g = and_input_gate(base, half_width, left_value, right_value)
             or_visitor.visit_gate(g, drop_true: nil)

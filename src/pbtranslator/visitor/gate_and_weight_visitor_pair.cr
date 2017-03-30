@@ -1,4 +1,8 @@
 struct PBTranslator::Visitor::GateAndWeightVisitorPair(G, W)
+  include Visitor
+
+  delegate way, to: @gate_visitor
+
   def initialize(*, @gate_visitor : G, @weight_visitor : W)
   end
 

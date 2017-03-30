@@ -17,13 +17,16 @@ struct PBTranslator::Network::WidthSlice(N)
     {@network.network_write_count, Area.new(network_depth) * network_width}.min
   end
 
-  def host(visitor v, way y : Way) : Nil
+  def host(visitor v) : Nil
     vv = Guide.new(v, @begin, @end)
-    @network.host(vv, y)
+    @network.host(vv)
   end
 
   private struct Guide(V)
+    include Visitor
     include Gate::Restriction
+
+    delegate way, to: @visitor
 
     def initialize(@visitor : V, @begin : Distance, @end : Distance)
     end

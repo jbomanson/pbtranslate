@@ -19,7 +19,7 @@ describe Network::Random do
       n = Network::Random.new(random: random, width: w, depth: pick_depth(w))
       x = n.network_write_count
       v = VisitCallCounter.new
-      n.host(v, FORWARD)
+      n.host(v)
       y = v.wire_count(Comparator, InPlace)
       y.should eq(x)
     end
@@ -34,7 +34,7 @@ describe Network::Random do
       c = a.sort
       n = Network::Random.new(random: random, width: w, depth: pick_depth(w))
       v = Visitor::ArraySwap.new(b)
-      n.host(v, FORWARD)
+      n.host(v)
       f = b.zip(c).reduce(0.0) { |memo, (x, y)| d = x - y; memo + d * d }
       g = allowed_mean_square_error * w.value
       f.should be < g

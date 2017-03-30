@@ -14,18 +14,20 @@ class PBTranslator::Network::WireWeighted(N, W)
   # The weights are provided to _visitor_ by calling its _visit_ method with
   # named parameters _weight_ and _wire_.
   # The sum of visited wire weights equals the sum of the initial weights.
-  def host(visitor v, way y : Way) : Nil
-    PropagatingGuide.guide(@network, @weights, v, y)
+  def host(visitor v) : Nil
+    PropagatingGuide.guide(@network, @weights, v)
   end
 
   private struct PropagatingGuide(V, W)
+    include Visitor
     include Gate::Restriction
     include Visitor::DefaultMethods
     include Visitor::OfNoYieldedContent
 
-    def self.guide(network n, weights w, visitor v, way : Forward)
+    def self.guide(network n, weights w, visitor v)
+      Util.restrict(v.way, Forward)
       p = self.new(visitor: v, weights: w)
-      n.host(p, FORWARD)
+      n.host(p)
       p.sweep
     end
 

@@ -6,6 +6,7 @@ include PBTranslator
 
 class ArrayConeSwap(T)
   include Gate::Restriction
+  include Visitor
 
   getter cone_size
 
@@ -41,7 +42,7 @@ private def host_with_cone(width_log2, wanted, array) : Int32
   n = scheme.network(w)
   nn = Network::Cone.new(network: n, width: w.value, output: wanted)
   visitor = ArrayConeSwap.new(array, FORWARD)
-  nn.host(visitor, FORWARD)
+  nn.host(visitor)
   visitor.cone_size
 end
 

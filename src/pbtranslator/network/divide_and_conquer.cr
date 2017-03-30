@@ -14,20 +14,24 @@ struct PBTranslator::Network::DivideAndConquer(P, R, E)
     @widths.last.value
   end
 
-  def host(visitor, way : Forward) : Nil
-    divide_and_conquer(visitor, way)
-    combine(visitor, way)
+  def host(visitor) : Nil
+    host(visitor, visitor.way)
   end
 
-  def host(visitor, way : Backward) : Nil
-    combine(visitor, way)
-    divide_and_conquer(visitor, way)
+  private def host(visitor, way : Forward)
+    divide_and_conquer(visitor)
+    combine(visitor)
   end
 
-  private def divide_and_conquer(visitor, way)
-    each_wire_slice(way) do |position, width|
+  private def host(visitor, way : Backward)
+    combine(visitor)
+    divide_and_conquer(visitor)
+  end
+
+  private def divide_and_conquer(visitor)
+    each_wire_slice(visitor.way) do |position, width|
       visitor.visit_region(Offset.new(position)) do |region_visitor|
-        @conquer_scheme.network(width).host(region_visitor, way)
+        @conquer_scheme.network(width).host(region_visitor)
       end
     end
   end
@@ -40,7 +44,7 @@ struct PBTranslator::Network::DivideAndConquer(P, R, E)
     end
   end
 
-  private def combine(visitor, way)
-    @combine_scheme.network(@widths).host(visitor, way)
+  private def combine(visitor)
+    @combine_scheme.network(@widths).host(visitor)
   end
 end

@@ -31,14 +31,14 @@ struct PBTranslator::Network::Random(C)
       network_read_count
     end
 
-    def host(visitor, way : Way) : Nil
+    def host(visitor) : Nil
       if @called
         raise "This Generator has already hosted"
       end
       @called = true
       a = Array.new(@network_width) { |i| Distance.new(i) }
       r = @random
-      way.each_in(typeof(@network_depth).zero...@network_depth) do |d|
+      visitor.way.each_in(typeof(@network_depth).zero...@network_depth) do |d|
         a.shuffle! random: r
         each_pair(a) do |i, j|
           x, y = i < j ? {i, j} : {j, i}

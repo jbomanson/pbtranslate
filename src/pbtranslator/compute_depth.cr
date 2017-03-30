@@ -3,16 +3,17 @@ require "./visitor/default_methods"
 
 module PBTranslator::Network
     # Computes the depth of this network, which is assumed to provide gate depths.
-  def self.compute_depth(network n, way y : Way = FORWARD) : Distance
-    ComputeDepthVisitor.compute(n, y)
+  def self.compute_depth(network n) : Distance
+    ComputeDepthVisitor.compute(n)
   end
 
   private class ComputeDepthVisitor
+    include Visitor
     include Visitor::DefaultMethods
 
-    def self.compute(network n, way y : Way) : Distance
+    def self.compute(network n) : Distance
       v = ComputeDepthVisitor.new
-      n.host(v, FORWARD)
+      n.host(v)
       v.result
     end
 

@@ -24,7 +24,7 @@ class PBTranslator::Tool::OptimizationRewriter <
   @scheme         = BASE_SCHEME.as(Scheme::OfAnyWidth)
 
   def quick_dry_test : Nil
-    network_of_width(1, [Int32.new(0)]).host(Visitor::Noop::INSTANCE, FORWARD)
+    network_of_width(1, [Int32.new(0)]).host(Visitor::Noop::INSTANCE)
   end
 
   def visit(s : Statement) : Bool
@@ -80,7 +80,7 @@ class PBTranslator::Tool::OptimizationRewriter <
       w = FilterVisitor.new(literals, @output_visitor)
       v = Visitor::GateAndWeightVisitorPair.new(gate_visitor: g, weight_visitor: w)
       n = network_of_width(literals.size, weights)
-      n.host(v, FORWARD)
+      n.host(v)
     end
     true
   end

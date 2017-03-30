@@ -18,6 +18,8 @@ cache_class =
     depth: Distance.zero)
 
 class WirePairCollector
+  include Visitor
+
   getter wire_count
 
   def initialize
@@ -54,7 +56,7 @@ describe Network::LayerCache do
       v, vv = {0, 0}.map { WirePairCollector.new }
       p, q =
         { {n, v}, {nn, vv} }.map do |(x, y)|
-          x.host(y, FORWARD)
+          x.host(y)
           y.consume_wire_pairs
         end
       p.size.should_not eq(0)

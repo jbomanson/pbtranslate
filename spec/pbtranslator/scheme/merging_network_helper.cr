@@ -14,7 +14,7 @@ macro it_merges(l, r, visitor_call, network_call)
       b = a.clone
       c = sort(a)
       visitor = {{visitor_call}}(b)
-      {{network_call}}(l, r).host(visitor, FORWARD)
+      {{network_call}}(l, r).host(visitor)
       b.should eq(c)
     end
   end

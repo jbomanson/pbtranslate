@@ -87,7 +87,7 @@ class PBTranslator::Tool::CardinalityTranslator <
     context = ASPIF::LogicContext.class_for(a, Int32).new(self)
     visitor = Visitor::ArrayLogic.new(a, context)
     network = network_of_width(w)
-    network.host(visitor, FORWARD)
+    network.host(visitor)
 
     # Derive the glue literal from the appropriate body literal.
     context.operate(Gate::Restriction::Or, glue_literal, {a[@lower_bound - 1]})

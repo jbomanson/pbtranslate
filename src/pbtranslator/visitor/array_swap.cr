@@ -2,6 +2,7 @@ require "../gate"
 
 record PBTranslator::Visitor::ArraySwap(T), array : Array(T) do
   include Gate::Restriction
+  include Visitor
 
   def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Nil
     i, j = g.wires

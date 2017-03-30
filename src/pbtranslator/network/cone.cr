@@ -32,39 +32,41 @@ class PBTranslator::Network::Cone(N)
     @is_pending = true
   end
 
-  def host(visitor, way : Way) : Nil
+  def host(visitor) : Nil
     if @is_pending
-      host_and_compute(visitor, way)
+      host_and_compute(visitor, visitor.way)
     else
-      host_and_pass(visitor, way)
+      host_and_pass(visitor)
     end
   end
 
   private def host_and_compute(visitor, way : Forward) : Nil
-    host_and_compute(Visitor::Noop::INSTANCE, BACKWARD)
-    host_and_pass(visitor, FORWARD)
+    host_and_compute(Visitor::Noop::INSTANCE.going(BACKWARD), BACKWARD)
+    host_and_pass(visitor)
   end
 
   private def host_and_compute(visitor, way : Backward) : Nil
-    ComputingGuide.guide(visitor, way, @network, @levels)
+    ComputingGuide.guide(visitor, @network, @levels)
     @is_pending = false
   end
 
-  private def host_and_pass(visitor, way : Way) : Nil
-    PassingGuide.guide(visitor, way, @network, @levels)
+  private def host_and_pass(visitor) : Nil
+    PassingGuide.guide(visitor, @network, @levels)
   end
 
   private class ComputingGuide(V)
     include Gate::Restriction
+    include Visitor
     include Visitor::DefaultMethods
     include Visitor::OfNoYieldedContent
 
     # A visitor that propagates a cone through gates backward from output to
     # input wires while guiding another visitor through the network.
 
-    def self.guide(visitor, way : Backward, network, levels) : Nil
+    def self.guide(visitor, network, levels) : Nil
+      Util.restrict(visitor.way, Backward)
       guide = self.new(visitor, levels)
-      network.host(guide, way)
+      network.host(guide)
       guide.finish
     end
 
@@ -79,6 +81,10 @@ class PBTranslator::Network::Cone(N)
       input_wires.each do |wire|
         @levels[wire] ||= @reverse_index
       end
+    end
+
+    def way : Way
+      BACKWARD
     end
 
     private def visit_gate_with_cone(g, **options) : Bool
@@ -101,15 +107,17 @@ class PBTranslator::Network::Cone(N)
 
   private class PassingGuide(V)
     include Gate::Restriction
+    include Visitor
     include Visitor::DefaultMethods
     include Visitor::OfNoYieldedContent
 
     # A visitor that guides another and indicates to it which output wires
     # are in a cone.
 
-    def self.guide(visitor, way : Forward, network, levels) : Nil
+    def self.guide(visitor, network, levels) : Nil
+      Util.restrict(visitor.way, Forward)
       guide = self.new(visitor, levels)
-      network.host(guide, way)
+      network.host(guide)
     end
 
     def initialize(@visitor : V, @levels : Array(Level?))

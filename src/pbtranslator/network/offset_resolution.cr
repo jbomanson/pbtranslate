@@ -6,14 +6,18 @@ class PBTranslator::Network::OffsetResolution(N)
   def initialize(@network : N)
   end
 
-  def host(visitor, way : Way) : Nil
-    Guide.guide(@network, visitor, way)
+  def host(visitor) : Nil
+    Guide.guide(@network, visitor)
   end
 
   private struct Guide(V)
-    def self.guide(network, visitor, way)
-      network.host(Guide.new(visitor), way)
+    include Visitor
+
+    def self.guide(network, visitor)
+      network.host(Guide.new(visitor))
     end
+
+    delegate way, to: @visitor
 
     protected def initialize(@visitor : V, @offset = Distance.new(0))
     end

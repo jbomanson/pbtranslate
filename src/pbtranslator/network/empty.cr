@@ -1,6 +1,6 @@
 struct PBTranslator::Network::Empty
   INSTANCE = new
 
-  def host(visitor, way) : Nil
+  def host(visitor) : Nil
   end
 end

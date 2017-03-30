@@ -5,8 +5,9 @@ require "./default_methods"
 # A visitor that operates on an array while visiting in place gates as well as
 # gates arranged in layers.
 struct PBTranslator::Visitor::ArrayLogic(T)
-  include Gate::Restriction
   include DefaultMethods
+  include Gate::Restriction
+  include Visitor
 
   # An interface for objects that perform logic operations on arrays.
   module Context(T)
