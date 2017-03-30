@@ -1,38 +1,25 @@
-require "../../spec_helper"
+require "./merging_network_helper"
 
-include SpecHelper
+module FlexibleMergeSpec
+  extend self
 
-scheme =
-  Scheme::FlexibleMerge.new(
-    Scheme::OddEvenMerge::INSTANCE
-  )
+  SCHEME =
+    Scheme::FlexibleMerge.new(
+      Scheme::OddEvenMerge::INSTANCE
+    )
 
-macro it_merges(l, r, visitor_factory)
-  l = {{l}}
-  r = {{r}}
-  it "represents a network that merges #{l} + #{r} wires" do
-    widths = {l, r}.map { |t| Width.from_value(Distance.new(t)) }
-    # Prepare two sorted arrays of booleans.
-    x, y = {l, r}.map { |t| Array.new(t + 1) { |c| Array.new(t, &.<(c)) } }
-    # Enumerate pairs of sorted arrays of booleans.
-    x.product(y) do |u, v|
-      a = u + v
-      b = a.clone
-      c = sort(a)
-      visitor = {{visitor_factory}}.new(b)
-      scheme.network(widths).host(visitor, FORWARD)
-      b.should eq(c)
-    end
+  def create_network(*args)
+    SCHEME.network(args.map { |t| Width.from_value(Distance.new(t)) })
   end
-end
 
-describe Scheme::FlexibleMerge do
-  {% begin %}
-    {% a = [1, 2, 3, 4, 5] %}
-    {% for l in a %}
-      {% for r in a %}
-        it_merges({{l}}, {{r}}, Visitor::ArrayLogic)
+  describe Scheme::FlexibleMerge do
+    {% begin %}
+      {% a = [1, 2, 3, 4, 5] %}
+      {% for l in a %}
+        {% for r in a %}
+          it_merges({{l}}, {{r}}, Visitor::ArrayLogic.new, create_network)
+        {% end %}
       {% end %}
     {% end %}
-  {% end %}
+  end
 end

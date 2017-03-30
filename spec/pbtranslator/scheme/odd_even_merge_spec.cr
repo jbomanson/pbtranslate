@@ -1,23 +1,20 @@
-require "../../spec_helper"
+require "./merging_network_helper"
 
-include PBTranslator
+module OddEvenMergeSpec
+  extend self
 
-scheme = Scheme::OddEvenMerge::INSTANCE
+  SCHEME = Scheme::OddEvenMerge::INSTANCE
 
-describe Scheme::OddEvenMerge do
-  it "represents a network that merges 2 and 2 wires" do
-    # Collect all sorted pairs of values in [0, ..., 3].
-    x = Array.new(4, &.itself).permutations(2)
-    x.each &.sort!
-    x.uniq!
-    # Enumerate pairs of sorted pairs.
-    x.product(x) do |u, v|
-      a = u + v
-      b = a.clone
-      c = a.sort
-      visitor = Visitor::ArraySwap.new(b)
-      scheme.network(Width.from_log2(Distance.new(1))).host(visitor, FORWARD)
-      b.should eq(c)
-    end
+  def create_network(i, j)
+    SCHEME.network(Width.from_pw2(Distance.new(i)))
+  end
+
+  describe Scheme::OddEvenMerge do
+    {% begin %}
+      {% a = [1, 2, 4, 8, 16, 32] %}
+      {% for l in a %}
+        it_merges({{l}}, {{l}}, Visitor::ArrayLogic.new, create_network)
+      {% end %}
+    {% end %}
   end
 end
