@@ -39,7 +39,7 @@ module PBTranslator::DepthTracking
     end
 
     private def initial_depth(way : Backward)
-      depth
+      {{ raise "Not yet tested" }}
     end
   end
   
