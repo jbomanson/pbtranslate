@@ -18,12 +18,10 @@ describe DepthTracking do
     e = e.map &.map {|v| Distance.new(v)}
     a = e.map {|(d, i, j)| {i, j}}
     network = Network::IndexableComparator.new(a)
-    width = network.width # => 4
+    width = network.network_width # => 4
     visitor = MyVisitor.new
     nn = DepthTracking::Network.new(network: network, width: width)
     nn.host(visitor, FORWARD)
-    b = nn.computed_depth
-    b.should eq(3)
     visitor.array.select {|t| t.size == 3}.should eq(e)
   end
 end
