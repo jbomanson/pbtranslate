@@ -95,30 +95,14 @@ module PBTranslator::DepthTracking
     def visit_gate(g : Gate(_, InPlace, _), *args, **options) : Nil
       input_wires = g.wires
       depth = @array.values_at(*input_wires).max
-      depth += increment_before(W.new)
+      depth += W.new.first(0, -1)
       @visitor.visit_gate(g, *args, **options, depth: depth)
-      depth += increment_after(W.new)
+      depth += W.new.first(+1, 0)
       @depth = {@depth, depth}.max
       output_wires = g.wires
       output_wires.each do |index|
         @array[index] = depth
       end
-    end
-
-    private def increment_before(way : Forward)
-      0
-    end
-
-    private def increment_before(way : Backward)
-      -1
-    end
-
-    private def increment_after(way : Forward)
-      1
-    end
-
-    private def increment_after(way : Backward)
-      0
     end
   end
 end
