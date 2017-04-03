@@ -13,6 +13,7 @@ class PBTranslator::Command
     Command:
         translate                translate a file
         measure                  measure a translation
+        inspect                  print a network
         help, --help, -h         show this help
         version, --version, -v   show version
     USAGE
@@ -38,7 +39,10 @@ class PBTranslator::Command
         translate
       when "measure".starts_with? command
         options.shift
-        measure
+        measure_or_inspect(inspect_please: false)
+      when "inspect".starts_with? command
+        options.shift
+        measure_or_inspect(inspect_please: true)
       when "help".starts_with?(command), "--help" == command, "-h" == command
         puts USAGE
         exit
@@ -227,7 +231,7 @@ class PBTranslator::Command
     end
   end
 
-  private def measure
+  private def measure_or_inspect(*, inspect_please)
     subject = nil
     output_filename = nil
     parameters = Array(String).new
@@ -275,11 +279,17 @@ class PBTranslator::Command
     with_file_or_io(output_filename, "w", STDOUT) do |output_io|
       w = Width.from_value(Distance.new(parameter))
       s = Tool::BASE_SCHEME
-      n = s.network(w)
-      size = Network.compute_gate_count(n)
-      depth = s.compute_depth(w)
-      puts "size: #{size}"
-      puts "depth: #{depth}"
+      if inspect_please
+        ss = s.with_gate_depth
+        n = ss.network(w)
+        n.host(Visitor::Print.new(output_io))
+      else
+        n = s.network(w)
+        size = Network.compute_gate_count(n)
+        depth = s.compute_depth(w)
+        puts "size: #{size}"
+        puts "depth: #{depth}"
+      end
     end
   end
 
