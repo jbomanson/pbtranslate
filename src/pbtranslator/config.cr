@@ -22,7 +22,7 @@ module PBTranslator::Config
     version, sha = version_and_sha
     String.build do |io|
       io << "PBTranslator"
-      io << version if version
+      io << " " << version if version
       io << " [" << sha << "]" if sha
       io << " (" << date << ")"
     end
