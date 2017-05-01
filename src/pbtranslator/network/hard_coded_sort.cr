@@ -9,7 +9,7 @@ module PBTranslator::Network::HardCodedSort
 
   # The range of width values for which `.network` is defined.
   def width_value_range
-    Distance.new(0)..Distance.new(20)
+    Distance.new(0)..Distance.new(24)
   end
 
   # Returns a good network of _width_.
@@ -47,6 +47,10 @@ module PBTranslator::Network::HardCodedSort
     when 18; NETWORK_18
     when 19; NETWORK_19
     when 20; NETWORK_20
+    when 21; NETWORK_21
+    when 22; NETWORK_22
+    when 23; NETWORK_23
+    when 24; NETWORK_24
     end
   end
 
@@ -805,4 +809,158 @@ module PBTranslator::Network::HardCodedSort
 
   # A width limited version of NETWORK_20.
   NETWORK_19 = with_limited_width(NETWORK_20, 19)
+
+  # A network from "Merging almost sorted sequences yields a 24-sorter"
+  # by Thorsten Ehlers.
+  NETWORK_24 =
+    create(
+      [
+        # Layer 1.
+        comparator(0, 1),
+        comparator(2, 3),
+        comparator(4, 5),
+        comparator(6, 7),
+        comparator(8, 9),
+        comparator(10, 11),
+        comparator(12, 13),
+        comparator(14, 15),
+        comparator(16, 17),
+        comparator(18, 19),
+        comparator(20, 21),
+        comparator(22, 23),
+        # Layer 2.
+        comparator(0, 2),
+        comparator(1, 3),
+        comparator(4, 6),
+        comparator(5, 7),
+        comparator(8, 10),
+        comparator(9, 11),
+        comparator(12, 14),
+        comparator(13, 15),
+        comparator(16, 18),
+        comparator(17, 19),
+        comparator(20, 22),
+        comparator(21, 23),
+        # Layer 3.
+        comparator(0, 4),
+        comparator(1, 5),
+        comparator(2, 8),
+        comparator(3, 9),
+        comparator(6, 10),
+        comparator(7, 11),
+        comparator(12, 16),
+        comparator(13, 17),
+        comparator(14, 20),
+        comparator(15, 21),
+        comparator(18, 22),
+        comparator(19, 23),
+        # Layer 4.
+        comparator(0, 2),
+        comparator(1, 3),
+        comparator(4, 6),
+        comparator(5, 7),
+        comparator(8, 10),
+        comparator(9, 11),
+        comparator(12, 14),
+        comparator(13, 15),
+        comparator(16, 18),
+        comparator(17, 19),
+        comparator(20, 22),
+        comparator(21, 23),
+        # Layer 5.
+        comparator(0, 12),
+        comparator(2, 4),
+        comparator(3, 5),
+        comparator(6, 8),
+        comparator(7, 9),
+        comparator(11, 23),
+        comparator(14, 16),
+        comparator(15, 17),
+        comparator(18, 20),
+        comparator(19, 21),
+        # Layer 6.
+        comparator(1, 13),
+        comparator(2, 14),
+        comparator(3, 15),
+        comparator(6, 16),
+        comparator(7, 17),
+        comparator(4, 18),
+        comparator(5, 19),
+        comparator(8, 20),
+        comparator(9, 21),
+        comparator(10, 22),
+        # Layer 7.
+        comparator(1, 12),
+        comparator(3, 14),
+        comparator(5, 18),
+        comparator(4, 6),
+        comparator(7, 16),
+        comparator(8, 13),
+        comparator(9, 20),
+        comparator(10, 15),
+        comparator(11, 22),
+        comparator(17, 19),
+        # Layer 8.
+        comparator(1, 4),
+        comparator(3, 6),
+        comparator(5, 7),
+        comparator(8, 12),
+        comparator(9, 13),
+        comparator(10, 14),
+        comparator(11, 15),
+        comparator(16, 18),
+        comparator(17, 20),
+        comparator(19, 22),
+        # Layer 9.
+        comparator(3, 8),
+        comparator(5, 12),
+        comparator(6, 10),
+        comparator(7, 14),
+        comparator(9, 16),
+        comparator(11, 18),
+        comparator(13, 17),
+        comparator(15, 19),
+        comparator(21, 22),
+        # Layer 10.
+        comparator(2, 3),
+        comparator(4, 5),
+        comparator(6, 8),
+        comparator(7, 9),
+        comparator(10, 12),
+        comparator(11, 16),
+        comparator(13, 14),
+        comparator(15, 17),
+        comparator(18, 20),
+        comparator(19, 21),
+        # Layer 11.
+        comparator(1, 2),
+        comparator(4, 6),
+        comparator(5, 8),
+        comparator(7, 10),
+        comparator(9, 12),
+        comparator(11, 13),
+        comparator(14, 16),
+        comparator(15, 18),
+        comparator(17, 20),
+        # Layer 12.
+        comparator(3, 4),
+        comparator(5, 6),
+        comparator(7, 8),
+        comparator(9, 10),
+        comparator(11, 12),
+        comparator(13, 14),
+        comparator(15, 16),
+        comparator(17, 18),
+        comparator(19, 20),
+      ]
+    )
+
+  # A width limited version of NETWORK_24.
+  NETWORK_21 = with_limited_width(NETWORK_24, 21)
+
+  # A width limited version of NETWORK_24.
+  NETWORK_22 = with_limited_width(NETWORK_24, 22)
+
+  # A width limited version of NETWORK_24.
+  NETWORK_23 = with_limited_width(NETWORK_24, 23)
 end
