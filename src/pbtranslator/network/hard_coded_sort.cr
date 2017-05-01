@@ -105,23 +105,24 @@ module PBTranslator::Network::HardCodedSort
       ]
     )
 
-  # ditto
+  # A network generated with "sortnetgen 5 --measure=count --level-factor=1.1".
   NETWORK_05 =
     create(
       [
         comparator(0, 1),
-        comparator(3, 4),
-        comparator(2, 4),
         comparator(2, 3),
-        comparator(0, 3),
         comparator(0, 2),
         comparator(1, 4),
-        comparator(1, 3),
+        comparator(1, 2),
+        comparator(3, 4),
+        comparator(0, 1),
+        comparator(2, 3),
         comparator(1, 2),
       ]
     )
 
-  # ditto
+  # A network generated using the Bose-Nelson algorithm on the website
+  # http://pages.ripco.net/~jgamble/nw.html
   NETWORK_06 =
     create(
       [
