@@ -624,7 +624,7 @@ module PBTranslator::Network::HardCodedSort
         # Layer 4.
         comparator(0, 8),
         comparator(9, 12),
-        comparator(1, 16),
+        # Unnecessary: comparator(1, 16),
         comparator(2, 6),
         comparator(10, 13),
         comparator(3, 4),
@@ -632,7 +632,7 @@ module PBTranslator::Network::HardCodedSort
         comparator(11, 14),
         # Layer 5.
         comparator(1, 11),
-        comparator(12, 14),
+        # Unnecessary: comparator(12, 14),
         comparator(15, 16),
         comparator(2, 5),
         comparator(6, 7),
@@ -649,7 +649,7 @@ module PBTranslator::Network::HardCodedSort
         comparator(13, 15),
         comparator(8, 10),
         # Layer 7.
-        comparator(0, 1),
+        # Unnecessary: comparator(0, 1),
         comparator(2, 4),
         comparator(6, 8),
         comparator(10, 11),
@@ -663,7 +663,7 @@ module PBTranslator::Network::HardCodedSort
         comparator(6, 7),
         comparator(8, 9),
         comparator(10, 12),
-        comparator(14, 16),
+        # Unnecessary: comparator(14, 16),
         comparator(1, 2),
         comparator(11, 13),
         # Layer 9.
