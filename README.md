@@ -28,4 +28,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [jbomanson](https://github.com/[your-github-name]) Jori Bomanson - creator, maintainer
+- [jbomanson](https://github.com/jbomanson) Jori Bomanson - creator, maintainer
