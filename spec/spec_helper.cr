@@ -1,7 +1,7 @@
 require "spec"
-require "../src/pbtranslator"
+require "../src/pbtranslate"
 
-include PBTranslator
+include PBTranslate
 
 WIDTH_LOG2_MAX = Distance.new(10)
 SEED           = 482382392
@@ -75,7 +75,7 @@ class WidthPw2Range(R)
 end
 
 module SpecHelper
-  include PBTranslator
+  include PBTranslate
 
   def sort(a : Array(Bool))
     a.sort_by { |w| w ? 0 : 1 }

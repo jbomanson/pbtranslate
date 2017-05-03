@@ -1,3 +1,3 @@
-require "./src/pbtranslator"
+require "./src/pbtranslate"
 
-PBTranslator::Command.run
+PBTranslate::Command.run
