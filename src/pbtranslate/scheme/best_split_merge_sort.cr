@@ -1,5 +1,7 @@
-require "../scheme"
 require "./flexible_merge"
+require "../network/compute_gate_count"
+require "../network/divide_and_conquer"
+require "../scheme"
 
 # A recursive merge sorting network parameterized by a scheme for base cases
 # and a scheme for merging.

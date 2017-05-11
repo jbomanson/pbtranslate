@@ -1,4 +1,6 @@
+require "./indexable_comparator"
 require "../scheme"
+require "./wrapper_with_depth"
 
 # A collection of good networks of fixed widths.
 module PBTranslate::Network::HardCodedSort

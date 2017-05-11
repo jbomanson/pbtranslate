@@ -1,6 +1,7 @@
 require "../gate"
 require "../gate_options"
 require "../named_tuple"
+require "../util/slice_matrix"
 
 # A network of gates stored explicitly for enumeration layer by layer.
 class PBTranslate::Network::LayerCache(G, O)

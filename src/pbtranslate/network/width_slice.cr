@@ -1,3 +1,6 @@
+require "../gate"
+require "../visitor"
+
 struct PBTranslate::Network::WidthSlice(N)
   delegate network_depth, network_read_count, to: @network
 

@@ -1,3 +1,7 @@
+require "../compute_depth"
+require "../gate"
+require "../scheme/indexable_comparator"
+
 # A network of comparator gates based on a given sequence of wire pairs.
 struct PBTranslate::Network::IndexableComparator(T)
   include Gate::Restriction

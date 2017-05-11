@@ -1,5 +1,8 @@
-require "../network/cone"
+require "../aspif/broker"
+require "../aspif/logic_context"
 require "./base_scheme"
+require "../network/cone"
+require "../util/id_broker"
 require "../visitor/array_logic"
 
 # An object that translates cardinality rules into normal rules in ASPIF::Reader.
@@ -7,7 +10,7 @@ class PBTranslate::Tool::CardinalityTranslator <
     PBTranslate::ASPIF::Broker
 
   property scheme
-    
+
   @in_weight_rule = false
   @lower_bound = 0
   @literals = Array(Literal(Util::BrokeredId(Int32))).new

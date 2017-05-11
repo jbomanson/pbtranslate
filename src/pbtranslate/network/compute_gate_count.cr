@@ -1,4 +1,5 @@
 require "../visitor/default_methods"
+require "../visitor/going"
 
 module PBTranslate::Network
   # Computes the number of gates in a network by visiting all of them.

@@ -1,5 +1,6 @@
-require "../scheme"
+require "../depth_tracking/scheme"
 require "../network/offset_resolution"
+require "../scheme"
 
 class PBTranslate::Scheme::OffsetResolution(S)
   include Scheme

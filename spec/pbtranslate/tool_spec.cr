@@ -27,6 +27,12 @@ macro describe_translator_class(translator_class)
   end
 end
 
+describe "filter_program" do
+  it "is found on the system" do
+    filter_program.should_not eq("")
+  end
+end
+
 describe_translator_class(ASPIF::Broker)
 describe_translator_class(Tool::CardinalityTranslator)
 describe_translator_class(Tool::OptimizationRewriter)

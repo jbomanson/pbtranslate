@@ -1,3 +1,4 @@
+require "./first_class"
 require "../gate"
 
 # See `Scheme::OddEvenMerge`.

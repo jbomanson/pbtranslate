@@ -1,3 +1,5 @@
+require "../network/layer_cache"
+
 class PBTranslate::Scheme::LayerCache(S, G, O)
   include Scheme
 

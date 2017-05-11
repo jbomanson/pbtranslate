@@ -1,4 +1,14 @@
+require "bit_array"
+
 require "./base_scheme"
+require "../network/partially_wire_weighted"
+require "../network/wire_weighted"
+require "../object"
+require "../scheme/depth_slice"
+require "../scheme/layer_cache"
+require "../visitor/gate_and_weight_visitor_pair"
+require "../visitor/noop"
+require "../width"
 
 # An object that rewrites optimization statements using normal rules in ASPIF::Reader.
 class PBTranslate::Tool::OptimizationRewriter <

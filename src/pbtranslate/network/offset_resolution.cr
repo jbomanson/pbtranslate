@@ -1,4 +1,6 @@
+require "../number_types"
 require "../offset"
+require "../visitor"
 
 class PBTranslate::Network::OffsetResolution(N)
   delegate network_depth, network_read_count, network_width, network_write_count, to: @network

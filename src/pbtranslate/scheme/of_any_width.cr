@@ -1,3 +1,5 @@
+require "./with_fallback"
+
 module PBTranslate::Scheme
   module OfAnyWidthMarker
     abstract def network(width w : Width)

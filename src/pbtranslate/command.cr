@@ -1,6 +1,13 @@
 require "colorize"
 require "option_parser"
 
+require "./config"
+require "./scheme/random_from_depth"
+require "./tool/base_scheme"
+require "./tool/cardinality_translator"
+require "./tool/optimization_rewriter"
+require "./visitor/print"
+
 # A class for processing command line options.
 #
 # This is based on `Crystal::Command`.

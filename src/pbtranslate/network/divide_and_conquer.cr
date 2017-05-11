@@ -1,3 +1,5 @@
+require "../not_implemented_error"
+
 struct PBTranslate::Network::DivideAndConquer(P, R, E)
   {% for message in [:network_depth, :network_write_count] %}
     def {{message.id}} : NoReturn

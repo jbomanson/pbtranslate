@@ -1,5 +1,6 @@
-require "../scheme"
+require "../network/depth_slice"
 require "./parameterized_by_depth"
+require "../scheme"
 require "../../util/restrict"
 require "../../width"
 

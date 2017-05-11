@@ -1,3 +1,6 @@
+require "../network/random"
+require "./of_any_width"
+require "./parameterized_by_depth"
 require "../scheme"
 
 class PBTranslate::Scheme::RandomFromDepth
