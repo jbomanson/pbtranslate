@@ -18,7 +18,7 @@ class PBTranslate::Command
     Usage: pbtranslate [command] [options] [--] [input file]
 
     Command:
-        translate                translate a file
+        translate (default)      translate a file
         measure                  measure a translation
         inspect                  print a network
         help, --help, -h         show this help
@@ -56,6 +56,8 @@ class PBTranslate::Command
       when "version".starts_with?(command), "--version" == command, "-v" == command
         puts PBTranslate::Config.description
         exit
+      when command.starts_with?("--"), File.file?(command)
+        translate
       else
         error "unknown command: #{command}"
       end
