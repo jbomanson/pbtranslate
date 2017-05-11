@@ -172,7 +172,7 @@ class PBTranslate::Command
         if translator.responds_to? :quick_dry_test
           translator.quick_dry_test
         end
-        translate(translator)
+        translate_with(translator)
       end
     end
   end
@@ -221,7 +221,7 @@ class PBTranslate::Command
     end
   end
 
-  private def translate(translator)
+  private def translate_with(translator)
     result = translator.parse
     if result
       # Report a syntax error, but without mentioning "error" twice.
