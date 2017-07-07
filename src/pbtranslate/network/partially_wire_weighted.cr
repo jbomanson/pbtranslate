@@ -56,6 +56,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
     end
 
     def visit_gate(g, *args, **options) : Nil
+      # Join the connected components of the wires of g.
       wires = g.wires
       scratch = @scratch
       parents = @parents
