@@ -23,10 +23,13 @@ layer_cache_class =
     Gate.comparator_between(Distance.zero, Distance.zero),
     depth: Distance.zero)
 
-class GateWeightCountingVisitor(T)
+# A visitor that accumulates the total sum of the *output_weights* fields of
+# gates.
+class GateWeightAccumulatingVisitor(T)
   include Visitor
 
-  getter sum
+  # The sum of all *output_weights* seen so far.
+  getter sum : T
 
   def initialize
     @sum = T.zero.as(T)
@@ -41,18 +44,26 @@ class GateWeightCountingVisitor(T)
   end
 end
 
-class DynamicGateWeightCountingVisitor(T)
+# A visitor for applying a comparator network to an array of values, and
+# computing the weighted sum of the generated wire values and *output_weights*
+# fields of the respective gates.
+class WireWeightSumComputingVisitor(T)
   include Visitor
 
-  getter values
-  getter sum
+  # An array representing the current values of all wires.
+  getter values : Array(T)
 
+  # The weighted sum accumulated so far.
+  getter sum : T
+
+  # Create an insance based on given initial *values*.
   def initialize(@values : Array(T))
     @sum = T.zero.as(T)
   end
 
   def visit_gate(gate, **options, output_weights) : Nil
     wires = gate.wires.to_a
+    # Sort the values of the _wires_ in place.
     local_values =
       wires.map do |wire|
         @values[wire]
@@ -61,6 +72,7 @@ class DynamicGateWeightCountingVisitor(T)
     wires.zip(local_values) do |wire, value|
       @values[wire] = value
     end
+    # Accumulate the dynamic sum.
     local_values.zip(output_weights.to_a) do |value, weight|
       @sum += value * weight
     end
@@ -71,20 +83,26 @@ class DynamicGateWeightCountingVisitor(T)
   end
 end
 
+# A visitor for collecting the wire weights of a network into a two dimensional
+# grid.
 class WireWeightCollectingVisitor(T)
   include Visitor
 
-  getter grid
+  # A grid of wire weights.
+  getter grid : Array(Array(T))
 
   def initialize(@values : Array(T))
-    @counter = DynamicGateWeightCountingVisitor(T).new(values)
+    # A wire weight computer.
+    # Only the wire weight computing capabilities of the visitor are used here
+    # -- the sum computing aspect is not used.
+    @computer = WireWeightSumComputingVisitor(T).new(values)
     @grid = Array(Array(T)).new(@values.size) { Array(T).new }
   end
 
   def visit_gate(gate, **options, output_weights) : Nil
-    @counter.visit_gate(gate, **options, output_weights)
+    @computer.visit_gate(gate, **options, output_weights)
     gate.wires.each do |wire|
-      @grid[wire] << @counter.values[wire]
+      @grid[wire] << @computer.values[wire]
     end
   end
 
@@ -93,10 +111,12 @@ class WireWeightCollectingVisitor(T)
   end
 end
 
-def test(network_count, scheme, layer_cache_class, random, weight_range, way)
+# A rather useless test for checking that the sum of wire weights in a
+# partially wire weighted network is the same as the sum of input weights.
+def sum_test(network_count, scheme, layer_cache_class, random, weight_range, way)
   random_width_array(network_count, random).each do |value|
     width = Width.from_value(value)
-    v = GateWeightCountingVisitor(typeof(random.next_int)).new
+    v = GateWeightAccumulatingVisitor(typeof(random.next_int)).new
     w = Array.new(width.value) { random.rand(weight_range) }
     ww = w.clone
     n = scheme.network(width)
@@ -110,11 +130,11 @@ def test(network_count, scheme, layer_cache_class, random, weight_range, way)
   end
 end
 
-def dynamic_test(network_count, scheme, layer_cache_class, random, weight_range, value_range)
+weighted_sum_test( wire values andnetwork_count, scheme, layer_cache_class, random, weight_range, value_range)
   random_width_array(network_count, random).each do |value|
     width = Width.from_value(value)
     x = Array.new(width.value) { random.rand(value_range) }
-    v = DynamicGateWeightCountingVisitor.new(x)
+    v = WireWeightSumComputingVisitor.new(x)
     w = Array.new(width.value) { random.rand(weight_range) }
     ww = w.clone
     n = scheme.network(width)
@@ -131,32 +151,32 @@ end
 describe Network::PartiallyWireWeighted do
   it "preserves sums of weights placed on all layers when going forward" do
     random = Random.new(seed)
-    test(network_count, scheme, layer_cache_class, random, weight_range, FORWARD) { true }
+    sum_test(network_count, scheme, layer_cache_class, random, weight_range, FORWARD) { true }
   end
 
   it "preserves sums of weights placed on all layers when going backward" do
     random = Random.new(seed)
-    test(network_count, scheme, layer_cache_class, random, weight_range, BACKWARD) { true }
+    sum_test(network_count, scheme, layer_cache_class, random, weight_range, BACKWARD) { true }
   end
 
   it "preserves sums of weights placed on random layers when going forward" do
     random = Random.new(seed)
-    test(network_count, scheme, layer_cache_class, random, weight_range, FORWARD) { random.next_bool }
+    sum_test(network_count, scheme, layer_cache_class, random, weight_range, FORWARD) { random.next_bool }
   end
 
   it "preserves sums of weights placed on random layers when going backward" do
     random = Random.new(seed)
-    test(network_count, scheme, layer_cache_class, random, weight_range, BACKWARD) { random.next_bool }
+    sum_test(network_count, scheme, layer_cache_class, random, weight_range, BACKWARD) { random.next_bool }
   end
 
-  it "preserves dynamic sums of weights placed on all layers when going forward" do
+  it "preserves sums of wire values and weights placed on all layers when going forward" do
     random = Random.new(seed)
-    dynamic_test(network_count, scheme, layer_cache_class, random, weight_range, value_range) { true }
+    weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range) { true }
   end
 
-  it "preserves dynamic sums of weights placed on random layers when going forward" do
+  it "preserves sums of wire values and weights placed on random layers when going forward" do
     random = Random.new(seed)
-    dynamic_test(network_count, scheme, layer_cache_class, random, weight_range, value_range) { random.next_bool }
+    weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range) { random.next_bool }
   end
 
   it "works as expected with a step of 2 on a sample network" do
