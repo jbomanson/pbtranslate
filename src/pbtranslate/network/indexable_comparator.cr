@@ -18,6 +18,16 @@ struct PBTranslate::Network::IndexableComparator(T)
     new(wire_pairs, width: width, init: nil)
   end
 
+  # A convenience method to construct a new comparator network with all
+  # integers given as Int32 values.
+  def self.new(wire_pairs : Indexable(Tuple(Int32, Int32)), *, width : Int32? = nil)
+    new(
+      wire_pairs.map &.map { |index| Distance.new(index) },
+      width: width.try { |value| Distance.new(value) },
+      init: nil,
+    )
+  end
+
   protected def initialize(@wire_pairs : T, *, width : Distance? = nil, init : Nil)
     @network_width = width || (@wire_pairs.map(&.max).max + 1)
   end
