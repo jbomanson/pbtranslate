@@ -27,6 +27,7 @@ layer_cache_class =
 # gates.
 class GateWeightAccumulatingVisitor(T)
   include Visitor
+  include Visitor::DefaultMethods
 
   # The sum of all *output_weights* seen so far.
   getter sum : T
@@ -38,10 +39,6 @@ class GateWeightAccumulatingVisitor(T)
   def visit_gate(*args, **options, output_weights) : Nil
     @sum += output_weights.sum
   end
-
-  def visit_region(region) : Nil
-    yield self
-  end
 end
 
 # A visitor for applying a comparator network to an array of values, and
@@ -49,6 +46,7 @@ end
 # fields of the respective gates.
 class WireWeightSumComputingVisitor(T)
   include Visitor
+  include Visitor::DefaultMethods
 
   # An array representing the current values of all wires.
   getter values : Array(T)
@@ -77,37 +75,25 @@ class WireWeightSumComputingVisitor(T)
       @sum += value * weight
     end
   end
-
-  def visit_region(region) : Nil
-    yield self
-  end
 end
 
 # A visitor for collecting the wire weights of a network into a two dimensional
 # grid.
 class WireWeightCollectingVisitor(T)
   include Visitor
+  include Visitor::DefaultMethods
 
   # A grid of wire weights.
   getter grid : Array(Array(T))
 
-  def initialize(@values : Array(T))
-    # A wire weight computer.
-    # Only the wire weight computing capabilities of the visitor are used here
-    # -- the sum computing aspect is not used.
-    @computer = WireWeightSumComputingVisitor(T).new(values)
-    @grid = Array(Array(T)).new(@values.size) { Array(T).new }
+  def initialize(size : Int)
+    @grid = Array(Array(T)).new(size) { Array(T).new }
   end
 
   def visit_gate(gate, **options, output_weights) : Nil
-    @computer.visit_gate(gate, **options, output_weights)
-    gate.wires.each do |wire|
-      @grid[wire] << @computer.values[wire]
+    gate.wires.zip(output_weights).each do |wire, weight|
+      @grid[wire] << weight
     end
-  end
-
-  def visit_region(region) : Nil
-    yield self
   end
 end
 
@@ -130,22 +116,39 @@ def sum_test(network_count, scheme, layer_cache_class, random, weight_range, way
   end
 end
 
-weighted_sum_test( wire values andnetwork_count, scheme, layer_cache_class, random, weight_range, value_range)
+# A test for checking that the sum of wire weights weighted by wire values is
+# the same as the sum of initial weights weighted by initial values.
+# Both the wire weigths and wire values are based on random initial values.
+def weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range)
   random_width_array(network_count, random).each do |value|
     width = Width.from_value(value)
     x = Array.new(width.value) { random.rand(value_range) }
-    v = WireWeightSumComputingVisitor.new(x)
+    v = WireWeightSumComputingVisitor.new(x.clone)
     w = Array.new(width.value) { random.rand(weight_range) }
-    ww = w.clone
     n = scheme.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
     nn = layer_cache_class.new(network: n, width: width)
-    nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: ww)
+    nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: w.clone)
     nnn.host(v.going(FORWARD))
     a, b = {v, w.zip(x).map { |u, v| u * v }}.map &.sum
     a.should eq(b)
   end
+end
+
+def weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
+  n =
+    Network::WrapperWithDepth.new(
+      Network::IndexableComparator.new(comparators),
+      network_depth: Distance.new(depth),
+    )
+  n.network_width.should eq(initial_weights.size)
+  nn = DepthTracking::Network.new(network: n, width: n.network_width)
+  nnn = layer_cache_class.new(network: nn, width: Width.from_value(n.network_width))
+  nnnn = Network::PartiallyWireWeighted.new(network: nnn, bit_array: bit_array, weights: initial_weights.clone)
+  v = WireWeightCollectingVisitor(typeof(initial_weights.first)).new(nnnn.network_width)
+  nnnn.host(v.going(FORWARD))
+  v.grid.should eq(expected_final_weights)
 end
 
 describe Network::PartiallyWireWeighted do
@@ -179,8 +182,21 @@ describe Network::PartiallyWireWeighted do
     weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range) { random.next_bool }
   end
 
-  it "works as expected with a step of 2 on a sample network" do
-    # Initial weights:
+  it "works as expected with all layers on a sample 3-sorting network" do
+    comparators = [{0, 1}, {0, 2}, {1, 2}]
+    depth = 3
+    initial_weights = [944, 354, 954]
+    bit_array = BitArray.new(3, true)
+    expected_final_weights = [
+      [590,   0, 0, 354],
+      [  0,   0, 0, 354],
+      [  0, 600, 0, 354],
+    ]
+    weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
+  end
+
+  it "works as expected with a step of 2 and offset 0 on a sample 4-sorting network" do
+    # Network with initial weights:
     # 3  +   0  +   0
     #    |      |
     # 4  +   0  |+  0  +  0
@@ -188,33 +204,60 @@ describe Network::PartiallyWireWeighted do
     # 1  +   0  +|  0  +  0
     #    |       |
     # 1  +   0   +  0
-    w = [3, 4, 1, 1]
-    ww = w.clone
-    width = Width.from_value(Distance.new(w.size))
-    y = BitArray.new(3)
-    y.each_index { |i| y[i] = (i % 2) == 0 }
-    n = scheme.network(width)
-    n.network_depth.should eq(3)
-    x = Array.new(width.value) { |i| i == index ? 1 : 0 }
-    v = WireWeightCollectingVisitor.new(x)
-    nn = layer_cache_class.new(network: n, width: width)
-    nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: ww)
-    nnn.host(v.going(FORWARD))
-    # Expected final weights:
-    # 2  +   0  +   1
+    comparators = [{0, 1}, {2, 3}, {0, 2}, {1, 3}, {1, 2}]
+    depth = 3
+    initial_weights = [3, 4, 1, 1]
+    # Bit array and network with expected final weights:
+    #        1      0     1
+    # ---------------------
+    # 0  +   2  +   0     1
+    #    |      |
+    # 1  +   2  |+  0  +  1
+    #           ||     |
+    # 0  +   0  +|  0  +  1
+    #    |       |
+    # 0  +   0   +  0     1
+    bit_array = BitArray.new(3)
+    bit_array.each_index { |i| bit_array[i] = (i % 2) == 0 }
+    expected_final_weights = [
+      [0, 2, 0, 1],
+      [1, 2, 0, 1],
+      [0, 0, 0, 1],
+      [0, 0, 0, 1],
+    ]
+    weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
+  end
+
+  it "works as expected with a step of 2 and offset 1 on a sample 4-sorting network" do
+    # Network with initial weights:
+    # 3  +   0  +   0
+    #    |      |
+    # 4  +   0  |+  0  +  0
+    #           ||     |
+    # 1  +   0  +|  0  +  0
+    #    |       |
+    # 1  +   0   +  0
+    comparators = [{0, 1}, {2, 3}, {0, 2}, {1, 3}, {1, 2}]
+    depth = 3
+    initial_weights = [3, 4, 1, 1]
+    # Bit array and network with expected final weights:
+    #        0      1     0
+    # ---------------------
+    # 2  +   0  +   1     0
     #    |      |
     # 3  +   0  |+  1  +  0
     #           ||     |
-    # 0  +   0  +|  1  +  0
+    # 1  +   0  +|  1  +  0
     #    |       |
-    # 0  +   0   +  1
-    v.grid.should eq(
-      [
-        [2, 0, 1],
-        [3, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1],
-      ]
-    )
+    # 1  +   0   +  1     0
+    bit_array = BitArray.new(3)
+    bit_array.each_index { |i| bit_array[i] = (i % 2) == 1 }
+    expected_final_weights = [
+      [2, 0, 1, 0],
+      [3, 0, 1, 0],
+      [0, 0, 1, 0],
+      [0, 0, 1, 0],
+    ]
+    weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
   end
 end
