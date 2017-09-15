@@ -7,6 +7,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
   include Gate::Restriction
 
   delegate size, to: @cache
+  delegate network_depth, network_read_count, network_width, network_write_count, to: @network
 
   # Enhances a _network_ with _weights_ propagated through its gates and placed
   # on the output wires of gates on layers _i_ for which `bit_array[i]` is true.
@@ -40,7 +41,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       s = Util::SliceMatrix(W).new(b.count(true) + 1, w.size) { zero }
       p = self.new(layered_weights: s, bit_array: b, weights: w)
       n.host(p)
-      p.flush_weights(b.size)
+      p.flush_weights_last
       s
     end
 
@@ -66,13 +67,12 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
     end
 
     protected def flush_weights(output_depth d)
-      return unless d == 0 || @bit_array[d - 1]
-      sink, is_early = next_sink
-      if is_early
-        march_weights(sink)
-      else
-        sink.copy_from(@scratch.to_unsafe, @scratch.size)
-      end
+      return unless @bit_array[d]
+      march_weights(next_sink.first)
+    end
+
+    protected def flush_weights_last
+      @layered_weights.last.copy_from(@scratch.to_unsafe, @scratch.size)
     end
 
     private def next_sink
