@@ -53,7 +53,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
 
     def visit_region(layer : Layer) : Nil
       yield self
-      flush_weights(layer.depth)
+      march_weights(next_sink) if @bit_array[layer.depth]
     end
 
     def visit_gate(g, *args, **options) : Nil
@@ -66,20 +66,14 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       (wires + roots).each { |i| parents[i] = least_root_index }
     end
 
-    protected def flush_weights(output_depth d)
-      return unless @bit_array[d]
-      march_weights(next_sink.first)
-    end
-
     protected def flush_weights_last
       @layered_weights.last.copy_from(@scratch.to_unsafe, @scratch.size)
     end
 
     private def next_sink
       i = @index
-      j = i + 1
-      @index = j
-      {@layered_weights[i], j < @layered_weights.size}
+      @index = i + 1
+      @layered_weights[i]
     end
 
     private def march_weights(sink)
