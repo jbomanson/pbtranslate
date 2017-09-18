@@ -22,6 +22,7 @@ class PBTranslate::Tool::OptimizationRewriter <
   property crop_depth
   property crop_depth_unit
   property scheme
+  property weight_last
   property weight_step
 
   @task           = Task::Pass
@@ -30,6 +31,7 @@ class PBTranslate::Tool::OptimizationRewriter <
   @output_visitor = WeightCollector.new
   @crop_depth     = nil.as(Int32 | Nil)
   @crop_depth_unit = nil.as(Int32 | Nil)
+  @weight_last    = true
   @weight_step    = nil.as(Int32 | Nil)
   @scheme         = BASE_SCHEME.as(Scheme::OfAnyWidth)
 
@@ -105,8 +107,8 @@ class PBTranslate::Tool::OptimizationRewriter <
   end
 
   private struct TailoredPartiallyWireWeightedScheme(S)
-    def self.new(scheme, weight_step)
-      new(layer_cache_class_for(scheme).new(scheme), weight_step, overload: nil)
+    def self.new(scheme, weight_step, weight_last)
+      new(layer_cache_class_for(scheme).new(scheme), weight_step, weight_last, overload: nil)
     end
 
     private def self.layer_cache_class_for(scheme)
@@ -116,7 +118,7 @@ class PBTranslate::Tool::OptimizationRewriter <
         depth: Distance.zero)
     end
 
-    private def initialize(@scheme : S, @weight_step : Int32, *, overload)
+    private def initialize(@scheme : S, @weight_step : Int32, @weight_last : Bool, *, overload)
     end
 
     def network(width : Width, *, weights)
@@ -129,6 +131,7 @@ class PBTranslate::Tool::OptimizationRewriter <
       p = @weight_step
       BitArray.new(d.to_i).tap do |y|
         y.each_index { |i| y[i] = (i + 1) % p == 0 }
+        y[-1] = true if @weight_last && !y.empty?
       end
     end
   end
@@ -157,7 +160,7 @@ class PBTranslate::Tool::OptimizationRewriter <
         s
       end
     if p = @weight_step
-      TailoredPartiallyWireWeightedScheme.new(ss, p)
+      TailoredPartiallyWireWeightedScheme.new(ss, p, weight_last)
     else
       WireWeightedScheme.new(ss)
     end

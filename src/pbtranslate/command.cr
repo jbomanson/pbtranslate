@@ -81,6 +81,7 @@ class PBTranslate::Command
     input_filename = nil
     output_filename = nil
     crop_depth = nil
+    weight_last = nil
     weight_step = nil
     scheme_description = nil
     random_seed = RANDOM_SEED_DEFAULT
@@ -108,6 +109,10 @@ class PBTranslate::Command
 
         opts.on("--weight-step <p>", "Place weights on every <p>th layer of a comparator network") do |p|
           weight_step = string_to_i32(p, label: "--weight-step", min: 1)
+        end
+
+        opts.on("--weight-last true|false", "Force placement of weights on the last layer of a comparator network. This is true by default.") do |b|
+          weight_last = bool_to_i32(b, label: "--weight-last")
         end
 
         opts.on("--random-seed <s>", "Use <s> as a seed for random number generation") do |s|
@@ -164,6 +169,15 @@ class PBTranslate::Command
         end
         if translator.responds_to? :"scheme="
           translator.scheme = scheme
+        end
+        if (t = weight_last).is_a?(Bool)
+          unless translator.responds_to? :"weight_last="
+            error "the --weight-last option is not supported with --type #{type}"
+          end
+          unless weight_step
+            error "the --weight-last option works only with --weight-step"
+          end
+          translator.weight_last = t
         end
         if p = weight_step
           unless translator.responds_to? :"weight_step="
@@ -299,6 +313,16 @@ class PBTranslate::Command
         puts "size: #{size}"
         puts "depth: #{depth}"
       end
+    end
+  end
+
+  private def bool_to_i32(s : String, *, label : String) : Bool
+    d = s.downcase
+    case
+    when "true".starts_with?(d)  then true
+    when "false".starts_with?(d) then false
+    else
+      error "#{label} must be true or false, not \"#{s}\""
     end
   end
 
