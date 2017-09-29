@@ -3,7 +3,7 @@ require "../not_implemented_error"
 struct PBTranslate::Network::DivideAndConquer(P, R, E)
   {% for message in [:network_depth, :network_write_count] %}
     def {{message.id}} : NoReturn
-      s = "Network::DivideAndConquer\#{{message.id}} is not implemented"
+      s = "Network::DivideAndConquer#" + "{{message.id}} is not implemented"
       raise NotImplementedError.new(s)
     end
   {% end %}
