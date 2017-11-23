@@ -1,12 +1,15 @@
 require "../not_implemented_error"
 
 struct PBTranslate::Network::DivideAndConquer(P, R, E)
-  {% for message in [:network_depth, :network_write_count] %}
-    def {{message.id}} : NoReturn
-      s = "Network::DivideAndConquer#" + "{{message.id}} is not implemented"
-      raise NotImplementedError.new(s)
-    end
-  {% end %}
+  def network_depth : Distance
+    @widths.max_of { |width| @conquer_scheme.network(width).network_depth } +
+      @combine_scheme.network(@widths).network_depth
+  end
+
+  def network_write_count : Area
+    @widths.sum { |width| @conquer_scheme.network(width).network_write_count }.as(Area) +
+      @combine_scheme.network(@widths).network_write_count.as(Area)
+  end
 
   def initialize(*, @widths : P, @conquer_scheme : R, @combine_scheme : E)
     Util.restrict(widths, Enumerable(Width))
