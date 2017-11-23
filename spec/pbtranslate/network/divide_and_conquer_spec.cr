@@ -3,6 +3,10 @@ require "../sorting_network_helper"
 include PBTranslate
 
 class MergeSortByDivideAndConquerScheme(M)
+  include Scheme
+
+  declare_gate_options
+
   def initialize(@merge_scheme : M)
   end
 
@@ -43,5 +47,5 @@ scheme =
   )
 
 describe Network::DivideAndConquer do
-  it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
+  it_acts_like_a_sorting_network(scheme, seed, range, rounds)
 end

@@ -47,7 +47,19 @@ macro it_reports_like_a_sorting_network(scheme, seed, range, rounds)
   %range = {{range}}
   %rounds = {{rounds}}
 
-  it "returns consistent write counts" do
+  it "returns type Distance for #network_depth" do
+    typeof(%scheme.network(%range.first).network_depth).should eq(Distance)
+  end
+
+  it "returns type Distance for #network_width" do
+    typeof(%scheme.network(%range.first).network_width).should eq(Distance)
+  end
+
+  it "returns type Area for #network_write_count" do
+    typeof(%scheme.network(%range.first).network_write_count).should eq(Area)
+  end
+
+  it "returns consistent #network_write_count values" do
     %range.each do |width|
       network = %scheme.network(width)
       a = network.network_write_count
@@ -58,7 +70,7 @@ macro it_reports_like_a_sorting_network(scheme, seed, range, rounds)
     end
   end
 
-  it "returns consistent depths" do
+  it "returns consistent #network_depth values" do
     %range.each do |width|
       network = %scheme.network(width)
       a = network.network_depth
