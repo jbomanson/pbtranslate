@@ -63,13 +63,28 @@ record WidthCheckingVisitor, width : Distance do
   end
 end
 
-class WidthPw2Range(R)
-  def initialize(@log2_range : R)
+class WidthPw2Range
+  include Enumerable(Width::Pw2)
+
+  def initialize(@log2_range : Range(Distance, Distance))
   end
 
   def each
     @log2_range.each do |log2|
       yield Width.from_log2(log2)
+    end
+  end
+end
+
+class WidthRange
+  include Enumerable(Width::Free)
+
+  def initialize(@value_range : Range(Distance, Distance))
+  end
+
+  def each
+    @value_range.each do |value|
+      yield Width.from_value(value)
     end
   end
 end
