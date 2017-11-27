@@ -28,11 +28,11 @@ struct PBTranslate::LagArray(T)
     @updates = Array({Int32, T}).new
   end
 
-  # Delegated to `#to_a`.
+  # Delegated to the underlying array.
   delegate :[], :[]=, to: to_a
 
-  # Yields a `Lagged` object for accessing this array so that all assignments
-  # via the object are applied only once the block returns.
+  # Yields a `Lagged` object for accessing this array with the property that
+  # all assignments through it are applied only after the block is done.
   #
   #     a = LagArray.new([:a, :b])
   #     a.lag do |lagged|

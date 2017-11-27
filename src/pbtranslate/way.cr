@@ -22,6 +22,10 @@
 #     join(FORWARD)   # => "(100)(200)(300)"
 #     join(BACKWARD)  # => "(300)(200)(100)"
 abstract struct PBTranslate::Way
+  # :nodoc:
+  def initialize
+  end
+
   # Iterates over the integers in the given inclusive range,
   # passing each in turn to the given block.
   #
@@ -61,6 +65,29 @@ abstract struct PBTranslate::Way
 
   # A convenience macro for defining argumentless _each_ and *reverse_each*
   # methods for an object that defines *each_in* with a single `Way` argument.
+  #
+  # ### Example
+  #
+  #     include PBTranslate
+  #
+  #     class Triple
+  #       VALUES = [100, 200, 300]
+  #
+  #       Way.define_each
+  #
+  #       def each_in(way : Way)
+  #         way.each_in(VALUES) do |value|
+  #           yield value
+  #         end
+  #       end
+  #     end
+  #
+  #     a = [] of Int32
+  #     Triple.new.each { |x| a << x }
+  #     a # => [100, 200, 300]
+  #     a = [] of Int32
+  #     Triple.new.reverse_each { |x| a << x }
+  #     a # => [300, 200, 100]
   macro define_each
     def each
       each_in(FORWARD) { |x| yield x }

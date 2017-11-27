@@ -2,7 +2,8 @@ require "./scheme"
 require "./visitor/default_methods"
 
 module PBTranslate::Network
-    # Computes the depth of this network, which is assumed to provide gate depths.
+  # Computes the depth of a network, which must already provide gate depths, by
+  # finding the maximum depth of its gates and adding one to it.
   def self.compute_depth(network n) : Distance
     ComputeDepthVisitor.compute(n)
   end

@@ -3,26 +3,45 @@ require "../network/compute_gate_count"
 require "../network/divide_and_conquer"
 require "../scheme"
 
-# A recursive merge sorting network parameterized by a scheme for base cases
-# and a scheme for merging.
+# A recursive merge sorting network scheme that uses dynamic programming to
+# determine good network structure, while relying on given schemes for base
+# cases and merging to build networks.
+#
+# For any given input width, this scheme will find a good way to split the
+# input in two parts that are sorted separately and then merged.
+# Sorting is based on the given base case scheme or recursion.
+# Merging is delegated to the given merging scheme.
+#
+# The base case scheme must provide a *network?* method with a single `Width`
+# argument and the merging scheme must provide a *network* method with a pair
+# of `Width` arguments.
 class PBTranslate::Scheme::BestSplitMergeSort(B, M)
   include Scheme
 
+  # A limit on the ratio of sizes of parts that are considered when splitting.
+  # Lower values lead to lower computation time at the risk of missing some
+  # good splits.
   IMBALANCE_LIMIT = Distance.new(3)
 
+  # :nodoc:
   record Details, point : Distance, cost : Area
 
   delegate gate_options, to: (true ? @base_scheme : @merge_scheme)
 
   @cache = Array(Details | Nil).new
 
+  # Creates a potentially recursive merge sorting network scheme that depends
+  # on the given schemes.
   def self.new(merge_scheme m = FlexibleMerge.new, *, base_scheme b = m.to_base_case)
     new(base_scheme: b, merge_scheme: m, init: nil)
   end
 
+  # :nodoc:
   def initialize(*, @base_scheme : B, @merge_scheme : M, init : Nil)
   end
 
+  # Generates a network of the given *width* as described in
+  # `BestSplitMergeSort`.
   def network(width : Width)
     (@base_scheme.network? width) || recursive_network(width)
   end
