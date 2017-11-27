@@ -15,14 +15,13 @@ struct PBTranslate::Visitor::ArrayLogic(T)
   end
 
   def initialize(
-    array : Array(T),
-    @context : Context(T) = DefaultContext(T).new)
-
+                 array : Array(T),
+                 @context : Context(T) = DefaultContext(T).new)
     @array = LagArray(T).new(array)
     @accumulator = Accumulator(T).new
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), **options, output_cone) : Nil
+  def visit_gate(g : Gate(Comparator, InPlace, _), *empty_args, output_cone, **options) : Nil
     i, j = g.wires
     a = @array[i]
     b = @array[j]
@@ -65,9 +64,9 @@ struct PBTranslate::Visitor::ArrayLogic(T)
   # The gates are expected to be split into input and output parts.
   private struct LayerVisitor(A, T)
     def initialize(
-      @array : A,
-      @context : Context(T),
-      @accumulator : Accumulator(T))
+                   @array : A,
+                   @context : Context(T),
+                   @accumulator : Accumulator(T))
     end
 
     def visit_gate(g : Gate(F, Output, _), **options) : Nil forall F
@@ -104,9 +103,9 @@ struct PBTranslate::Visitor::ArrayLogic(T)
   # to the gate input wires in a given context.
   private struct StoringOperatingVisitor(T)
     def initialize(
-      @array : Array(T),
-      @context : Context(T),
-      @storage : Array(T))
+                   @array : Array(T),
+                   @context : Context(T),
+                   @storage : Array(T))
     end
 
     def visit_gate(g : Gate(F, Input, _), **options) : Nil forall F

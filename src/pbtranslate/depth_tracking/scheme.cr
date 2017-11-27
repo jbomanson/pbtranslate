@@ -33,19 +33,19 @@ module PBTranslate::Scheme
     s.tap &.gate_options.restrict(depth: true)
   end
 
-  private def with_gate_depth_helper(**options, depth : Bool, &block)
+  private def with_gate_depth_helper(*empty_args, depth : Bool, **options, &block)
     self
   end
 
-  private def with_gate_depth_helper(**options, depth : Nil)
+  private def with_gate_depth_helper(*empty_args, depth : Nil, **options)
     yield self
   end
 
-  private def with_gate_depth_helper(**options, depth : Bool | Nil, &block)
+  private def with_gate_depth_helper(*empty_args, depth : Bool | Nil, **options, &block)
     {{ raise "Ambiguity error: depth is and is not provided by #{@type}" }}
   end
 
-  private def with_gate_depth_helper(**options)
+  private def with_gate_depth_helper(*empty_args, **options)
     yield self
   end
 end

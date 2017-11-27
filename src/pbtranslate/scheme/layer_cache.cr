@@ -9,7 +9,7 @@ class PBTranslate::Scheme::LayerCache(S, G, O)
   include Scheme
 
   def gate_options(**extra)
-    ::PBTranslate::GateOptions.new(**extra, {{@type.type_vars.last.keys.join(", ").id}})
+    ::PBTranslate::GateOptions.new({{@type.type_vars.last.keys.join(", ").id}}, **extra)
   end
 
   # Returns a `LayerCache` type with type arguments appropriate for wrapping

@@ -22,8 +22,8 @@ class PBTranslate::Network::Cone(N)
   # are in the cone.
   # The cone is computed based on network outputs for which _output.[]_ returns
   # true.
-  def self.new(*args, **options, output)
-    new(*args, **options) {|i| output[i]}
+  def self.new(*args, output, **options)
+    new(*args, **options) { |i| output[i] }
   end
 
   # Like the other `new` but using a block for picking network outputs.

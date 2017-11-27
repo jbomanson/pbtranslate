@@ -6,7 +6,7 @@ struct PBTranslate::Visitor::GateAndWeightVisitorPair(G, W)
   def initialize(*, @gate_visitor : G, @weight_visitor : W)
   end
 
-  def visit_gate(g, **options, input_weights = Tuple.new, output_weights = Tuple.new) : Nil
+  def visit_gate(g, *empty_args, input_weights = Tuple.new, output_weights = Tuple.new, **options) : Nil
     e = g.wires
     v = @weight_visitor
     input_weights.zip(e) do |weight, wire|

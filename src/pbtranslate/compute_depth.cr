@@ -25,7 +25,7 @@ module PBTranslate::Network
       @depth + @bonus
     end
 
-    def visit_gate(gate, *, **options, depth) : Nil
+    def visit_gate(gate, *empty_args, depth, **options) : Nil
       @depth = {@depth, depth}.max
       @bonus = Distance.new(1)
     end

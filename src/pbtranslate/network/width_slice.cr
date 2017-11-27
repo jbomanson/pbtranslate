@@ -40,8 +40,8 @@ struct PBTranslate::Network::WidthSlice(N)
         return unless w = pick_wires(g, b, e, **options)
         h = g.class.new(w.map &.- b)
         @visitor.visit_gate(h, **options) {{
-          (please_yield ? "{ |v| yield Guide.new(v, @begin, @end) }" : "").id
-        }}
+                                            (please_yield ? "{ |v| yield Guide.new(v, @begin, @end) }" : "").id
+                                          }}
       end
     end
 
@@ -74,7 +74,7 @@ struct PBTranslate::Network::WidthSlice(N)
       s.all? { |w| w < e }
     end
 
-    private def false_and(s, b, **options, drop_true : Nil) : Nil
+    private def false_and(s, b, *empty_args, drop_true : Nil, **options) : Nil
       if s.none? { |w| b <= w }
         raise "Simplification of And gates to constant true is not supported"
       end

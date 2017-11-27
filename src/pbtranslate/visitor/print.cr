@@ -5,7 +5,7 @@ struct PBTranslate::Visitor::Print
   def initialize(@io : IO)
   end
 
-  def visit_gate(g : Gate::Comparator, **options, depth) : Nil
+  def visit_gate(g : Gate::Comparator, *empty_args, depth, **options) : Nil
     i, j = g.wires
     @io.puts "comparator(#{i}, #{j}, #{depth})."
   end

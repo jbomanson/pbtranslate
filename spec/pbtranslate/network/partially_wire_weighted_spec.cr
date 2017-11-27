@@ -36,7 +36,7 @@ class GateWeightAccumulatingVisitor(T)
     @sum = T.zero.as(T)
   end
 
-  def visit_gate(*args, **options, output_weights) : Nil
+  def visit_gate(*args, output_weights, **options) : Nil
     @sum += output_weights.sum
   end
 end
@@ -59,7 +59,7 @@ class WireWeightSumComputingVisitor(T)
     @sum = T.zero.as(T)
   end
 
-  def visit_gate(gate, **options, output_weights) : Nil
+  def visit_gate(gate, *, output_weights, **options) : Nil
     wires = gate.wires.to_a
     # Sort the values of the _wires_ in place.
     local_values =
@@ -90,7 +90,7 @@ class WireWeightCollectingVisitor(T)
     @grid = Array(Array(T)).new(size) { Array(T).new }
   end
 
-  def visit_gate(gate, **options, output_weights) : Nil
+  def visit_gate(gate, *, output_weights, **options) : Nil
     gate.wires.zip(output_weights).each do |wire, weight|
       @grid[wire] << weight
     end
@@ -201,9 +201,9 @@ describe Network::PartiallyWireWeighted do
     initial_weights = [944, 354, 954]
     bit_array = BitArray.new(3, true)
     expected_final_weights = [
-      [590,   0, 0, 354],
-      [  0,   0, 0, 354],
-      [  0, 600, 0, 354],
+      [590, 0, 0, 354],
+      [0, 0, 0, 354],
+      [0, 600, 0, 354],
     ]
     weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
   end
