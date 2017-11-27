@@ -5,6 +5,8 @@ class PBTranslate::Network::DirectMerge
   include FirstClass
   include Gate::Restriction
 
+  BASE = Int64.new(-1)
+
   def initialize(@half_width_log2 : Distance)
   end
 
@@ -43,22 +45,20 @@ class PBTranslate::Network::DirectMerge
     Area.new(network_width)
   end
 
-  # Arranges a visit over the AND and OR gates in this network placed at an
-  # *offset*.
-  def host(visitor, at offset : Distance = Distance.new(0)) : Nil
+  # Arranges a visit over the AND and OR gates in this network.
+  def host(visitor) : Nil
     visitor.visit_region(OOPSublayer) do |layer_visitor|
-      base = Int64.new(offset - 1)
       half_width = Int64.new(1) << @half_width_log2
       a = Int64.new(1)
       b = half_width << 1
       visitor.way.each_between(a, b) do |out_value| # This is one indexed.
-        wire = Distance.new(out_value + base)
+        wire = Distance.new(out_value + BASE)
         layer_visitor.visit_gate(Gate.or_as(Distance.new(wire))) do |or_visitor|
           a = {Int64.new(0), out_value - half_width}.max
           b = {half_width, out_value}.min
           visitor.way.each_between(a, b) do |left_value|
             right_value = out_value - left_value
-            g = and_input_gate(base, half_width, left_value, right_value)
+            g = and_input_gate(half_width, left_value, right_value)
             or_visitor.visit_gate(g, drop_true: nil)
           end
         end
@@ -66,7 +66,7 @@ class PBTranslate::Network::DirectMerge
     end
   end
 
-  private def and_input_gate(base, half_width, left_value, right_value)
+  private def and_input_gate(half_width, left_value, right_value)
     values =
       if 1 <= left_value
         if 1 <= right_value
@@ -77,7 +77,7 @@ class PBTranslate::Network::DirectMerge
       else
         {half_width + right_value}
       end
-    wires = values.map { |value| Distance.new(value) }
-    Gate.and_of(tuple: wires).shifted_by(base)
+    wires = values.map { |value| Distance.new(value + BASE) }
+    Gate.and_of(tuple: wires)
   end
 end
