@@ -1,9 +1,9 @@
-require "./indexable_comparator"
+require "../network/indexable_comparator"
+require "../network/wrapper_with_depth"
 require "../scheme"
-require "./wrapper_with_depth"
 
 # A collection of good networks of fixed widths.
-module PBTranslate::Network::HardCodedSort
+module PBTranslate::Scheme::HardCodedSort
   include Scheme
   extend self
 

@@ -8,7 +8,7 @@ rounds = 5
 
 seed = SEED ^ __FILE__.hash
 
-scheme_a = Network::HardCodedSort
+scheme_a = Scheme::HardCodedSort
 
 scheme_b =
   Scheme::OffsetResolution.new(

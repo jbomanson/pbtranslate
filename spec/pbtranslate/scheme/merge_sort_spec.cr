@@ -22,7 +22,7 @@ end
 scheme =
   Scheme::OffsetResolution.new(
     Scheme::MergeSort::RecursiveFallback.new(
-      Network::HardCodedSort,
+      Scheme::HardCodedSort,
       Scheme::OddEvenMerge::INSTANCE
     )
   )

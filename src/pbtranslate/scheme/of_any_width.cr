@@ -20,6 +20,6 @@ module PBTranslate::Scheme
   # An alias for some schemes that generate networks of any `Width`, as
   # opposed to only `Width::Pw2`.
   alias OfAnyWidth = OfAnyWidthMarker |
-                     OffsetResolution(BestSplitMergeSort(Network::HardCodedSort.class, FlexibleMerge(OddEvenMerge))) |
-                     WithFallback(Network::HardCodedSort.class, OfAnyWidthMarker)
+                     OffsetResolution(BestSplitMergeSort(Scheme::HardCodedSort.class, FlexibleMerge(OddEvenMerge))) |
+                     WithFallback(Scheme::HardCodedSort.class, OfAnyWidthMarker)
 end

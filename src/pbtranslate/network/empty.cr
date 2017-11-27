@@ -1,3 +1,5 @@
+require "../number_types"
+
 # An empty network with no gates.
 #
 # Intended for use as a base case in recursively constructed networks.
