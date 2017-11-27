@@ -24,7 +24,7 @@ class PBTranslate::ASPIF::Reader
     end
   end
 
-  EXISTING = MatchKind.new("missing", "partial")
+  EXISTING       = MatchKind.new("missing", "partial")
   POSSIBLY_EMPTY = MatchKind.new("faulty", "partial")
 
   private delegate_helper_methods_to @helper
@@ -84,7 +84,6 @@ class PBTranslate::ASPIF::Reader
   end
 
   def visit(m : Heuristic, pos_lit : Literal, k : Int, priority : Int) : Bool
-
     !!yield
   end
 
@@ -188,10 +187,8 @@ class PBTranslate::ASPIF::Reader
 
   private describe EXISTING, version do
     ((m = nonnegative_integer) &&
-     (n = nonnegative_integer) &&
-     (r = nonnegative_integer)) ?
-    Version.new(m, n, r) :
-    nil
+      (n = nonnegative_integer) &&
+      (r = nonnegative_integer)) ? Version.new(m, n, r) : nil
   end
 
   private describe POSSIBLY_EMPTY, tag_list do
@@ -212,17 +209,17 @@ class PBTranslate::ASPIF::Reader
       (t = parse_enum_plain(Statement)) &&
       visit(t) {
         case t
-        when Statement::Rule; rule_statement
-        when Statement::Minimize; minimize_statement
+        when Statement::Rule      ; rule_statement
+        when Statement::Minimize  ; minimize_statement
         when Statement::Projection; projection_statement
-        when Statement::Output; output_statement
-        when Statement::External; external_statement
+        when Statement::Output    ; output_statement
+        when Statement::External  ; external_statement
         when Statement::Assumption; assumption_statement
-        when Statement::Heuristic; heuristic_statement
-        when Statement::Edge; edge_statement
-        when Statement::Theory; theory_term_or_atom
-        when Statement::Comment; comment
-        else raise "Internal error"
+        when Statement::Heuristic ; heuristic_statement
+        when Statement::Edge      ; edge_statement
+        when Statement::Theory    ; theory_term_or_atom
+        when Statement::Comment   ; comment
+        else                        raise "Internal error"
         end
       }
   end
@@ -322,7 +319,7 @@ class PBTranslate::ASPIF::Reader
             visit(TheoryAtom6, a, p) {
               integer_list && (g = integer) && (u1 = integer) &&
                 visit(TheoryAtomOperator.new(g), u1)
-          }
+            }
         else
           raise "Internal error"
         end
@@ -342,27 +339,21 @@ class PBTranslate::ASPIF::Reader
   end
 
   private describe EXISTING, integer_list do
-    (n = nonnegative_integer) ?
-      visit(IntegerListStart.new(n)) {
-        instances(n) { integer(self) }
-      } :
-      false
+    (n = nonnegative_integer) ? visit(IntegerListStart.new(n)) {
+      instances(n) { integer(self) }
+    } : false
   end
 
   private describe EXISTING, literal_list do
-    (n = nonnegative_integer) ?
-      visit(LiteralListStart.new(n)) {
-        instances(n) { literal(self) }
-      } :
-      false
+    (n = nonnegative_integer) ? visit(LiteralListStart.new(n)) {
+      instances(n) { literal(self) }
+    } : false
   end
 
   private describe EXISTING, weighted_literal_list do
-    (n = nonnegative_integer) ?
-      visit(WeightedLiteralListStart.new(n)) {
-        instances(n) { weighted_literal(self) }
-      } :
-      false
+    (n = nonnegative_integer) ? visit(WeightedLiteralListStart.new(n)) {
+      instances(n) { weighted_literal(self) }
+    } : false
   end
 
   # Variations of numbers
@@ -414,12 +405,8 @@ class PBTranslate::ASPIF::Reader
   end
 
   private def integer_silent
-    space ?
-      (sign = minus ? -1 : 1) &&
-      ((n = nonnegative_integer_plain) ?
-       sign * n :
-       nil) :
-      nil
+    space ? (sign = minus ? -1 : 1) &&
+      ((n = nonnegative_integer_plain) ? sign * n : nil) : nil
   end
 
   private describe EXISTING, asp do

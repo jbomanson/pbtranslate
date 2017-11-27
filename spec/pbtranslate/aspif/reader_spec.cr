@@ -6,7 +6,6 @@ RR = ASPIF::Reader
 
 describe ASPIF::Reader do
   it "parses Figure 3. from gekakaosscwa16b" do
-
     s =
       <<-EOF
       asp 1 0 0
@@ -24,7 +23,6 @@ describe ASPIF::Reader do
   end
 
   it "parses Figure 4. from gekakaosscwa16b" do
-
     s =
       <<-EOF
       asp 1 0 0
@@ -65,7 +63,6 @@ describe ASPIF::Reader do
   end
 
   it "parses an arbitrary hand crafter instance" do
-
     s =
       <<-EOF
       asp 1 0 0 one two three
@@ -108,7 +105,6 @@ describe ASPIF::Reader do
   end
 
   it "does not accept all nonsense" do
-
     s = "lkajsdflkajsdf"
 
     RR.new(s).parse.should_not eq(nil)

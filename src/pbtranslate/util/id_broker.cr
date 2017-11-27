@@ -77,6 +77,5 @@ module PBTranslate::Util
       @chunk_counter += 1
       c
     end
-
   end
 end

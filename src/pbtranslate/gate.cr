@@ -1,7 +1,7 @@
 require "./number_types"
 
 struct PBTranslate::Gate(F, S, T)
-    module Function
+  module Function
   end
 
   module Form

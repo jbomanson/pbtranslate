@@ -11,8 +11,7 @@ require "../visitor/noop"
 require "../width"
 
 # An object that rewrites optimization statements using normal rules in ASPIF::Reader.
-class PBTranslate::Tool::OptimizationRewriter <
-  PBTranslate::ASPIF::Broker
+class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
   enum Task
     Pass
     Read
@@ -25,15 +24,15 @@ class PBTranslate::Tool::OptimizationRewriter <
   property weight_last
   property weight_step
 
-  @task           = Task::Pass
-  @priority       = 0
-  @input_visitor  = WeightCollector.new
+  @task = Task::Pass
+  @priority = 0
+  @input_visitor = WeightCollector.new
   @output_visitor = WeightCollector.new
-  @crop_depth     = nil.as(Int32 | Nil)
+  @crop_depth = nil.as(Int32 | Nil)
   @crop_depth_unit = nil.as(Int32 | Nil)
-  @weight_last    = true
-  @weight_step    = nil.as(Int32 | Nil)
-  @scheme         = BASE_SCHEME.as(Scheme::OfAnyWidth)
+  @weight_last = true
+  @weight_step = nil.as(Int32 | Nil)
+  @scheme = BASE_SCHEME.as(Scheme::OfAnyWidth)
 
   def quick_dry_test : Nil
     network_of_width(1, [Int32.new(0)]).host(Visitor::Noop::INSTANCE)
@@ -168,11 +167,11 @@ class PBTranslate::Tool::OptimizationRewriter <
 
   private def depth_range_proc(d : Int32)
     if d >= 0
-      ->(width: Width, depth: Distance) {
+      ->(width : Width, depth : Distance) {
         Distance.new(0)...Distance.new(preprocess_depth(d, depth))
       }
     else
-      ->(width: Width, depth: Distance) {
+      ->(width : Width, depth : Distance) {
         depth + Distance.new(preprocess_depth(d, depth))...depth
       }
     end
@@ -222,7 +221,7 @@ class PBTranslate::Tool::OptimizationRewriter <
 
   private struct WeightCollector
     @literals = Array(Literal(Util::BrokeredId(Int32))).new
-    @weights  = Array(Int32).new
+    @weights = Array(Int32).new
 
     def add(*, literal, weight) : Nil
       @literals << literal

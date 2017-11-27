@@ -84,7 +84,6 @@ class PBTranslate::ASPIF::AbstractReader
       end
     end
 
-
     struct Exactly
       include Count
 
@@ -137,11 +136,11 @@ class PBTranslate::ASPIF::AbstractReader
       def {{name.id}}
         scope(
           {{kind}},
-          {{name.
-            stringify.
-            gsub(/\s+.*/, "").
-            gsub(/_/, " ").
-            gsub(/\(.*\)$/, "") }},
+          {{name
+              .stringify
+              .gsub(/\s+.*/, "")
+              .gsub(/_/, " ")
+              .gsub(/\(.*\)$/, "")}},
             {{*rest}}) do
 
           {{yield}}
@@ -212,10 +211,9 @@ class PBTranslate::ASPIF::AbstractReader
   @cursor : Char | Iterator::Stop
 
   def initialize(
-    @iterator : Iterator(Char),
-    *,
-    @buffer : IO::Memory = IO::Memory.new)
-
+                 @iterator : Iterator(Char),
+                 *,
+                 @buffer : IO::Memory = IO::Memory.new)
     @cursor_position = Position.new
     @cursor = @iterator.next
     @problem_stack = Array(Problem).new

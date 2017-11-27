@@ -42,7 +42,7 @@ module PBTranslate::DepthTracking
       {{ raise "Not yet tested" }}
     end
   end
-  
+
   # A visitor guide that computes the depths in a network.
   #
   # The depth of a gate refers to the distance to the input furthest from it.

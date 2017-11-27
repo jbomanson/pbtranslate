@@ -34,16 +34,16 @@ struct PBTranslate::GateOptions(O)
   getter named_tuple : O
 
   def self.complete_exact(
-    *,
-    depth : Element = nil,
-    output_cone : Element = nil)
+                          *,
+                          depth : Element = nil,
+                          output_cone : Element = nil)
     {depth: depth, output_cone: output_cone}
   end
 
   def self.complete_relaxed(
-    *,
-    depth : Element = nil.as(Element),
-    output_cone : Element = nil.as(Element))
+                            *,
+                            depth : Element = nil.as(Element),
+                            output_cone : Element = nil.as(Element))
     {depth: depth, output_cone: output_cone}
   end
 
@@ -90,7 +90,7 @@ struct PBTranslate::GateOptions(O)
   def to_s(io)
     @named_tuple.pbtranslate_gate_options_to_s(io)
   end
-  
+
   def inspect(io)
     to_s(io)
   end

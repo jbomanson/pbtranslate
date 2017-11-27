@@ -6,9 +6,7 @@ require "../util/id_broker"
 require "../visitor/array_logic"
 
 # An object that translates cardinality rules into normal rules in ASPIF::Reader.
-class PBTranslate::Tool::CardinalityTranslator <
-    PBTranslate::ASPIF::Broker
-
+class PBTranslate::Tool::CardinalityTranslator < PBTranslate::ASPIF::Broker
   property scheme
 
   @in_weight_rule = false

@@ -38,7 +38,7 @@ module PBTranslate::ASPIF::Concept
   # Enums.
 
   enum Statement
-    Rule = 1
+    Rule       = 1
     Minimize
     Projection
     Output
@@ -76,12 +76,12 @@ module PBTranslate::ASPIF::Concept
   end
 
   enum TheoryStatement
-    TermNumeric = 0
-    TermString = 1
+    TermNumeric  = 0
+    TermString   = 1
     TermFunction = 2
-    AtomElement = 4
-    Atom5 = 5
-    Atom6 = 6
+    AtomElement  = 4
+    Atom5        = 5
+    Atom6        = 6
   end
 
   # Modules.
@@ -97,8 +97,8 @@ module PBTranslate::ASPIF::Concept
             io << ' '
           {% end %}
           io << {{
-            (property.is_a? Assign) ? property.target.var : property.var
-          }}
+                  (property.is_a? Assign) ? property.target.var : property.var
+                }}
         {% end %}
       end
     end

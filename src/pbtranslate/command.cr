@@ -332,7 +332,7 @@ class PBTranslate::Command
         case bound
         when 1 then "positive integer"
         when 0 then "nonnegative integer"
-        else "signed integer"
+        else        "signed integer"
         end
       error "#{label} must be a 32 bit #{x}, not \"#{s}\""
     end

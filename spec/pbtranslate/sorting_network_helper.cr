@@ -29,7 +29,7 @@ macro it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
 
       vf, vb = Array.new(2) { VisitCallCounter.new }
       wf, wb = {FORWARD, BACKWARD}
-      
+
       network.host(vf.going(wf))
       network.host(vb.going(wb))
 

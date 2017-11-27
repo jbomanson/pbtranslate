@@ -140,7 +140,11 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       def visit_gate(g : Gate, **options) : Nil
         e = g.wires
         c = @current_weights
-        o = if c; c.values_at(*e) else e.map { W.zero } end
+        o = if c
+              c.values_at(*e)
+            else
+              e.map { W.zero }
+            end
         @visitor.visit_gate(g, **options, output_weights: o)
       end
     end
