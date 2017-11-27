@@ -5,7 +5,7 @@ require "../network/direct_merge"
 #
 # A network from this scheme is of quadratic size.
 # That is, a network of *n* inputs has *O(n^2)* gates.
-class PBTranslate::Scheme::DirectMerge
+struct PBTranslate::Scheme::DirectMerge
   include Scheme
 
   # An instance of this scheme.
