@@ -117,7 +117,7 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
         depth: Distance.zero)
     end
 
-    private def initialize(@scheme : S, @weight_step : Int32, @weight_last : Bool, *, overload)
+    private def initialize(@scheme : S, @weight_step : Int32, @weight_last : Bool, *, overload : Nil)
     end
 
     def network(width : Width, *, weights)

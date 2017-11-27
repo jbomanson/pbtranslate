@@ -15,7 +15,7 @@ struct PBTranslate::Network::IndexableComparator(T)
   # Any _width_ given here is returned by `network_width`.
   # If no network_width is specified, it is computed as the maximum wire index plus one.
   def self.new(wire_pairs : Indexable(Tuple(Distance, Distance)), *, width : Distance? = nil)
-    new(wire_pairs, width: width, init: nil)
+    new(wire_pairs, width: width, overload: nil)
   end
 
   # A convenience method to construct a new comparator network with all
@@ -24,11 +24,11 @@ struct PBTranslate::Network::IndexableComparator(T)
     new(
       wire_pairs.map &.map { |index| Distance.new(index) },
       width: width.try { |value| Distance.new(value) },
-      init: nil,
+      overload: nil,
     )
   end
 
-  protected def initialize(@wire_pairs : T, *, width : Distance? = nil, init : Nil)
+  protected def initialize(@wire_pairs : T, *, width : Distance? = nil, overload : Nil)
     @network_width = width || (@wire_pairs.map(&.max).max + 1)
   end
 

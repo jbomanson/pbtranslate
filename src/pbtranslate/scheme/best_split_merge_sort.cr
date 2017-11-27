@@ -33,11 +33,11 @@ class PBTranslate::Scheme::BestSplitMergeSort(B, M)
   # Creates a potentially recursive merge sorting network scheme that depends
   # on the given schemes.
   def self.new(merge_scheme m = FlexibleMerge.new, *, base_scheme b = m.to_base_case)
-    new(base_scheme: b, merge_scheme: m, init: nil)
+    new(base_scheme: b, merge_scheme: m, overload: nil)
   end
 
   # :nodoc:
-  def initialize(*, @base_scheme : B, @merge_scheme : M, init : Nil)
+  def initialize(*, @base_scheme : B, @merge_scheme : M, overload : Nil)
   end
 
   # Generates a network of the given *width* as described in
