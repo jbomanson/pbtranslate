@@ -8,7 +8,7 @@ require "../scheme"
 #
 # The generated networks are of linear size, so that for *n* inputs they have
 # *O(n)* gates, when the configured depth is regarded as constant.
-class PBTranslate::Scheme::RandomFromDepth
+struct PBTranslate::Scheme::RandomFromDepth
   include Scheme
   include OfAnyWidthMarker
   include ParameterizedByDepth
