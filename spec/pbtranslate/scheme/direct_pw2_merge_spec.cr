@@ -5,7 +5,7 @@ include PBTranslate
 half_width_log2_max = Distance.new(3)
 half_width_max = 1 << half_width_log2_max
 
-scheme = Scheme::DirectMerge::INSTANCE
+scheme = Scheme::DirectPw2Merge::INSTANCE
 
 describe typeof(scheme) do
   it "represents a network that merges up to #{half_width_max}^2 booleans" do

@@ -14,7 +14,7 @@ oe_scheme =
 direct_scheme =
   Scheme::OffsetResolution.new(
     Scheme::MergeSort::Recursive.new(
-      Scheme::DirectMerge::INSTANCE
+      Scheme::DirectPw2Merge::INSTANCE
     )
   )
 
