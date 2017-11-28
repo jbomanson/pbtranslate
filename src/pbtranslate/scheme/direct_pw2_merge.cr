@@ -1,4 +1,5 @@
 require "../network/direct_pw2_merge"
+require "./pw2_conquer"
 
 # A scheme of networks of depth one or two that merge pairs of sorted
 # sequences of equal lengths that are powers of two.
@@ -6,6 +7,7 @@ require "../network/direct_pw2_merge"
 # A network from this scheme is of quadratic size.
 # That is, a network of *n* inputs has *O(n^2)* gates.
 struct PBTranslate::Scheme::DirectPw2Merge
+  include Pw2Conquer
   include Scheme
 
   # An instance of this scheme.

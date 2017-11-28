@@ -1,5 +1,6 @@
-require "../scheme"
 require "../network/odd_even_pw2_merge"
+require "./pw2_conquer"
+require "../scheme"
 
 # A scheme for generating Batcher's odd-even merging networks.
 #
@@ -13,6 +14,7 @@ require "../network/odd_even_pw2_merge"
 # See https://en.wikipedia.org/wiki/Batcher_odd%E2%80%93even_mergesort
 # See https://gist.github.com/Bekbolatov/c8e42f5fcaa36db38402
 class PBTranslate::Scheme::OddEvenPw2Merge
+  include Pw2Conquer
   include Scheme
 
   # An instance of this scheme.
