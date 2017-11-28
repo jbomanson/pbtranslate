@@ -77,7 +77,7 @@ class WidthPw2Range
 end
 
 class WidthRange
-  include Enumerable(Width::Free)
+  include Enumerable(Width::Flexible)
 
   def initialize(@value_range : Range(Distance, Distance))
   end

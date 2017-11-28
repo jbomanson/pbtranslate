@@ -8,14 +8,14 @@ abstract struct PBTranslate::Width
   end
 
   def self.from_value(v)
-    Free.new(value: v)
+    Flexible.new(value: v)
   end
 
   abstract def value : Distance
   abstract def pw2ceil : Distance
   abstract def log2ceil : Distance
   abstract def to_pw2 : Pw2
-  abstract def to_free : Free
+  abstract def to_free : Flexible
 
   struct Pw2 < Width
     getter log2 : Distance
@@ -51,12 +51,12 @@ abstract struct PBTranslate::Width
       self
     end
 
-    def to_free : Free
-      Free.new(value: value)
+    def to_free : Flexible
+      Flexible.new(value: value)
     end
   end
 
-  struct Free < Width
+  struct Flexible < Width
     getter value : Distance
 
     def initialize(*, @value : Distance)
@@ -74,7 +74,7 @@ abstract struct PBTranslate::Width
       Pw2.new(value: value)
     end
 
-    def to_free : Free
+    def to_free : Flexible
       self
     end
   end
