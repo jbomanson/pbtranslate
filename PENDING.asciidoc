@@ -1,26 +1,36 @@
 Branch scheme-to-scheme
 -----------------------
 
-* Added `Pw2Conquer#to_recursive_divide_and_conquer_scheme`
-* Added `Scheme.best_split_odd_even_merge_sort_scheme`
-* Added `Scheme.hard_coded_sort_scheme`
-* Added `Scheme.direct_pw2_merge_scheme`
-* Added `Scheme.pw2_odd_even_merge_scheme`
-* Added `Scheme.simple_split_odd_even_merge_sort_scheme`
-* Added `Scheme#to_best_split_recursive_scheme`
-* Added `Scheme#to_depth_slice_scheme`
-* Added `Scheme#to_easy_to_use_scheme` (combines #to_flexible_scheme and #to_scheme_without_offset)
-* Added `Scheme#to_flexible_merge_scheme`
-* Added `Scheme#to_flexible_scheme`
-* Added `Scheme#to_flexible_split_scheme`
+* Added `Network::FlexibleIndexableComparator#to_scheme_singleton`.
+* Added `Pw2Combine#to_scheme_divide_and_conquer`
+* Added `Scheme.flexible_random_from_depth`.
+* Added `Scheme.partial_flexible_sort_hard_coded`.
+* Added `Scheme.partial_flexible_void`.
+* Added `Scheme::PartialFlexibleVoid`.
+* Added `Scheme::Pw2Combine` module in `Pw2MergeOddEven` and `Pw2MergeDirect`.
+* Added `Scheme.pw2_merge_direct`.
+* Added `Scheme.pw2_merge_odd_even`.
+* Added `Scheme#to_scheme_depth_slice`
+* Added `Scheme#to_scheme_flexible`
+* Added `Scheme#to_scheme_flexible_combine` (included in `to_scheme_flexible`)
+* Added `Scheme#to_scheme_flexible_divide_and_conquer_dynamic_programming`
 * Added `Scheme#to_scheme_with_fallback`
-* Added `Scheme#to_scheme_with_gate_depth`
-* Added `Scheme#to_scheme_without_offset`
-
-* Added `Scheme::Pw2Conquer` module in `OddEvenPw2Merge` and `DirectPw2Merge`.
-* Changed `MergeSort` to `RecursiveDivideAndConquer`.
-* Changed `DirectMerge` to `DirectPw2Merge`.
-* Changed `OddEvenMerge` to `OddEvenPw2Merge`.
+* Added `Scheme#to_scheme_with_offset_resolution`
+* Changed `Network::BestSplitMergeSort` to `FlexibleDivideAndConquerDynamicProgramming`.
+* Changed `Network::FlexibleMerge` to `FlexibleCombineFromPw2Combine`.
+* Changed `Network::IndexableComparator` to `FlexibleIndexableComparator`.
+* Changed `Network::MergeSort` to `Pw2DivideAndConquer`.
+* Changed `Scheme::BestSplitMergeSort` to `FlexibleDivideAndConquerDynamicProgramming`.
+* Changed `Scheme::DirectMerge` to `Pw2MergeDirect`.
+* Changed `Scheme::HardCodedSort` to `PartialFlexibleSortHardCoded`.
+* Changed `Scheme::IndexableComparator` to `PartialFlexibleIndexableComparator`.
+* Changed `Scheme::MergeSort` to `Pw2DivideAndConquer`.
+* Changed `Scheme::OddEvenMerge` to `Pw2MergeOddEven`.
+* Changed `Scheme::RandomFromDepth` to `FlexibleRandomFromDepth`.
+* Changed `Scheme::Random` to `FlexibleRandom`.
+* Changed `Scheme::WidthLimited` to `FlexibleFromPw2`.
+* Changed `Scheme#with_gate_depth` to `Scheme#to_scheme_with_gate_depth`
 * Changed `Width::Free` to `Width::Flexible`.
-* Removed `MergeSort::Recursive`.
-* Removed `MergeSort::RecursiveFallback`.
+* Removed `Network::IndexableComparator#scheme` as trivial.
+* Removed `Scheme::MergeSort::Recursive` as newly redundant.
+* Removed `Scheme::MergeSort::RecursiveFallback` as newly redundant.
