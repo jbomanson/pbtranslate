@@ -1,15 +1,15 @@
 require "./merging_network_helper"
 
-module OddEvenMergeSpec
+module OddEvenPw2MergeSpec
   extend self
 
-  SCHEME = Scheme::OddEvenMerge::INSTANCE
+  SCHEME = Scheme::OddEvenPw2Merge::INSTANCE
 
   def create_network(i, j)
     SCHEME.network(Width.from_pw2(Distance.new(i)))
   end
 
-  describe Scheme::OddEvenMerge do
+  describe Scheme::OddEvenPw2Merge do
     {% begin %}
       {% a = [1, 2, 4, 8, 16, 32] %}
       {% for l in a %}

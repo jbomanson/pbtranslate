@@ -5,7 +5,7 @@ include PBTranslate
 scheme =
   Scheme::OffsetResolution.new(
     Scheme::MergeSort::Recursive.new(
-      Scheme::OddEvenMerge::INSTANCE
+      Scheme::OddEvenPw2Merge::INSTANCE
     )
   )
 

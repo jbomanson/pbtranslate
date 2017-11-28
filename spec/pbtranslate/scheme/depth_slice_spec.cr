@@ -6,7 +6,7 @@ scheme =
   DepthTracking::Scheme.new(
     Scheme::OffsetResolution.new(
       Scheme::MergeSort::Recursive.new(
-        Scheme::OddEvenMerge::INSTANCE
+        Scheme::OddEvenPw2Merge::INSTANCE
       )
     )
   )

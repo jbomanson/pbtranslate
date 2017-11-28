@@ -20,7 +20,7 @@ struct PBTranslate::Scheme::FlexibleMerge(S)
   delegate gate_options, to: @merge_scheme
 
   # Creates a flexible merge scheme based on the given *merge_scheme*.
-  def initialize(@merge_scheme : S = OddEvenMerge)
+  def initialize(@merge_scheme : S = OddEvenPw2Merge)
   end
 
   # Generates a network that merges pairs of sorted sequences of the given

@@ -5,7 +5,7 @@ module FlexibleMergeSpec
 
   SCHEME =
     Scheme::FlexibleMerge.new(
-      Scheme::OddEvenMerge::INSTANCE
+      Scheme::OddEvenPw2Merge::INSTANCE
     )
 
   def create_network(*args)

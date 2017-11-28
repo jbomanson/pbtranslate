@@ -1,5 +1,5 @@
 require "../scheme/merge_sort"
-require "../scheme/odd_even_merge"
+require "../scheme/odd_even_pw2_merge"
 
 struct PBTranslate::Network::MergeSort(S, M)
   include FirstClass
