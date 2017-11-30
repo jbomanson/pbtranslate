@@ -1,0 +1,26 @@
+Branch scheme-to-scheme
+-----------------------
+
+* Added `Pw2Conquer#to_recursive_divide_and_conquer_scheme`
+* Added `Scheme.best_split_odd_even_merge_sort_scheme`
+* Added `Scheme.hard_coded_sort_scheme`
+* Added `Scheme.direct_pw2_merge_scheme`
+* Added `Scheme.pw2_odd_even_merge_scheme`
+* Added `Scheme.simple_split_odd_even_merge_sort_scheme`
+* Added `Scheme#to_best_split_recursive_scheme`
+* Added `Scheme#to_depth_slice_scheme`
+* Added `Scheme#to_easy_to_use_scheme` (combines #to_flexible_scheme and #to_scheme_without_offset)
+* Added `Scheme#to_flexible_merge_scheme`
+* Added `Scheme#to_flexible_scheme`
+* Added `Scheme#to_flexible_split_scheme`
+* Added `Scheme#to_scheme_with_fallback`
+* Added `Scheme#to_scheme_with_gate_depth`
+* Added `Scheme#to_scheme_without_offset`
+
+* Added `Scheme::Pw2Conquer` module in `OddEvenPw2Merge` and `DirectPw2Merge`.
+* Changed `MergeSort` to `RecursiveDivideAndConquer`.
+* Changed `DirectMerge` to `DirectPw2Merge`.
+* Changed `OddEvenMerge` to `OddEvenPw2Merge`.
+* Changed `Width::Free` to `Width::Flexible`.
+* Removed `MergeSort::Recursive`.
+* Removed `MergeSort::RecursiveFallback`.

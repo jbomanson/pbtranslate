@@ -10,7 +10,7 @@ seed = SEED ^ __FILE__.hash
 
 scheme =
   Scheme::OffsetResolution.new(
-    Scheme::MergeSort::Recursive.new(
+    Scheme::MergeSort.new(
       Scheme::OddEvenPw2Merge::INSTANCE
     )
   )
@@ -21,12 +21,12 @@ end
 
 scheme =
   Scheme::OffsetResolution.new(
-    Scheme::MergeSort::RecursiveFallback.new(
-      Scheme::HardCodedSort,
-      Scheme::OddEvenPw2Merge::INSTANCE
+    Scheme::MergeSort.new(
+      Scheme::OddEvenPw2Merge::INSTANCE,
+      base_scheme: Scheme::HardCodedSort,
     )
   )
 
-describe Scheme::MergeSort::RecursiveFallback do
+describe Scheme::MergeSort do
   it_acts_like_a_sorting_network(scheme, seed, range, rounds)
 end

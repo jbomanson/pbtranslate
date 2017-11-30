@@ -20,4 +20,15 @@ module PBTranslate::Scheme
       gate_options(**extra, &.itself)
     end
   end
+
+  macro declare_nonexistent_gate_options
+    def gate_options(*args, **options) : NoReturn
+      yield raise ImpossibleError.new
+      raise ImpossibleError.new
+    end
+
+    def gate_options(**extra)
+      gate_options(**extra, &.itself)
+    end
+  end
 end
