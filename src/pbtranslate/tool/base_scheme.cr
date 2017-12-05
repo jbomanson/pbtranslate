@@ -1,17 +1,17 @@
-require "../scheme/best_split_merge_sort"
-require "../scheme/hard_coded_sort"
-require "../scheme/odd_even_pw2_merge"
-require "../scheme/of_any_width"
+require "../scheme/flexible_divide_and_conquer_dynamic_programming"
+require "../scheme/flexible_partial_sort_hard_coded"
+require "../scheme/pw2_merge_odd_even"
+require "../scheme/flexible"
 require "../scheme/offset_resolution"
 
 class PBTranslate::Tool
   BASE_SCHEME =
     Scheme::OffsetResolution.new(
-      Scheme::BestSplitMergeSort.new(
-        base_scheme: Scheme::HardCodedSort,
-        merge_scheme: Scheme::FlexibleMerge.new(
-          Scheme::OddEvenPw2Merge::INSTANCE
+      Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
+        base_scheme: Scheme::FlexiblePartialSortHardCoded,
+        merge_scheme: Scheme::FlexibleCombineFromPw2Combine.new(
+          Scheme::Pw2MergeOddEven::INSTANCE
         ),
       )
-    ).as(Scheme::OfAnyWidth)
+    ).as(Scheme::Flexible)
 end

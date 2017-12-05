@@ -5,9 +5,9 @@ include SpecHelper
 network_count = 10
 scheme =
   Scheme::OffsetResolution.new(
-    Scheme::BestSplitMergeSort.new(
-      Scheme::FlexibleMerge.new(
-        Scheme::OddEvenPw2Merge::INSTANCE
+    Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
+      Scheme::FlexibleCombineFromPw2Combine.new(
+        Scheme::Pw2MergeOddEven::INSTANCE
       )
     )
   )
@@ -17,6 +17,6 @@ log_max = Distance.new(7)
 range = random_width_array(network_count, random, log_max).map { |v| Width.from_value(v) }
 rounds = 5
 
-describe Scheme::BestSplitMergeSort do
+describe Scheme::FlexibleDivideAndConquerDynamicProgramming do
   it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
 end

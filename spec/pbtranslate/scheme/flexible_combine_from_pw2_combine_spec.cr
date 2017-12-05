@@ -1,18 +1,18 @@
 require "./merging_network_helper"
 
-module FlexibleMergeSpec
+module FlexibleCombineFromPw2CombineSpec
   extend self
 
   SCHEME =
-    Scheme::FlexibleMerge.new(
-      Scheme::OddEvenPw2Merge::INSTANCE
+    Scheme::FlexibleCombineFromPw2Combine.new(
+      Scheme::Pw2MergeOddEven::INSTANCE
     )
 
   def create_network(*args)
     SCHEME.network(args.map { |t| Width.from_value(Distance.new(t)) })
   end
 
-  describe Scheme::FlexibleMerge do
+  describe Scheme::FlexibleCombineFromPw2Combine do
     {% begin %}
       {% a = [1, 2, 3, 4, 5] %}
       {% for l in a %}

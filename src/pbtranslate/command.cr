@@ -2,7 +2,7 @@ require "colorize"
 require "option_parser"
 
 require "./config"
-require "./scheme/random_from_depth"
+require "./scheme/flexible_random_from_depth"
 require "./tool/base_scheme"
 require "./tool/cardinality_translator"
 require "./tool/optimization_rewriter"
@@ -212,7 +212,7 @@ class PBTranslate::Command
         error "the --network-scheme random option works only with an absolute --crop-depth"
       end
       r = Random.new(@random_seed_for_random_from_depth)
-      Scheme::RandomFromDepth.new(random: r, depth: Distance.new(d))
+      Scheme::FlexibleRandomFromDepth.new(random: r, depth: Distance.new(d))
     else
       error "unknown argument '#{s}' to --network-scheme"
     end

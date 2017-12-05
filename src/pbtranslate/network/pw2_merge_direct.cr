@@ -1,7 +1,7 @@
 require "../gate"
 require "./first_class"
 
-class PBTranslate::Network::DirectPw2Merge
+class PBTranslate::Network::Pw2MergeDirect
   include FirstClass
   include Gate::Restriction
 

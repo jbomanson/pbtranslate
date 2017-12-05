@@ -9,10 +9,10 @@ seed = SEED ^ __FILE__.hash
 
 scheme =
   DepthTracking::Scheme.new(
-    Scheme::WidthLimited.new(
+    Scheme::FlexibleFromPw2.new(
       Scheme::OffsetResolution.new(
-        Scheme::MergeSort::Recursive.new(
-          Scheme::OddEvenPw2Merge::INSTANCE
+        Scheme::Pw2DivideAndConquer.new(
+          Scheme::Pw2MergeOddEven::INSTANCE
         )
       )
     )
@@ -139,7 +139,7 @@ end
 def weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
   n =
     Network::WrapperWithDepth.new(
-      Network::IndexableComparator.new(comparators),
+      Network::PartialIndexableComparator.new(comparators),
       network_depth: Distance.new(depth),
     )
   n.network_width.should eq(initial_weights.size)

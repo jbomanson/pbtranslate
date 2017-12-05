@@ -7,9 +7,9 @@ require "../scheme"
 # base networks and ignoring any excess wires at high positions.
 # The depths of the resulting networks are generally the same as those of the
 # base networks.
-struct PBTranslate::Scheme::WidthLimited(S)
+struct PBTranslate::Scheme::FlexibleFromPw2(S)
   include Scheme
-  include OfAnyWidthMarker
+  include FlexibleMarker
 
   delegate gate_options, to: @scheme
 

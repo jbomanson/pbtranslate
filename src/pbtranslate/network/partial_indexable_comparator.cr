@@ -1,9 +1,8 @@
 require "../compute_depth"
 require "../gate"
-require "../scheme/indexable_comparator"
 
 # A network of comparator gates based on a given sequence of wire pairs.
-struct PBTranslate::Network::IndexableComparator(T)
+struct PBTranslate::Network::PartialIndexableComparator(T)
   include Gate::Restriction
 
   getter network_width : Distance
@@ -53,9 +52,5 @@ struct PBTranslate::Network::IndexableComparator(T)
 
   private def pair_to_gate(pair)
     Gate.comparator_between(*pair)
-  end
-
-  def scheme
-    Scheme::IndexableComparator.new(self)
   end
 end

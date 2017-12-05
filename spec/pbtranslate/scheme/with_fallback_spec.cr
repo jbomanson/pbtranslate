@@ -8,12 +8,12 @@ rounds = 5
 
 seed = SEED ^ __FILE__.hash
 
-scheme_a = Scheme::HardCodedSort
+scheme_a = Scheme::FlexiblePartialSortHardCoded
 
 scheme_b =
   Scheme::OffsetResolution.new(
-    Scheme::MergeSort::Recursive.new(
-      Scheme::OddEvenPw2Merge::INSTANCE
+    Scheme::Pw2DivideAndConquer.new(
+      Scheme::Pw2MergeOddEven::INSTANCE
     )
   )
 

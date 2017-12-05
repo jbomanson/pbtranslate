@@ -1,10 +1,7 @@
-require "../scheme/merge_sort"
-require "../scheme/odd_even_pw2_merge"
-
-struct PBTranslate::Network::MergeSort(S, M)
+struct PBTranslate::Network::Pw2DivideAndConquer(M, Q)
   include FirstClass
 
-  def initialize(@sort_scheme : S, @merge_scheme : M, @width : Width::Pw2)
+  def initialize(@width : Width::Pw2, @combine_scheme : M, @conquer_scheme : Q)
     @width_log2 = width.log2.as(Distance)
   end
 
@@ -14,7 +11,7 @@ struct PBTranslate::Network::MergeSort(S, M)
     when Distance.new(0)
       {{zero}}
     when Distance.new(1)
-      @merge_scheme.network(less).{{one_call}}
+      @combine_scheme.network(less).{{one_call}}
     else
       {{else_expr}}
     end
@@ -25,7 +22,7 @@ struct PBTranslate::Network::MergeSort(S, M)
       three_cases(
         {{tuple[1].id}}.new(0),
         {{tuple[0].id}},
-        @sort_scheme.network(less).{{tuple[0].id}} * {{tuple[2].id}} + @merge_scheme.network(less).{{tuple[0].id}},
+        @conquer_scheme.network(less).{{tuple[0].id}} * {{tuple[2].id}} + @combine_scheme.network(less).{{tuple[0].id}},
       )
     end
   {% end %}
@@ -41,13 +38,13 @@ struct PBTranslate::Network::MergeSort(S, M)
   private def host(visitor, way : Forward)
     helper_host(visitor) do |less|
       pair_host(visitor, less)
-      @merge_scheme.network(less).host(visitor)
+      @combine_scheme.network(less).host(visitor)
     end
   end
 
   private def host(visitor, way : Backward)
     helper_host(visitor) do |less|
-      @merge_scheme.network(less).host(visitor)
+      @combine_scheme.network(less).host(visitor)
       pair_host(visitor, less)
     end
   end
@@ -57,10 +54,10 @@ struct PBTranslate::Network::MergeSort(S, M)
   end
 
   private def pair_host(visitor, less)
-    sort_network = @sort_scheme.network(less)
+    conquer_network = @conquer_scheme.network(less)
     visitor.way.each_in({typeof(less.value).new(0), less.value}) do |amount|
       visitor.visit_region(Offset.new(amount)) do |region_visitor|
-        sort_network.host(region_visitor)
+        conquer_network.host(region_visitor)
       end
     end
   end

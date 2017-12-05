@@ -1,5 +1,5 @@
 require "../network/random"
-require "./of_any_width"
+require "./flexible"
 require "./parameterized_by_depth"
 require "../scheme"
 
@@ -8,9 +8,9 @@ require "../scheme"
 #
 # The generated networks are of linear size, so that for *n* inputs they have
 # *O(n)* gates, when the configured depth is regarded as constant.
-struct PBTranslate::Scheme::RandomFromDepth
+struct PBTranslate::Scheme::FlexibleRandomFromDepth
   include Scheme
-  include OfAnyWidthMarker
+  include FlexibleMarker
   include ParameterizedByDepth
 
   declare_gate_options depth

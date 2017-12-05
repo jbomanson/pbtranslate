@@ -1,4 +1,4 @@
-require "./flexible_merge"
+require "./flexible_combine_from_pw2_combine"
 require "../network/compute_gate_count"
 require "../network/divide_and_conquer"
 require "../scheme"
@@ -15,7 +15,7 @@ require "../scheme"
 # The base case scheme must provide a *network?* method with a single `Width`
 # argument and the merging scheme must provide a *network* method with a pair
 # of `Width` arguments.
-class PBTranslate::Scheme::BestSplitMergeSort(B, M)
+class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(B, M)
   include Scheme
 
   # A limit on the ratio of sizes of parts that are considered when splitting.
@@ -32,7 +32,7 @@ class PBTranslate::Scheme::BestSplitMergeSort(B, M)
 
   # Creates a potentially recursive merge sorting network scheme that depends
   # on the given schemes.
-  def self.new(merge_scheme m = FlexibleMerge.new, *, base_scheme b = m.to_base_case)
+  def self.new(merge_scheme m = FlexibleCombineFromPw2Combine.new, *, base_scheme b = m.to_base_case)
     new(base_scheme: b, merge_scheme: m, overload: nil)
   end
 
@@ -41,7 +41,7 @@ class PBTranslate::Scheme::BestSplitMergeSort(B, M)
   end
 
   # Generates a network of the given *width* as described in
-  # `BestSplitMergeSort`.
+  # `FlexibleDivideAndConquerDynamicProgramming`.
   def network(width : Width)
     (@base_scheme.network? width) || recursive_network(width)
   end

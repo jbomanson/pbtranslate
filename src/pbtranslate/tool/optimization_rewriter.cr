@@ -32,7 +32,7 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
   @crop_depth_unit = nil.as(Int32 | Nil)
   @weight_last = true
   @weight_step = nil.as(Int32 | Nil)
-  @scheme = BASE_SCHEME.as(Scheme::OfAnyWidth)
+  @scheme = BASE_SCHEME.as(Scheme::Flexible)
 
   def quick_dry_test : Nil
     network_of_width(1, [Int32.new(0)]).host(Visitor::Noop::INSTANCE)

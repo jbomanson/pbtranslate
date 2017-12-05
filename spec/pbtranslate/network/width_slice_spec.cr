@@ -6,15 +6,15 @@ network_count = 10
 
 oe_scheme =
   Scheme::OffsetResolution.new(
-    Scheme::MergeSort::Recursive.new(
-      Scheme::OddEvenPw2Merge::INSTANCE
+    Scheme::Pw2DivideAndConquer.new(
+      Scheme::Pw2MergeOddEven::INSTANCE
     )
   )
 
 direct_scheme =
   Scheme::OffsetResolution.new(
-    Scheme::MergeSort::Recursive.new(
-      Scheme::DirectPw2Merge::INSTANCE
+    Scheme::Pw2DivideAndConquer.new(
+      Scheme::Pw2MergeDirect::INSTANCE
     )
   )
 

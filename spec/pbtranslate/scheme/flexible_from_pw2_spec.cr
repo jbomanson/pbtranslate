@@ -6,20 +6,20 @@ network_count = 10
 
 oe_scheme =
   Scheme::OffsetResolution.new(
-    Scheme::MergeSort::Recursive.new(
-      Scheme::OddEvenPw2Merge::INSTANCE
+    Scheme::Pw2DivideAndConquer.new(
+      Scheme::Pw2MergeOddEven::INSTANCE
     )
   )
 
 direct_scheme =
   Scheme::OffsetResolution.new(
-    Scheme::MergeSort::Recursive.new(
-      Scheme::DirectPw2Merge::INSTANCE
+    Scheme::Pw2DivideAndConquer.new(
+      Scheme::Pw2MergeDirect::INSTANCE
     )
   )
 
 def test_limits_with_sub_scheme(sub_scheme, network_count)
-  scheme = Scheme::WidthLimited.new(sub_scheme)
+  scheme = Scheme::FlexibleFromPw2.new(sub_scheme)
   random = Random.new(SEED)
   random_width_array(network_count, random).each do |width|
     visitor = WidthCheckingVisitor.new(width)
@@ -28,7 +28,7 @@ def test_limits_with_sub_scheme(sub_scheme, network_count)
 end
 
 def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
-  scheme = Scheme::WidthLimited.new(sub_scheme)
+  scheme = Scheme::FlexibleFromPw2.new(sub_scheme)
   random = Random.new(SEED)
   random_width_array(network_count, random).each do |width|
     a = Array.new(width) { yield random }
@@ -40,7 +40,7 @@ def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
   end
 end
 
-describe Scheme::WidthLimited do
+describe Scheme::FlexibleFromPw2 do
   it "trims oe merge sorting networks to within limits" do
     test_limits_with_sub_scheme(oe_scheme, network_count)
   end

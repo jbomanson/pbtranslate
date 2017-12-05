@@ -14,13 +14,13 @@ require "../network/width_slice"
 # at low and high positions.
 # The depths of the resulting networks are generally the same as those of the
 # base networks.
-struct PBTranslate::Scheme::FlexibleMerge(S)
+struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
   include Scheme
 
   delegate gate_options, to: @merge_scheme
 
   # Creates a flexible merge scheme based on the given *merge_scheme*.
-  def initialize(@merge_scheme : S = OddEvenPw2Merge)
+  def initialize(@merge_scheme : S = Pw2MergeOddEven)
   end
 
   # Generates a network that merges pairs of sorted sequences of the given

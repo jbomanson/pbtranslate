@@ -1,9 +1,10 @@
-require "../network/indexable_comparator"
+require "../network/partial_indexable_comparator"
 require "../network/wrapper_with_depth"
 require "../scheme"
+require "../scheme/flexible_partial_indexable_comparator"
 
 # A collection of good networks of fixed widths.
-module PBTranslate::Scheme::HardCodedSort
+module PBTranslate::Scheme::FlexiblePartialSortHardCoded
   include Scheme
   extend self
 
@@ -57,9 +58,9 @@ module PBTranslate::Scheme::HardCodedSort
   end
 
   private def create(*args, **options)
-    n = Network::IndexableComparator.new(*args, **options)
-    s = n.scheme
+    n = Network::PartialIndexableComparator.new(*args, **options)
     w = Width.from_value(n.network_width)
+    s = Scheme::FlexiblePartialIndexableComparator.new(n)
     d = s.compute_depth(w)
     nnn = PBTranslate::Network::WrapperWithDepth.new(network: n, network_depth: d)
   end

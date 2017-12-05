@@ -1,14 +1,14 @@
 require "./first_class"
 require "../gate"
 
-# See `Scheme::OddEvenPw2Merge`.
-struct PBTranslate::Network::OddEvenPw2Merge
+# See `Scheme::Pw2MergeOddEven`.
+struct PBTranslate::Network::Pw2MergeOddEven
   include FirstClass
 
   # The binary logarithm of the width of the input halves of this network.
   getter half_width_log2
 
-  # See `Scheme::OddEvenPw2Merge#network`.
+  # See `Scheme::Pw2MergeOddEven#network`.
   def initialize(@half_width_log2 : Distance)
   end
 
