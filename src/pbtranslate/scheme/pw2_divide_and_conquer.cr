@@ -1,5 +1,5 @@
 require "../network/pw2_divide_and_conquer"
-require "./flexible_partial_void"
+require "./partial_flexible_void"
 require "../scheme"
 
 # A scheme for divide and conquer algorithms that divide input sequences in
@@ -22,7 +22,7 @@ class PBTranslate::Scheme::Pw2DivideAndConquer(M, Q)
   # Creates a scheme that conquers recursively and combines the results using
   # *merge_scheme*.
   def self.new(merge_scheme)
-    new(merge_scheme, base_scheme: FlexiblePartialVoid::INSTANCE)
+    new(merge_scheme, base_scheme: PartialFlexibleVoid::INSTANCE)
   end
 
   # Creates a scheme that conquers subsequences using *base_scheme* or itself

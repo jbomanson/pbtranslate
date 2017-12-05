@@ -8,7 +8,7 @@ rounds = 5
 
 seed = SEED ^ __FILE__.hash
 
-scheme_a = Scheme::FlexiblePartialSortHardCoded
+scheme_a = Scheme::PartialFlexibleSortHardCoded
 
 scheme_b =
   Scheme::OffsetResolution.new(

@@ -1,7 +1,7 @@
 require "../scheme"
 
 # A partial scheme that represents no networks.
-class PBTranslate::Scheme::FlexiblePartialVoid
+class PBTranslate::Scheme::PartialFlexibleVoid
   include Scheme
 
   # An instance of this scheme.

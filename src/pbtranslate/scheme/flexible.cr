@@ -20,6 +20,6 @@ module PBTranslate::Scheme
   # An alias for some schemes that generate networks of any `Width`, as
   # opposed to only `Width::Pw2`.
   alias Flexible = FlexibleMarker |
-                     OffsetResolution(FlexibleDivideAndConquerDynamicProgramming(Scheme::FlexiblePartialSortHardCoded.class, FlexibleCombineFromPw2Combine(Pw2MergeOddEven))) |
-                     WithFallback(Scheme::FlexiblePartialSortHardCoded.class, FlexibleMarker)
+                     OffsetResolution(FlexibleDivideAndConquerDynamicProgramming(Scheme::PartialFlexibleSortHardCoded.class, FlexibleCombineFromPw2Combine(Pw2MergeOddEven))) |
+                     WithFallback(Scheme::PartialFlexibleSortHardCoded.class, FlexibleMarker)
 end

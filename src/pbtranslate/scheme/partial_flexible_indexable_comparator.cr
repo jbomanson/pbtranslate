@@ -4,7 +4,7 @@ require "../scheme"
 # returns when `network` is called with the width of the network.
 #
 # Requesting for networks of other widths is an error.
-struct PBTranslate::Scheme::FlexiblePartialIndexableComparator(T)
+struct PBTranslate::Scheme::PartialFlexibleIndexableComparator(T)
   include Scheme
 
   declare_gate_options
