@@ -1,4 +1,4 @@
-# A network implementing this module provides useful introspection methods.
+# A module implemented by networks that provide useful introspection methods.
 module PBTranslate::Network::FirstClass
   # Returns the number of gates on the longest path from an input to an output.
   abstract def network_depth : Distance
