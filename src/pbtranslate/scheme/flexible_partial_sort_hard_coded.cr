@@ -1,4 +1,4 @@
-require "../network/partial_indexable_comparator"
+require "../network/flexible_indexable_comparator"
 require "../network/wrapper_with_depth"
 require "../scheme"
 require "../scheme/flexible_partial_indexable_comparator"
@@ -58,7 +58,7 @@ module PBTranslate::Scheme::FlexiblePartialSortHardCoded
   end
 
   private def create(*args, **options)
-    n = Network::PartialIndexableComparator.new(*args, **options)
+    n = Network::FlexibleIndexableComparator.new(*args, **options)
     w = Width.from_value(n.network_width)
     s = Scheme::FlexiblePartialIndexableComparator.new(n)
     d = s.compute_depth(w)

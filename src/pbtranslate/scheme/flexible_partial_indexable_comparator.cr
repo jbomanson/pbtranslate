@@ -1,6 +1,6 @@
 require "../scheme"
 
-# A scheme that wraps a single `Network::PartialIndexableComparator`, which it
+# A scheme that wraps a single `Network::FlexibleIndexableComparator`, which it
 # returns when `network` is called with the width of the network.
 #
 # Requesting for networks of other widths is an error.
@@ -10,7 +10,7 @@ struct PBTranslate::Scheme::FlexiblePartialIndexableComparator(T)
   declare_gate_options
 
   # Wraps *unique_network* into a `Scheme`.
-  def initialize(@unique_network : Network::PartialIndexableComparator(T))
+  def initialize(@unique_network : Network::FlexibleIndexableComparator(T))
   end
 
   # Returns the wrapped network if it is of the given `width` and otherwise

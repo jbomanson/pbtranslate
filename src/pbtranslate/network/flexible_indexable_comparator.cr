@@ -2,7 +2,7 @@ require "../compute_depth"
 require "../gate"
 
 # A network of comparator gates based on a given sequence of wire pairs.
-struct PBTranslate::Network::PartialIndexableComparator(T)
+struct PBTranslate::Network::FlexibleIndexableComparator(T)
   include Gate::Restriction
 
   getter network_width : Distance

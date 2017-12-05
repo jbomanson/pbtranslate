@@ -62,7 +62,7 @@ module PBTranslate::DepthTracking
   #     end
   #
   #     a = [{0, 1}, {2, 3}, {0, 2}, {1, 3}, {1, 2}]
-  #     network = Network::PartialIndexableComparator.new(a)
+  #     network = Network::FlexibleIndexableComparator.new(a)
   #     width = network.width # => 4
   #     visitor = MyVisitor.new
   #     wrapper = DepthTracking::Guide.new(width: width, visitor: visitor)

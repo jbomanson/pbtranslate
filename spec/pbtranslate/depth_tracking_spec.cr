@@ -19,7 +19,7 @@ describe DepthTracking do
     e = [{0, 0, 1}, {0, 2, 3}, {1, 0, 2}, {1, 1, 3}, {2, 1, 2}]
     e = e.map &.map { |v| Distance.new(v) }
     a = e.map { |(d, i, j)| {i, j} }
-    network = Network::PartialIndexableComparator.new(a)
+    network = Network::FlexibleIndexableComparator.new(a)
     width = network.network_width # => 4
     visitor = MyVisitor.new
     nn = DepthTracking::Network.new(network: network, width: width)
