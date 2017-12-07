@@ -8,6 +8,13 @@ module PBTranslate::Scheme::PartialFlexibleSortHardCoded
   include Scheme
   extend self
 
+  module ::PBTranslate
+    # Creates a partial scheme representing a fixed number of good networks.
+    def Scheme.partial_flexible_sort_hard_coded : PartialFlexibleSortHardCoded
+      PartialFlexibleSortHardCoded
+    end
+  end
+
   declare_gate_options
 
   # The range of width values for which `.network` is defined.

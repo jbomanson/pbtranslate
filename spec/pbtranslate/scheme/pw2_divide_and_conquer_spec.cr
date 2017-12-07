@@ -23,7 +23,7 @@ scheme =
   Scheme::OffsetResolution.new(
     Scheme::Pw2DivideAndConquer.new(
       Scheme.pw2_merge_odd_even,
-      base_scheme: Scheme::PartialFlexibleSortHardCoded,
+      base_scheme: Scheme.partial_flexible_sort_hard_coded,
     )
   )
 
