@@ -1,11 +1,15 @@
 require "../scheme"
 
-# A partial scheme that represents no networks.
+# :nodoc:
 class PBTranslate::Scheme::PartialFlexibleVoid
   include Scheme
 
-  # An instance of this scheme.
-  INSTANCE = new
+  module ::PBTranslate
+    # Creates a partial scheme that represents no networks.
+    def Scheme.partial_flexible_void : Scheme
+      PartialFlexibleVoid.new
+    end
+  end
 
   declare_void_gate_options
 

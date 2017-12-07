@@ -15,8 +15,7 @@ class PBTranslate::Scheme::Pw2DivideAndConquer(M, Q)
     #
     # The given base_scheme is optional, it is allwoed to be partial and it is
     # enough for it to generate networks of widths that are powers of two.
-    def to_scheme_pw2_divide_and_conquer(
-                                         base_scheme = PartialFlexibleVoid::INSTANCE) : Scheme
+    def to_scheme_pw2_divide_and_conquer(base_scheme = Scheme.partial_flexible_void) : Scheme
       Pw2DivideAndConquer.new(self, base_scheme)
     end
   end

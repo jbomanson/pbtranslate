@@ -18,7 +18,7 @@ private record DummyUnionScheme(A, B), one : A, two : B do
   delegate gate_options, to: (true ? @one : @two)
 end
 
-scheme = Scheme::PartialFlexibleVoid::INSTANCE
+scheme = Scheme.partial_flexible_void
 
 describe PBTranslate::Scheme::PartialFlexibleVoid do
   it "generates no networks with #network?" do
