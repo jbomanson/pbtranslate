@@ -17,7 +17,7 @@ scheme_b =
     )
   )
 
-scheme = Scheme::WithFallback.new(scheme_a, scheme_b)
+scheme = scheme_a.to_scheme_with_fallback(scheme_b)
 
 describe Scheme::WithFallback do
   it_acts_like_a_sorting_network(scheme, seed, range, rounds)
