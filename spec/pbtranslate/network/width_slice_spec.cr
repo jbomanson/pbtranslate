@@ -14,7 +14,7 @@ oe_scheme =
 direct_scheme =
   Scheme::OffsetResolution.new(
     Scheme::Pw2DivideAndConquer.new(
-      Scheme::Pw2MergeDirect::INSTANCE
+      Scheme.pw2_merge_direct
     )
   )
 
