@@ -6,9 +6,7 @@ network_count = 10
 scheme =
   Scheme::OffsetResolution.new(
     Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
-      Scheme::FlexibleCombineFromPw2Combine.new(
-        Scheme.pw2_merge_odd_even
-      )
+      Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
     )
   )
 seed = SEED ^ __FILE__.hash

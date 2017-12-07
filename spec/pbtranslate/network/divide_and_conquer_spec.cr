@@ -40,9 +40,7 @@ seed = SEED ^ __FILE__.hash
 scheme =
   Scheme::OffsetResolution.new(
     MergeSortByDivideAndConquerScheme.new(
-      Scheme::FlexibleCombineFromPw2Combine.new(
-        Scheme.pw2_merge_odd_even
-      )
+      Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
     )
   )
 

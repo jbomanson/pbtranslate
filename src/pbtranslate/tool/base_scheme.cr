@@ -9,9 +9,7 @@ class PBTranslate::Tool
     Scheme::OffsetResolution.new(
       Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
         base_scheme: Scheme.partial_flexible_sort_hard_coded,
-        combine_scheme: Scheme::FlexibleCombineFromPw2Combine.new(
-          Scheme.pw2_merge_odd_even
-        ),
+        combine_scheme: Scheme.pw2_merge_odd_even.to_scheme_flexible_combine,
       )
     ).as(Scheme::Flexible)
 end

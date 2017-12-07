@@ -1,31 +1,33 @@
-require "../scheme"
+require "./flexible_combine"
 require "../network/empty"
 require "../network/width_slice"
+require "../scheme"
 
-# A scheme of networks that combine pairs of sequences of arbitrary
-# lengths into single sequences.
-# These networks which are based on networks that combine pairs of sequences of
-# equal lenghts that are powers of two.
-#
-# The base networks are obtained from a given scheme of type *S*.
-# The scheme must provide a *#network* method with a single `Width::Pw2`
-# argument standing for the width of each of the halves to be combined.
-#
-# The resulting networks are obtained by ignoring appropriate numbers of wires
-# at low and high positions.
-# The depths of the resulting networks are generally the same as those of the
-# base networks.
+# :nodoc:
 struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
   include Scheme
+  include FlexibleCombine
+
+  module ::PBTranslate::Scheme::Pw2Combine
+    # Creates a version of this scheme that generates networks to combine pairs
+    # of sequences of flexible lengths into single sequences, as opposed to
+    # only pairs of equal length sequences of length that is a power of two.
+    #
+    # The generated networks are obtained by ignoring generating sufficiently
+    # large base networks and ignoring any excess wires at low and high
+    # positions.
+    # The depths of the resulting networks are generally the same as those of the
+    # base networks.
+    def to_scheme_flexible_combine : FlexibleCombine
+      FlexibleCombineFromPw2Combine.new(self)
+    end
+  end
 
   delegate gate_options, to: @combine_scheme
 
-  # Creates a flexible combine scheme based on the given *combine_scheme*.
   def initialize(@combine_scheme : S = Pw2MergeOddEven)
   end
 
-  # Generates a network that combines pairs of sequences of the given respective
-  # *widths*.
   def network(widths : {Width, Width})
     l, r = lr = widths.map &.value
     middle = Math.pw2ceil(lr.map { |x| Math.pw2ceil(x) }.sum) >> 1
