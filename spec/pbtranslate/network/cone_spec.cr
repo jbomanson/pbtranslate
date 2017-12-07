@@ -35,7 +35,7 @@ private def host_with_cone(width_log2, wanted, array) : Int32
   scheme =
     Scheme::OffsetResolution.new(
       Scheme::Pw2DivideAndConquer.new(
-        Scheme::Pw2MergeOddEven::INSTANCE
+        Scheme.pw2_merge_odd_even
       )
     )
   w = Width.from_log2(width_log2)

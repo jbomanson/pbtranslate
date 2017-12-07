@@ -5,7 +5,7 @@ include PBTranslate
 scheme =
   Scheme::OffsetResolution.new(
     Scheme::Pw2DivideAndConquer.new(
-      Scheme::Pw2MergeOddEven::INSTANCE
+      Scheme.pw2_merge_odd_even
     )
   )
 

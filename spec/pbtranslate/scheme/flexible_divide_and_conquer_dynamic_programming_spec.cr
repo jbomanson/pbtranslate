@@ -7,7 +7,7 @@ scheme =
   Scheme::OffsetResolution.new(
     Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
       Scheme::FlexibleCombineFromPw2Combine.new(
-        Scheme::Pw2MergeOddEven::INSTANCE
+        Scheme.pw2_merge_odd_even
       )
     )
   )

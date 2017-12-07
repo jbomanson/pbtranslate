@@ -41,7 +41,7 @@ scheme =
   Scheme::OffsetResolution.new(
     MergeSortByDivideAndConquerScheme.new(
       Scheme::FlexibleCombineFromPw2Combine.new(
-        Scheme::Pw2MergeOddEven::INSTANCE
+        Scheme.pw2_merge_odd_even
       )
     )
   )

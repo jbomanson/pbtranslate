@@ -3,7 +3,7 @@ require "./merging_network_helper"
 module Pw2MergeOddEvenSpec
   extend self
 
-  SCHEME = Scheme::Pw2MergeOddEven::INSTANCE
+  SCHEME = Scheme.pw2_merge_odd_even
 
   def create_network(i, j)
     SCHEME.network(Width.from_pw2(Distance.new(i)))

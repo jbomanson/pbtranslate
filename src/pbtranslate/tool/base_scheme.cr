@@ -10,7 +10,7 @@ class PBTranslate::Tool
       Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
         base_scheme: Scheme::PartialFlexibleSortHardCoded,
         combine_scheme: Scheme::FlexibleCombineFromPw2Combine.new(
-          Scheme::Pw2MergeOddEven::INSTANCE
+          Scheme.pw2_merge_odd_even
         ),
       )
     ).as(Scheme::Flexible)

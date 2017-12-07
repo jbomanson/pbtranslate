@@ -5,7 +5,7 @@ module FlexibleCombineFromPw2CombineSpec
 
   SCHEME =
     Scheme::FlexibleCombineFromPw2Combine.new(
-      Scheme::Pw2MergeOddEven::INSTANCE
+      Scheme.pw2_merge_odd_even
     )
 
   def create_network(*args)
