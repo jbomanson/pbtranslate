@@ -7,7 +7,6 @@ require "../scheme"
 # Conquer actions are implemented using either a scheme of type *Q* or this
 # scheme recursively.
 # Combination actions are implemented using a scheme of type *M*.
-# are powers of two by using a scheme of type *Q* as a base cas#
 #
 # It is enough for these parameter schemes to generate networks of widths that
 # are powers of two.

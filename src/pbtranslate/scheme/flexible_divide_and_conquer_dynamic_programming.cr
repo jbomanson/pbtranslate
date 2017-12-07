@@ -3,41 +3,43 @@ require "../network/compute_gate_count"
 require "../network/divide_and_conquer"
 require "../scheme"
 
-# A recursive merge sorting network scheme that uses dynamic programming to
-# determine good network structure, while relying on given schemes for base
-# cases and merging to build networks.
+# A recursive command and conquer network scheme that uses dynamic programming
+# to determine good network structure, while relying on given schemes for base
+# cases and combination operations to build networks.
+# Conquer actions are implemented using either a scheme of type *Q* or this
+# scheme recursively.
+# Combination actions are implemented using a scheme of type *M*.
 #
 # For any given input width, this scheme will find a good way to split the
-# input in two parts that are sorted separately and then merged.
-# Sorting is based on the given base case scheme or recursion.
-# Merging is delegated to the given merging scheme.
+# input into two parts that are conquered separately and then combined.
+# Conquering is based on the given base case scheme or recursion.
+# Combination is delegated to the given combine scheme.
 #
 # The base case scheme must provide a *network?* method with a single `Width`
-# argument and the merging scheme must provide a *network* method with a pair
+# argument and the combine scheme must provide a *network* method with a pair
 # of `Width` arguments.
-class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(B, M)
+class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   include Scheme
 
   # A limit on the ratio of sizes of parts that are considered when splitting.
   # Lower values lead to lower computation time at the risk of missing some
-  # good splits.
+  # good ways of arranging network structure.
   IMBALANCE_LIMIT = Distance.new(3)
 
   # :nodoc:
   record Details, point : Distance, cost : Area
 
-  delegate gate_options, to: (true ? @base_scheme : @merge_scheme)
+  delegate gate_options, to: (true ? @base_scheme : @combine_scheme)
 
   @cache = Array(Details | Nil).new
 
-  # Creates a potentially recursive merge sorting network scheme that depends
-  # on the given schemes.
-  def self.new(merge_scheme m = FlexibleCombineFromPw2Combine.new, *, base_scheme b = m.to_base_case)
-    new(base_scheme: b, merge_scheme: m, overload: nil)
+  # Creates a scheme that depends on the given schemes.
+  def self.new(combine_scheme m = FlexibleCombineFromPw2Combine.new, *, base_scheme b = m.to_base_case)
+    new(base_scheme: b, combine_scheme: m, overload: nil)
   end
 
   # :nodoc:
-  def initialize(*, @base_scheme : B, @merge_scheme : M, overload : Nil)
+  def initialize(*, @base_scheme : Q, @combine_scheme : M, overload : Nil)
   end
 
   # Generates a network of the given *width* as described in
@@ -52,7 +54,7 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(B, M)
     Network::DivideAndConquer.new(
       widths: widths(l, w - l),
       conquer_scheme: self,
-      combine_scheme: @merge_scheme,
+      combine_scheme: @combine_scheme,
     )
   end
 
@@ -91,18 +93,18 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(B, M)
     best
   end
 
-  # Returns the cost of a merge sorter that merges `l + r` wires.
+  # Returns the cost to conquer and combine `l + r` wires.
   private def evaluate(l, r) : Area
-    sort_cost(l) + sort_cost(r) + merge_cost(l, r)
+    conquer_cost(l) + conquer_cost(r) + combine_cost(l, r)
   end
 
-  private def sort_cost(w : Distance) : Area
+  private def conquer_cost(w : Distance) : Area
     n = (@base_scheme.network? Width.from_value(w))
     n ? Network.compute_gate_count(n) : details(w).cost
   end
 
-  private def merge_cost(l : Distance, r : Distance) : Area
-    Network.compute_gate_count(@merge_scheme.network(widths(l, r)))
+  private def combine_cost(l : Distance, r : Distance) : Area
+    Network.compute_gate_count(@combine_scheme.network(widths(l, r)))
   end
 
   private def widths(*args)
