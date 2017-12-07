@@ -5,14 +5,14 @@ include SpecHelper
 network_count = 10
 
 oe_scheme =
-  Scheme::Pw2DivideAndConquer.new(
-    Scheme.pw2_merge_odd_even
-  ).to_scheme_with_offset_resolution
+  Scheme.pw2_merge_odd_even
+        .to_scheme_pw2_divide_and_conquer
+        .to_scheme_with_offset_resolution
 
 direct_scheme =
-  Scheme::Pw2DivideAndConquer.new(
-    Scheme.pw2_merge_direct
-  ).to_scheme_with_offset_resolution
+  Scheme.pw2_merge_direct
+        .to_scheme_pw2_divide_and_conquer
+        .to_scheme_with_offset_resolution
 
 def test_limits_with_sub_scheme(sub_scheme, network_count)
   scheme = Scheme::FlexibleFromPw2.new(sub_scheme)
