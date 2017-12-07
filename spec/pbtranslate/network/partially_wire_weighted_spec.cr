@@ -9,13 +9,11 @@ seed = SEED ^ __FILE__.hash
 
 scheme =
   DepthTracking::Scheme.new(
-    Scheme::FlexibleFromPw2.new(
-      Scheme::OffsetResolution.new(
-        Scheme::Pw2DivideAndConquer.new(
-          Scheme.pw2_merge_odd_even
-        )
+    Scheme::OffsetResolution.new(
+      Scheme::Pw2DivideAndConquer.new(
+        Scheme.pw2_merge_odd_even
       )
-    )
+    ).to_scheme_flexible
   )
 
 layer_cache_class =

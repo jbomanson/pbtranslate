@@ -5,13 +5,11 @@ include SpecHelper
 network_count = 10
 
 scheme =
-  Scheme::FlexibleFromPw2.new(
-    Scheme::OffsetResolution.new(
-      Scheme::Pw2DivideAndConquer.new(
-        Scheme.pw2_merge_odd_even
-      )
+  Scheme::OffsetResolution.new(
+    Scheme::Pw2DivideAndConquer.new(
+      Scheme.pw2_merge_odd_even
     )
-  )
+  ).to_scheme_flexible
 
 class WeightCountingVisitor(T)
   getter sum
