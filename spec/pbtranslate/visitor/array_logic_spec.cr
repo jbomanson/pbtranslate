@@ -3,11 +3,9 @@ require "../../spec_helper"
 include PBTranslate
 
 scheme =
-  Scheme::OffsetResolution.new(
-    Scheme::Pw2DivideAndConquer.new(
-      Scheme.pw2_merge_odd_even
-    )
-  )
+  Scheme::Pw2DivideAndConquer.new(
+    Scheme.pw2_merge_odd_even
+  ).to_scheme_with_offset_resolution
 
 describe Visitor::ArrayLogic do
   it "sorts booleans in descending order with merge sorting networks" do

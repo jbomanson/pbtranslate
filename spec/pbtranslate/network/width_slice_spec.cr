@@ -5,18 +5,14 @@ include SpecHelper
 network_count = 10
 
 oe_scheme =
-  Scheme::OffsetResolution.new(
-    Scheme::Pw2DivideAndConquer.new(
-      Scheme.pw2_merge_odd_even
-    )
-  )
+  Scheme::Pw2DivideAndConquer.new(
+    Scheme.pw2_merge_odd_even
+  ).to_scheme_with_offset_resolution
 
 direct_scheme =
-  Scheme::OffsetResolution.new(
-    Scheme::Pw2DivideAndConquer.new(
-      Scheme.pw2_merge_direct
-    )
-  )
+  Scheme::Pw2DivideAndConquer.new(
+    Scheme.pw2_merge_direct
+  ).to_scheme_with_offset_resolution
 
 # Randomly partitions a range of numbers into three parts so that the middle
 # one is nonempty. Returns the two points that separate the parts.

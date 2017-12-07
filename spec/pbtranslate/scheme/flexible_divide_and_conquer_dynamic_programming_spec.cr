@@ -4,11 +4,9 @@ include SpecHelper
 
 network_count = 10
 scheme =
-  Scheme::OffsetResolution.new(
-    Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
-      Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
-    )
-  )
+  Scheme::FlexibleDivideAndConquerDynamicProgramming.new(
+    Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
+  ).to_scheme_with_offset_resolution
 seed = SEED ^ __FILE__.hash
 random = Random.new(seed)
 log_max = Distance.new(7)

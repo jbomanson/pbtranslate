@@ -11,11 +11,9 @@ seed = SEED ^ __FILE__.hash
 scheme_a = Scheme.partial_flexible_sort_hard_coded
 
 scheme_b =
-  Scheme::OffsetResolution.new(
-    Scheme::Pw2DivideAndConquer.new(
-      Scheme.pw2_merge_odd_even
-    )
-  )
+  Scheme::Pw2DivideAndConquer.new(
+    Scheme.pw2_merge_odd_even
+  ).to_scheme_with_offset_resolution
 
 scheme = scheme_a.to_scheme_with_fallback(scheme_b)
 

@@ -38,11 +38,9 @@ range = WidthPw2Range.new(Distance.new(0)..WIDTH_LOG2_MAX)
 rounds = 5
 seed = SEED ^ __FILE__.hash
 scheme =
-  Scheme::OffsetResolution.new(
-    MergeSortByDivideAndConquerScheme.new(
-      Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
-    )
-  )
+  MergeSortByDivideAndConquerScheme.new(
+    Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
+  ).to_scheme_with_offset_resolution
 
 describe Network::DivideAndConquer do
   it_acts_like_a_sorting_network(scheme, seed, range, rounds)

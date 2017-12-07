@@ -33,11 +33,9 @@ end
 # Hosts a visitor through a network with a cone and returns the size of the cone
 private def host_with_cone(width_log2, wanted, array) : Int32
   scheme =
-    Scheme::OffsetResolution.new(
-      Scheme::Pw2DivideAndConquer.new(
-        Scheme.pw2_merge_odd_even
-      )
-    )
+    Scheme::Pw2DivideAndConquer.new(
+      Scheme.pw2_merge_odd_even
+    ).to_scheme_with_offset_resolution
   w = Width.from_log2(width_log2)
   n = scheme.network(w)
   nn = Network::Cone.new(network: n, width: w.value, output: wanted)
