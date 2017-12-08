@@ -3,23 +3,30 @@ require "../network/compute_gate_count"
 require "../network/divide_and_conquer"
 require "../scheme"
 
-# A recursive command and conquer network scheme that uses dynamic programming
-# to determine good network structure, while relying on given schemes for base
-# cases and combination operations to build networks.
-# Conquer actions are implemented using either a scheme of type *Q* or this
-# scheme recursively.
-# Combination actions are implemented using a scheme of type *M*.
-#
-# For any given input width, this scheme will find a good way to split the
-# input into two parts that are conquered separately and then combined.
-# Conquering is based on the given base case scheme or recursion.
-# Combination is delegated to the given combine scheme.
-#
-# The base case scheme must provide a *network?* method with a single `Width`
-# argument and the combine scheme must provide a *network* method with a pair
-# of `Width` arguments.
+# :nodoc:
 class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   include Scheme
+
+  module ::PBTranslate::Scheme
+    # Creates a divide and conquer scheme that uses dynamic programming
+    # to determine good network structure.
+    # Conquer actions are implemented using either the given *base_scheme* or
+    # the created scheme recursively.
+    # Combination actions are implemented using this scheme.
+    #
+    # For any given input width, the created scheme will find a good way to
+    # split the input into two parts that are conquered separately and then
+    # combined.
+    # Conquering is based on the given base case scheme or recursion.
+    # Combination is delegated to the given combine scheme.
+    #
+    # The given *base_scheme* must provide a *network?* method with a single
+    # `Width` argument and the this scheme must provide a *network* method with
+    # a pair of `Width` arguments.
+    def to_scheme_flexible_divide_and_conquer_dynamic_programming(base_scheme = to_base_case) : Scheme
+      FlexibleDivideAndConquerDynamicProgramming.new(self, base_scheme)
+    end
+  end
 
   # A limit on the ratio of sizes of parts that are considered when splitting.
   # Lower values lead to lower computation time at the risk of missing some
@@ -33,17 +40,9 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
 
   @cache = Array(Details | Nil).new
 
-  # Creates a scheme that depends on the given schemes.
-  def self.new(combine_scheme m = FlexibleCombineFromPw2Combine.new, *, base_scheme b = m.to_base_case)
-    new(base_scheme: b, combine_scheme: m, overload: nil)
+  def initialize(@combine_scheme : M, @base_scheme : Q)
   end
 
-  # :nodoc:
-  def initialize(*, @base_scheme : Q, @combine_scheme : M, overload : Nil)
-  end
-
-  # Generates a network of the given *width* as described in
-  # `FlexibleDivideAndConquerDynamicProgramming`.
   def network(width : Width)
     (@base_scheme.network? width) || recursive_network(width)
   end
