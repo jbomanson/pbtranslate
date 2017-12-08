@@ -211,8 +211,10 @@ class PBTranslate::Command
       if u
         error "the --network-scheme random option works only with an absolute --crop-depth"
       end
-      r = Random.new(@random_seed_for_random_from_depth)
-      Scheme::FlexibleRandomFromDepth.new(random: r, depth: Distance.new(d))
+      Scheme.flexible_random_from_depth(
+        random: Random.new(@random_seed_for_random_from_depth),
+        depth: Distance.new(d),
+      )
     else
       error "unknown argument '#{s}' to --network-scheme"
     end

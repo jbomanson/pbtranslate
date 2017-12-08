@@ -3,24 +3,29 @@ require "./flexible"
 require "./parameterized_by_depth"
 require "../scheme"
 
-# A scheme of networks consiting of a configured number of layers with randomly
-# constructed comparators.
-#
-# The generated networks are of linear size, so that for *n* inputs they have
-# *O(n)* gates, when the configured depth is regarded as constant.
+# :nodoc:
 struct PBTranslate::Scheme::FlexibleRandomFromDepth
   include Scheme
   include FlexibleMarker
   include ParameterizedByDepth
 
-  declare_gate_options depth
-
-  # Creates a scheme that generates networks with *depth* layers of gates
-  # chosen randomly using the generator *random*.
-  def initialize(*, @random : ::Random, @depth : Distance)
+  module ::PBTranslate
+    # Creates a scheme scheme of networks consiting of *depth* layers with
+    # comparators constructed using the given *random* generator.
+    #
+    # The size of the generated networks is proprotional to both the given
+    # *depth* and the width of the inputs.
+    # That is, they have *O(d n)* gates where d is the depth and n the width.
+    def Scheme.flexible_random_from_depth(*, random : ::Random, depth : Distance) : Scheme
+      FlexibleRandomFromDepth.new(random, depth)
+    end
   end
 
-  # Generates a network of the given *width*.
+  declare_gate_options depth
+
+  def initialize(@random : ::Random, @depth : Distance)
+  end
+
   def network(width w : Width)
     Network::Random.new(random: @random, depth: @depth, width: w)
   end
