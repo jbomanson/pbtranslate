@@ -4,11 +4,11 @@ include PBTranslate
 include Gate::Restriction
 
 scheme =
-  DepthTracking::Scheme.new(
-    Scheme.pw2_merge_odd_even
-          .to_scheme_pw2_divide_and_conquer
-          .to_scheme_with_offset_resolution
-  )
+  Scheme
+    .pw2_merge_odd_even
+    .to_scheme_pw2_divide_and_conquer
+    .to_scheme_with_offset_resolution
+    .to_scheme_with_gate_depth
 
 cache_class =
   Network::LayerCache.class_for(
