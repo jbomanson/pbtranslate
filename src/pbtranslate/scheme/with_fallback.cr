@@ -29,9 +29,9 @@ class PBTranslate::Scheme::WithFallback(A, B)
     (@schemes.first.network? width) || (@schemes.last.network?(width))
   end
 
-  # See `Scheme#with_gate_depth`.
-  def with_gate_depth
+  # See `Scheme#to_scheme_with_gate_depth`.
+  def to_scheme_with_gate_depth
     a, b = @schemes
-    a.with_gate_depth.to_scheme_with_fallback(b.with_gate_depth)
+    a.to_scheme_with_gate_depth.to_scheme_with_fallback(b.to_scheme_with_gate_depth)
   end
 end

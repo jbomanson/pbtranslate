@@ -305,7 +305,7 @@ class PBTranslate::Command
       w = Width.from_value(Distance.new(parameter))
       s = Tool::BASE_SCHEME
       if inspect_please
-        ss = s.with_gate_depth
+        ss = s.to_scheme_with_gate_depth
         n = ss.network(w)
         n.host(Visitor::Print.new(output_io))
       else

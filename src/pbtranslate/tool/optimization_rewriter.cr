@@ -151,7 +151,7 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
       if d = @crop_depth
         s.pbtranslate_as(Scheme::ParameterizedByDepth) do |x|
           Scheme::DepthSlice.new(
-            scheme: x.with_gate_depth,
+            scheme: x.to_scheme_with_gate_depth,
             range_proc: depth_range_proc(d),
           )
         end

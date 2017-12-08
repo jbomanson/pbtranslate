@@ -29,9 +29,9 @@ class PBTranslate::Scheme::OffsetResolution(S)
     Network::OffsetResolution.new(@scheme.network(width))
   end
 
-  def with_gate_depth
-    @scheme.with_gate_depth do |without|
-      OffsetResolution.new(without).with_gate_depth_added
+  def to_scheme_with_gate_depth
+    @scheme.to_scheme_with_gate_depth do |without|
+      OffsetResolution.new(without).to_scheme_with_gate_depth_added
     end
   end
 end
