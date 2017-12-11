@@ -2,19 +2,18 @@ require "../spec_helper"
 
 include PBTranslate
 
-instance_path = "spec/instance/300.aspif"
-filter_program = %x(spec/script/find-lpconvert.sh).chomp
+private INSTANCE_PATH  = "spec/instance/300.aspif"
+private FILTER_PROGRAM = %x(spec/script/find-lpconvert.sh).chomp
 
-instance = File.read(instance_path)
+private INSTANCE = File.read(INSTANCE_PATH)
 
-macro describe_translator_class(translator_class)
-  translator_class = {{translator_class}}
+def describe_translator_class(translator_class)
   describe translator_class do
-    it "produces output accepted by #{filter_program}" do
-      process = Process.new(filter_program, input: nil, output: false, error: nil)
+    it "produces output accepted by #{FILTER_PROGRAM}" do
+      process = Process.new(FILTER_PROGRAM, input: nil, output: false, error: nil)
       begin
         pipe = process.input
-        t = translator_class.new(instance, pipe)
+        t = translator_class.new(INSTANCE, pipe)
         t.parse
         status = process.wait
         status.exit_code.should eq(0)
@@ -27,9 +26,9 @@ macro describe_translator_class(translator_class)
   end
 end
 
-describe "filter_program" do
+describe "FILTER_PROGRAM" do
   it "is found on the system" do
-    filter_program.should_not eq("")
+    FILTER_PROGRAM.should_not eq("")
   end
 end
 
