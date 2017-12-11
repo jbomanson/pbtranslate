@@ -13,7 +13,9 @@ module Pw2MergeOddEvenSpec
     {% begin %}
       {% a = [1, 2, 4, 8, 16, 32] %}
       {% for l in a %}
-        it_merges({{l}}, {{l}}, Visitor::ArrayLogic.new, create_network)
+        it_merges({{l}}, {{l}}, Visitor::ArrayLogic) do |i, j|
+          create_network(i, j)
+        end
       {% end %}
     {% end %}
   end

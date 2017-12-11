@@ -14,7 +14,9 @@ module FlexibleCombineFromPw2CombineSpec
       {% a = [1, 2, 3, 4, 5] %}
       {% for l in a %}
         {% for r in a %}
-          it_merges({{l}}, {{r}}, Visitor::ArrayLogic.new, create_network)
+          it_merges({{l}}, {{r}}, Visitor::ArrayLogic) do |i, j|
+            create_network(i, j)
+          end
         {% end %}
       {% end %}
     {% end %}
