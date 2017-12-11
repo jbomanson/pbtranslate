@@ -57,7 +57,7 @@ struct PBTranslate::Network::WidthSlice(N)
       s = g.wires
       return false_and(s, b, **options) unless all_potentially_true?(g, b, e)
       p = s.find { |w| b <= w && w < e }
-      raise "But with simplification in WidthSlice" unless p
+      raise "Bug with simplification in WidthSlice" unless p
       s.map do |w|
         if b <= w && w < e
           p = w
