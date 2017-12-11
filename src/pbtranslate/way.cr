@@ -26,14 +26,6 @@ abstract struct PBTranslate::Way
   def initialize
   end
 
-  # Iterates over the integers in the given inclusive range,
-  # passing each in turn to the given block.
-  #
-  # The order of iteration is determined by the type of _self_.
-  def each_between(lo, hi)
-    each_in(lo..hi) { |x| yield x }
-  end
-
   # Similar to `Indexable#each_index` for _object_.
   #
   # The order of iteration is determined by the type of _self_.
@@ -55,7 +47,7 @@ abstract struct PBTranslate::Way
 
   # Similar to `Int#times` for _n_.
   def times(n)
-    each_between(typeof(n).new(0), n - 1) { |x| yield x }
+    each_in(typeof(n).new(0)...n) { |x| yield x }
   end
 
   # Returns the way forward if this and `way` agree, and backward otherwise.
