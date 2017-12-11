@@ -11,9 +11,9 @@ require "../visitor/of_no_yielded_content"
 #
 # There is no corresponding default scheme.
 class PBTranslate::Network::Cone(N)
-  private alias Level = Area
+  private alias Timestamp = Area
 
-  @levels : Array(Level?)
+  @timestamps : Array(Timestamp?)
 
   # Creates a version of a _network_ that augments visits with a named parameter
   # *output_cone*.
@@ -28,7 +28,7 @@ class PBTranslate::Network::Cone(N)
 
   # Like the other `new` but using a block for picking network outputs.
   def initialize(*, @network : N, width, &block : Int32 -> Bool)
-    @levels = Array.new(width) { |index| (yield index) ? Level.zero : nil }
+    @timestamps = Array.new(width) { |index| (yield index) ? Timestamp.zero : nil }
     @is_pending = true
   end
 
@@ -46,12 +46,12 @@ class PBTranslate::Network::Cone(N)
   end
 
   private def host_and_compute(visitor, way : Backward) : Nil
-    ComputingGuide.guide(visitor, @network, @levels)
+    ComputingGuide.guide(visitor, @network, @timestamps)
     @is_pending = false
   end
 
   private def host_and_pass(visitor) : Nil
-    PassingGuide.guide(visitor, @network, @levels)
+    PassingGuide.guide(visitor, @network, @timestamps)
   end
 
   private class ComputingGuide(V)
@@ -63,15 +63,15 @@ class PBTranslate::Network::Cone(N)
     # A visitor that propagates a cone through gates backward from output to
     # input wires while guiding another visitor through the network.
 
-    def self.guide(visitor, network, levels) : Nil
+    def self.guide(visitor, network, timestamps) : Nil
       Util.restrict(visitor.way, Backward)
-      guide = self.new(visitor, levels)
+      guide = self.new(visitor, timestamps)
       network.host(guide)
       guide.finish
     end
 
-    protected def initialize(@visitor : V, @levels : Array(Level?))
-      @reverse_index = Level.zero.as(Level)
+    protected def initialize(@visitor : V, @timestamps : Array(Timestamp?))
+      @reverse_index = Timestamp.zero.as(Timestamp)
     end
 
     def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
@@ -79,7 +79,7 @@ class PBTranslate::Network::Cone(N)
       return unless visit_gate_with_cone(g, **options)
       input_wires = g.wires
       input_wires.each do |wire|
-        @levels[wire] ||= @reverse_index
+        @timestamps[wire] ||= @reverse_index
       end
     end
 
@@ -90,8 +90,8 @@ class PBTranslate::Network::Cone(N)
     private def visit_gate_with_cone(g, **options) : Bool
       output_wires = g.wires
       output_cone =
-        @levels.values_at(*output_wires).map do |level|
-          level || false
+        @timestamps.values_at(*output_wires).map do |timestamp|
+          timestamp || false
         end
       @visitor.visit_gate(g, **options, output_cone: output_cone)
       output_cone.any?
@@ -99,7 +99,7 @@ class PBTranslate::Network::Cone(N)
 
     protected def finish : Nil
       last = @reverse_index
-      @levels.map! do |value|
+      @timestamps.map! do |value|
         value && last - value
       end
     end
@@ -114,21 +114,21 @@ class PBTranslate::Network::Cone(N)
     # A visitor that guides another and indicates to it which output wires
     # are in a cone.
 
-    def self.guide(visitor, network, levels) : Nil
+    def self.guide(visitor, network, timestamps) : Nil
       Util.restrict(visitor.way, Forward)
-      guide = self.new(visitor, levels)
+      guide = self.new(visitor, timestamps)
       network.host(guide)
     end
 
-    def initialize(@visitor : V, @levels : Array(Level?))
-      @index = Level.zero.as(Level)
+    def initialize(@visitor : V, @timestamps : Array(Timestamp?))
+      @index = Timestamp.zero.as(Timestamp)
     end
 
     def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
       output_wires = g.wires
       output_cone =
-        @levels.values_at(*output_wires).map do |level|
-          (level && @index < level) || false
+        @timestamps.values_at(*output_wires).map do |timestamp|
+          (timestamp && @index < timestamp) || false
         end
       @visitor.visit_gate(g, **options, output_cone: output_cone)
       @index += 1
