@@ -97,7 +97,7 @@ end
 # A rather useless test for checking that the sum of wire weights in a
 # partially wire weighted network is the same as the sum of input weights.
 def sum_test(network_count, scheme, layer_cache_class, random, weight_range, way)
-  random_width_array(network_count, random).each do |value|
+  array_of_random_width(network_count, random).each do |value|
     width = Width.from_value(value)
     v = GateWeightAccumulatingVisitor(typeof(random.next_int)).new
     w = Array.new(width.value) { random.rand(weight_range) }
@@ -117,7 +117,7 @@ end
 # the same as the sum of initial weights weighted by initial values.
 # Both the wire weigths and wire values are based on random initial values.
 def weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range)
-  random_width_array(network_count, random).each do |value|
+  array_of_random_width(network_count, random).each do |value|
     width = Width.from_value(value)
     x = Array.new(width.value) { random.rand(value_range) }
     v = WireWeightSumComputingVisitor.new(x.clone)
@@ -273,7 +273,7 @@ describe Network::PartiallyWireWeighted do
 
   it "propagates nothing when given a false bit array" do
     random = Random.new(seed)
-    random_width_array(network_count, random).each do |width_value|
+    array_of_random_width(network_count, random).each do |width_value|
       weights, grid = corner_case_weight_test_helper(scheme, layer_cache_class, random, weight_range, width_value, false, false)
       grid.map(&.first).should eq(weights)
       grid.each do |single_wire_weights|
@@ -285,7 +285,7 @@ describe Network::PartiallyWireWeighted do
 
   it "propagates in one step over everything when given a bit array with a single true bit at the end" do
     random = Random.new(seed)
-    random_width_array(network_count, random).each do |width_value|
+    array_of_random_width(network_count, random).each do |width_value|
       weights, grid = corner_case_weight_test_helper(scheme, layer_cache_class, random, weight_range, width_value, false, true)
       least = weights.min
       grid.map(&.first).should eq(weights.map &.-(least))

@@ -24,7 +24,7 @@ end
 describe Network::WireWeighted do
   it "preserves sums of weights" do
     random = Random.new(SEED)
-    random_width_array(network_count, random).each do |width|
+    array_of_random_width(network_count, random).each do |width|
       g = Visitor::Noop::INSTANCE
       w = WeightCountingVisitor(typeof(random.next_int)).new
       visitor = Visitor::GateAndWeightVisitorPair.new(gate_visitor: g, weight_visitor: w)

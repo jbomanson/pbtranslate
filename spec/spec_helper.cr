@@ -100,7 +100,7 @@ module SpecHelper
     a.sort
   end
 
-  def random_width_array(n, random, log_max = WIDTH_LOG2_MAX)
+  def array_of_random_width(n, random, log_max = WIDTH_LOG2_MAX)
     a =
       Array.new(n) do
         Distance.new(2 ** (random.next_float * log_max))

@@ -24,7 +24,7 @@ def partition_in_three(n, random)
 end
 
 def for_some_networks_of_random_width(network_count, random, sub_scheme)
-  random_width_array(network_count, random).each do |width|
+  array_of_random_width(network_count, random).each do |width|
     sub_width = Math.pw2ceil(width)
     sub_network = sub_scheme.network(Width.from_pw2(sub_width))
     left, right = partition_in_three(sub_width, random)

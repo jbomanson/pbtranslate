@@ -17,7 +17,7 @@ direct_scheme =
 def test_limits_with_sub_scheme(sub_scheme, network_count)
   scheme = Scheme::FlexibleFromPw2.new(sub_scheme)
   random = Random.new(SEED)
-  random_width_array(network_count, random).each do |width|
+  array_of_random_width(network_count, random).each do |width|
     visitor = WidthCheckingVisitor.new(width)
     scheme.network(Width.from_value(width)).host(visitor)
   end
@@ -26,7 +26,7 @@ end
 def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
   scheme = Scheme::FlexibleFromPw2.new(sub_scheme)
   random = Random.new(SEED)
-  random_width_array(network_count, random).each do |width|
+  array_of_random_width(network_count, random).each do |width|
     a = Array.new(width) { yield random }
     b = a.clone
     c = sort(a)

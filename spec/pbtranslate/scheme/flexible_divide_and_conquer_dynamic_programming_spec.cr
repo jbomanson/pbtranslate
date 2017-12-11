@@ -12,7 +12,7 @@ scheme =
 seed = SEED ^ __FILE__.hash
 random = Random.new(seed)
 log_max = Distance.new(7)
-range = random_width_array(network_count, random, log_max).map { |v| Width.from_value(v) }
+range = array_of_random_width(network_count, random, log_max).map { |v| Width.from_value(v) }
 rounds = 5
 
 describe Scheme::FlexibleDivideAndConquerDynamicProgramming do
