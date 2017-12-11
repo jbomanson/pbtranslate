@@ -29,8 +29,8 @@ describe Scheme::DepthSlice do
       depth = scheme.network(Width.from_log2(width_log2)).network_depth
       point = depth <= 1 ? Distance.new(0) : random.rand(Distance.new(1)...depth)
 
-      scheme_a = Scheme::DepthSlice.new(scheme: scheme, range_proc: ->(width : Width, depth : Distance) { Distance.new(0)...point })
-      scheme_b = Scheme::DepthSlice.new(scheme: scheme, range_proc: ->(width : Width, depth : Distance) { point...depth })
+      scheme_a = scheme.to_scheme_depth_slice { |width, depth| Distance.new(0)...point }
+      scheme_b = scheme.to_scheme_depth_slice { |width, depth| point...depth }
 
       visitor_x = RecordingVisitor.new
       visitor_y = RecordingVisitor.new
