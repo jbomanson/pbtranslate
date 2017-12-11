@@ -19,12 +19,4 @@ record PBTranslate::Visitor::ArraySwap(T), array : Array(T) do
   def visit_region(layer : Layer) : Nil
     yield self
   end
-
-  # On some machine, the following is a 1.15x slower version of the above.
-  # def visit_comparator(i, j) : Nil
-  #   a, b = @array.values_at(i, j)
-  #   unless a < b
-  #     @array.swap(i, j)
-  #   end
-  # end
 end
