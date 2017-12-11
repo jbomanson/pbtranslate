@@ -2,7 +2,7 @@ require "../gate"
 require "../visitor/default_methods"
 require "../visitor/of_no_yielded_content"
 
-# A network that computes a _cone of influence_ for another network on-the-fly.
+# A network that computes a _cone of influence_ for another network on the fly.
 #
 # Each gate output in a network influences some subset of network outputs.
 # Put otherwise, each output of a network is influenced by some subset of gate
