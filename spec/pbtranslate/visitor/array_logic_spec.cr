@@ -2,10 +2,7 @@ require "../../spec_helper"
 
 include PBTranslate
 
-scheme =
-  Scheme.pw2_merge_odd_even
-        .to_scheme_pw2_divide_and_conquer
-        .to_scheme_with_offset_resolution
+scheme = SpecHelper.pw2_sort_odd_even
 
 describe Visitor::ArrayLogic do
   it "sorts booleans in descending order with merge sorting networks" do

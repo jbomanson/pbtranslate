@@ -91,6 +91,7 @@ end
 
 module SpecHelper
   include PBTranslate
+  extend self
 
   def sort(a : Array(Bool))
     a.sort_by { |w| w ? 0 : 1 }
@@ -106,5 +107,12 @@ module SpecHelper
         Distance.new(2 ** (random.next_float * log_max))
       end
     a.sort
+  end
+
+  def pw2_sort_odd_even(*args)
+    Scheme
+      .pw2_merge_odd_even
+      .to_scheme_pw2_divide_and_conquer(*args)
+      .to_scheme_with_offset_resolution
   end
 end

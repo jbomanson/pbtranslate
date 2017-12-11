@@ -8,10 +8,8 @@ value_range = 0..1
 seed = SEED ^ __FILE__.hash
 
 scheme =
-  Scheme
-    .pw2_merge_odd_even
-    .to_scheme_pw2_divide_and_conquer
-    .to_scheme_with_offset_resolution
+  SpecHelper
+    .pw2_sort_odd_even
     .to_scheme_flexible
     .to_scheme_with_gate_depth
 
