@@ -901,7 +901,7 @@ module PBTranslate::Network::HardCoded
   private def self.create(*args, **options)
     n = Network::FlexibleIndexableComparator.new(*args, **options)
     w = Width.from_value(n.network_width)
-    s = Scheme::PartialFlexibleIndexableComparator.new(n)
+    s = n.to_scheme_singleton
     d = s.compute_depth(w)
     nnn = PBTranslate::Network::WrapperWithDepth.new(network: n, network_depth: d)
   end

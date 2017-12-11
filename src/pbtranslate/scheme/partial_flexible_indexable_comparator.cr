@@ -1,20 +1,25 @@
+require "../network/flexible_indexable_comparator"
 require "../scheme"
 
-# A scheme that wraps a single `Network::FlexibleIndexableComparator`, which it
-# returns when `network` is called with the width of the network.
-#
-# Requesting for networks of other widths is an error.
+# :nodoc:
 struct PBTranslate::Scheme::PartialFlexibleIndexableComparator(T)
   include Scheme
 
+  struct ::PBTranslate::Network::FlexibleIndexableComparator(T)
+    # Creates a scheme that wraps this single network which it returns whenever
+    # it receives a `network` with the width of the network as an argument.
+    #
+    # Requests for networks of other widths is an error.
+    def to_scheme_singleton : Scheme
+      PBTranslate::Scheme::PartialFlexibleIndexableComparator.new(self)
+    end
+  end
+
   declare_gate_options
 
-  # Wraps *unique_network* into a `Scheme`.
   def initialize(@unique_network : Network::FlexibleIndexableComparator(T))
   end
 
-  # Returns the wrapped network if it is of the given `width` and otherwise
-  # raises an error.
   def network(width w : Width)
     @unique_network.tap do |n|
       e = n.network_width
