@@ -91,11 +91,11 @@ class PBTranslate::Command
       OptionParser.parse(options) do |opts|
         opts.banner = "Usage: pbtranslate translate [options] [--] [input file]\n\nOptions:"
 
-        opts.on("--network-scheme sorting|random", "Use a sorting network or a random comparator network") do |s|
+        opts.on("--network-scheme sorting|random", "Use a sorting network or a random comparator network.") do |s|
           scheme_description = s
         end
 
-        opts.on("--type cardinality|optimization|nothing", "Translate cardinality rules, rewrite optimization statements or do nothing") do |t|
+        opts.on("--type cardinality|optimization|nothing", "Translate cardinality rules, rewrite optimization statements or do nothing.") do |t|
           type = t
         end
 
@@ -107,7 +107,7 @@ class PBTranslate::Command
           crop_depth = string_to_i32(d, label: "--crop-depth")
         end
 
-        opts.on("--weight-step <p>", "Place weights on every <p>th layer of a comparator network") do |p|
+        opts.on("--weight-step <p>", "Place weights on every <p>th layer of a comparator network.") do |p|
           weight_step = string_to_i32(p, label: "--weight-step", min: 1)
         end
 
@@ -115,20 +115,20 @@ class PBTranslate::Command
           weight_last = bool_to_i32(b, label: "--weight-last")
         end
 
-        opts.on("--random-seed <s>", "Use <s> as a seed for random number generation") do |s|
+        opts.on("--random-seed <s>", "Use <s> as a seed for random number generation.") do |s|
           random_seed = string_to_i32(s, label: "--random-seed")
         end
 
-        opts.on("-o ", "Output filename") do |o|
+        opts.on("-o ", "Output filename.") do |o|
           output_filename = o
         end
 
-        opts.on("-h", "--help", "Show this message") do
+        opts.on("-h", "--help", "Show this message.") do
           puts opts
           exit
         end
 
-        opts.on("--no-color", "Disable colored output") do
+        opts.on("--no-color", "Disable colored output.") do
           @use_color = false
         end
         opts.unknown_args do |before, after|
@@ -265,20 +265,27 @@ class PBTranslate::Command
       OptionParser.parse(options) do |opts|
         opts.banner = "Usage: pbtranslate measure [options] [--] <parameter>\n\nOptions:"
 
-        opts.on("--subject 'sorting network'", "Measure the size and depth of a sorting network of width <parameter>") do |s|
+        description =
+          if inspect_please
+            "Print a sorting network of width <parameter>."
+          else
+            "Measure the size and depth of a sorting network of width <parameter>."
+          end
+
+        opts.on("--subject 'sorting network'", description) do |s|
           subject = s
         end
 
-        opts.on("-o ", "Output filename") do |o|
+        opts.on("-o ", "Output filename.") do |o|
           output_filename = o
         end
 
-        opts.on("-h", "--help", "Show this message") do
+        opts.on("-h", "--help", "Show this message.") do
           puts opts
           exit
         end
 
-        opts.on("--no-color", "Disable colored output") do
+        opts.on("--no-color", "Disable colored output.") do
           @use_color = false
         end
         opts.unknown_args do |before, after|
