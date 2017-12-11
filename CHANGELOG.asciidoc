@@ -1,3 +1,10 @@
+PENDING
+-------
+
+* Changed the naming of `Scheme` types to be more descriptive.
+* Changed the `Scheme` API to rely on chainable methods and not constructors.
+  This simplifies documentation greatly.
+
 0.1.0 (2017-05-03)
 ------------------
 
