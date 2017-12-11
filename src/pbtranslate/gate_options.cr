@@ -1,4 +1,5 @@
 struct NamedTuple
+  # :nodoc:
   def pbtranslate_gate_options_to_s(io)
     io << "{"
     delim = ""
@@ -15,6 +16,7 @@ struct NamedTuple
     io << "}"
   end
 
+  # :nodoc:
   def pbtranslate_gate_options_take_interesting
     {% begin %}
       NamedTuple.new(
