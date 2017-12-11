@@ -65,7 +65,7 @@ class PBTranslate::Network::Cone(N)
 
     def self.guide(visitor, network, timestamps) : Nil
       Util.restrict(visitor.way, Backward)
-      guide = self.new(visitor, timestamps)
+      guide = new(visitor, timestamps)
       network.host(guide)
       guide.finish
     end
@@ -116,7 +116,7 @@ class PBTranslate::Network::Cone(N)
 
     def self.guide(visitor, network, timestamps) : Nil
       Util.restrict(visitor.way, Forward)
-      guide = self.new(visitor, timestamps)
+      guide = new(visitor, timestamps)
       network.host(guide)
     end
 

@@ -26,7 +26,7 @@ class PBTranslate::Network::WireWeighted(N, W)
 
     def self.guide(network n, weights w, visitor v)
       Util.restrict(v.way, Forward)
-      p = self.new(visitor: v, weights: w)
+      p = new(visitor: v, weights: w)
       n.host(p)
       p.sweep
     end

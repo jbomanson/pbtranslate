@@ -201,7 +201,7 @@ class PBTranslate::ASPIF::AbstractReader
   end
 
   def self.new(s : String | IO, *args, **options)
-    self.new(s.each_char, *args, **options)
+    new(s.each_char, *args, **options)
   end
 
   getter iterator

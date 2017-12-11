@@ -39,7 +39,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
 
     def self.propagate(network n, bit_array b, zero : W, weights w) forall W
       s = Util::SliceMatrix(W).new(b.count(true) + 1, w.size) { zero }
-      p = self.new(layered_weights: s, bit_array: b, weights: w)
+      p = new(layered_weights: s, bit_array: b, weights: w)
       n.host(p)
       p.flush_weights_last
       s

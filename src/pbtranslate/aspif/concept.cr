@@ -13,7 +13,7 @@ module PBTranslate::ASPIF::Concept
         reporter.problem("zero literal")
         nil
       else
-        self.new(value)
+        new(value)
       end
     end
 

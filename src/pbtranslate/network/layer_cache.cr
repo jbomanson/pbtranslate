@@ -70,7 +70,7 @@ class PBTranslate::Network::LayerCache(G, O)
 
     def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | {G, O})
       s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.network_depth, w.value) { Unused.new }
-      n.host(self.new(s))
+      n.host(new(s))
       s
     end
 
