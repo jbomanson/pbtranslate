@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 include PBTranslate
 
-scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_depth
+scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_level
 
 struct RecordingVisitor
   include Visitor
@@ -16,7 +16,7 @@ struct RecordingVisitor
   end
 end
 
-describe Scheme::DepthSlice do
+describe Scheme::LevelSlice do
   it "works correctly when partitioning a network in two" do
     random = Random.new(SEED)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
@@ -24,8 +24,8 @@ describe Scheme::DepthSlice do
       depth = scheme.network(Width.from_log2(width_log2)).network_depth
       point = depth <= 1 ? Distance.new(0) : random.rand(Distance.new(1)...depth)
 
-      scheme_a = scheme.to_scheme_depth_slice { |width, depth| Distance.new(0)...point }
-      scheme_b = scheme.to_scheme_depth_slice { |width, depth| point...depth }
+      scheme_a = scheme.to_scheme_level_slice { |width, depth| Distance.new(0)...point }
+      scheme_b = scheme.to_scheme_level_slice { |width, depth| point...depth }
 
       visitor_x = RecordingVisitor.new
       visitor_y = RecordingVisitor.new

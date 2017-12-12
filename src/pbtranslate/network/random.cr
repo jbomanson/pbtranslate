@@ -3,7 +3,7 @@ struct PBTranslate::Network::Random(C)
   delegate network_depth, network_read_count, network_width, network_write_count, host, to: @cache
 
   private def self.layer_cache_class_for(w : Width)
-    LayerCache.class_for(Gate.comparator_between(Distance.zero, Distance.zero), depth: Distance.zero)
+    LayerCache.class_for(Gate.comparator_between(Distance.zero, Distance.zero), level: Distance.zero)
   end
 
   def self.new(*, random r : ::Random, width w : Width, depth d : Distance)
@@ -43,7 +43,7 @@ struct PBTranslate::Network::Random(C)
         each_pair(a) do |i, j|
           x, y = i < j ? {i, j} : {j, i}
           g = Gate.comparator_between(x, y)
-          visitor.visit_gate(g, depth: d)
+          visitor.visit_gate(g, level: d)
         end
       end
     end

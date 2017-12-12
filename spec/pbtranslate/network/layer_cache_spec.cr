@@ -3,12 +3,12 @@ require "../../spec_helper"
 include PBTranslate
 include Gate::Restriction
 
-scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_depth
+scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_level
 
 cache_class =
   Network::LayerCache.class_for(
     Gate.comparator_between(Distance.zero, Distance.zero),
-    depth: Distance.zero)
+    level: Distance.zero)
 
 class WirePairCollector
   include Visitor

@@ -4,7 +4,7 @@ require "./base_scheme"
 require "../network/partially_wire_weighted"
 require "../network/wire_weighted"
 require "../object"
-require "../scheme/depth_slice"
+require "../scheme/level_slice"
 require "../scheme/layer_cache"
 require "../visitor/gate_and_weight_visitor_pair"
 require "../visitor/noop"
@@ -114,7 +114,7 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
       Scheme::LayerCache.class_for(
         scheme,
         Gate.comparator_between(Distance.zero, Distance.zero),
-        depth: Distance.zero)
+        level: Distance.zero)
     end
 
     private def initialize(@scheme : S, @weight_step : Int32, @weight_last : Bool, *, overload : Nil)
@@ -126,9 +126,9 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
       Network::PartiallyWireWeighted.new(network: n, weights: weights, bit_array: y)
     end
 
-    private def layer_bit_array(depth d) : BitArray
+    private def layer_bit_array(level) : BitArray
       p = @weight_step
-      BitArray.new(d.to_i).tap do |y|
+      BitArray.new(level.to_i).tap do |y|
         y.each_index { |i| y[i] = (i + 1) % p == 0 }
         y[-1] = true if @weight_last && !y.empty?
       end
@@ -151,8 +151,8 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
       if d = @crop_depth
         s.pbtranslate_as(Scheme::ParameterizedByDepth) do |scheme|
           scheme
-            .to_scheme_with_gate_depth
-            .to_scheme_depth_slice &depth_range_proc(d)
+            .to_scheme_with_gate_level
+            .to_scheme_level_slice &depth_range_proc(d)
         end
       else
         s

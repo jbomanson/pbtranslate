@@ -36,24 +36,24 @@ class PBTranslate::Network::LayerCache(G, O)
   # Hosts a visitor layer by layer through stored gates and generated
   # `Passthrough` gates.
   def host(visitor) : Nil
-    visitor.way.each_with_index_in(@layers) do |layer, depth_i|
-      depth = Distance.new(depth_i)
-      visitor.visit_region(Layer.new(depth)) do |layer_visitor|
+    visitor.way.each_with_index_in(@layers) do |layer, level_i|
+      level = Distance.new(level_i)
+      visitor.visit_region(Layer.new(level)) do |layer_visitor|
         visitor.way.each_with_index_in(layer) do |element, index|
-          element_host(depth, layer_visitor, element, index)
+          element_host(level, layer_visitor, element, index)
         end
       end
     end
   end
 
-  private def element_host(depth, layer_visitor, element, index)
+  private def element_host(level, layer_visitor, element, index)
     case element
     when Tuple
       gate, options = element
       layer_visitor.visit_gate(gate, **options)
     when Unused
       gate = Gate.passthrough_at(Distance.new(index))
-      options = {depth: depth}
+      options = {level: level}
       layer_visitor.visit_gate(gate, **options)
     end
   end
@@ -79,10 +79,10 @@ class PBTranslate::Network::LayerCache(G, O)
 
     def visit_gate(g : G, **options : **O) : Nil
       f, t = first_and_rest(*g.wires)
-      d = options[:depth]
+      d = options[:level]
       r = @layers[d]
       unless r[f].is_a? Unused
-        raise "Internal error: two gates for wire #{f} at depth #{d}"
+        raise "Internal error: two gates for wire #{f} at level #{d}"
       end
       r[f] = {g, options}
       t.each { |i| r[i] = Used.new }

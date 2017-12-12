@@ -1,6 +1,6 @@
 require "../../util/restrict"
 
-struct PBTranslate::Network::DepthSlice(N)
+struct PBTranslate::Network::LevelSlice(N)
   delegate network_width, to: @network
 
   def initialize(*, @network : N, @range : Range(Distance, Distance))
@@ -29,8 +29,8 @@ struct PBTranslate::Network::DepthSlice(N)
     def initialize(@visitor : V, @range : Range(Distance, Distance))
     end
 
-    def visit_gate(*args, depth, **options) : Nil
-      (@range.includes? depth) && @visitor.visit_gate(*args, **options, depth: depth)
+    def visit_gate(*args, level, **options) : Nil
+      (@range.includes? level) && @visitor.visit_gate(*args, **options, level: level)
     end
 
     def visit_region(region) : Nil

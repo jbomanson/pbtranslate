@@ -19,7 +19,7 @@ class PBTranslate::Scheme::LayerCache(S, G, O)
   end
 
   protected def self.preprocess(scheme)
-    scheme.to_scheme_with_gate_depth
+    scheme.to_scheme_with_gate_level
   end
 
   @scheme : S

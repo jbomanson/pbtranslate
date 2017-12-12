@@ -11,7 +11,7 @@ end
 private struct DummySchemeWithDepth
   include Scheme
 
-  declare_gate_options depth
+  declare_gate_options level
 end
 
 private record DummyUnionScheme(A, B), one : A, two : B do
@@ -31,7 +31,7 @@ describe PBTranslate::Scheme::PartialFlexibleVoid do
   end
 
   it "does not change an empty set of #gate_options in unions" do
-    empty = {depth: nil, output_cone: nil}
+    empty = {level: nil, output_cone: nil}
     dummy = DummyScheme.new
     dummy.gate_options.restrict(**empty)
     typeof(DummyUnionScheme.new(dummy, scheme).gate_options.restrict(**empty))

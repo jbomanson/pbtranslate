@@ -11,12 +11,12 @@ scheme =
   SpecHelper
     .pw2_sort_odd_even
     .to_scheme_flexible
-    .to_scheme_with_gate_depth
+    .to_scheme_with_gate_level
 
 layer_cache_class =
   Network::LayerCache.class_for(
     Gate.comparator_between(Distance.zero, Distance.zero),
-    depth: Distance.zero)
+    level: Distance.zero)
 
 # A visitor that accumulates the total sum of the *output_weights* fields of
 # gates.

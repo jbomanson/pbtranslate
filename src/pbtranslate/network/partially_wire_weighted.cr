@@ -53,7 +53,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
 
     def visit_region(layer : Layer) : Nil
       yield self
-      march_weights(next_sink) if @bit_array[layer.depth]
+      march_weights(next_sink) if @bit_array[layer.level]
     end
 
     def visit_gate(g, *args, **options) : Nil
@@ -107,7 +107,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
     private struct LayerGuide(V, W, L, B) < PassingGuide(V, W, L, B)
       def visit_region(layer : Layer) : Nil
         @current_weights = next_weights_or_nil
-        @visitor.visit_region(Layer.new(layer.depth + 1)) do |v|
+        @visitor.visit_region(Layer.new(layer.level + 1)) do |v|
           yield GateGuide.new(v, @current_weights, @layer_iterator, @bit_iterator)
         end
       end

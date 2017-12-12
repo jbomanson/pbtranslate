@@ -9,13 +9,13 @@ struct MyVisitor
 
   @array = Array({Distance, Distance} | {Distance, Distance, Distance}).new
 
-  def visit_gate(g, *args, depth) : Nil
-    @array << {depth} + g.wires
+  def visit_gate(g, *args, level) : Nil
+    @array << {level} + g.wires
   end
 end
 
 describe DepthTracking do
-  it "computes depths in a small example network correctly" do
+  it "computes levels in a small example network correctly" do
     e = [{0, 0, 1}, {0, 2, 3}, {1, 0, 2}, {1, 1, 3}, {2, 1, 2}]
     e = e.map &.map { |v| Distance.new(v) }
     a = e.map { |(d, i, j)| {i, j} }

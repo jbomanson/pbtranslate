@@ -9,9 +9,9 @@ struct PBTranslate::Gate(F, S, T)
 
   module Restriction
     struct Layer
-      getter depth : Distance
+      getter level : Distance
 
-      def initialize(@depth : Distance)
+      def initialize(@level : Distance)
       end
     end
 

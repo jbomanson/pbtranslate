@@ -1,4 +1,4 @@
-require "../depth_tracking/scheme"
+require "../level_tracking/scheme"
 require "../network/offset_resolution"
 require "../scheme"
 
@@ -29,9 +29,9 @@ class PBTranslate::Scheme::OffsetResolution(S)
     Network::OffsetResolution.new(@scheme.network(width))
   end
 
-  def to_scheme_with_gate_depth
-    @scheme.to_scheme_with_gate_depth do |without|
-      OffsetResolution.new(without).to_scheme_with_gate_depth_added
+  def to_scheme_with_gate_level
+    @scheme.to_scheme_with_gate_level do |without|
+      OffsetResolution.new(without).to_scheme_with_gate_level_added
     end
   end
 end

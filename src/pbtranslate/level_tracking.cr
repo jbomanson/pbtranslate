@@ -7,10 +7,10 @@ module PBTranslate::DepthTracking
   class Scheme(S)
     include PBTranslate::Scheme
 
-    delegate_and_declare_gate_options @scheme, depth
+    delegate_and_declare_gate_options @scheme, level
 
     def initialize(@scheme : S)
-      scheme.gate_options.restrict(depth: nil)
+      scheme.gate_options.restrict(level: nil)
     end
 
     def network(width w : Width)
@@ -29,23 +29,23 @@ module PBTranslate::DepthTracking
     end
 
     def host(visitor v) : Nil
-      d = initial_depth(v.way)
-      g = Guide.new(visitor: v, width: @width, initial_depth: d)
+      d = initial_level(v.way)
+      g = Guide.new(visitor: v, width: @width, initial_level: d)
       @network.host(g)
     end
 
-    private def initial_depth(way : Forward)
+    private def initial_level(way : Forward)
       Distance.new(0)
     end
 
-    private def initial_depth(way : Backward)
+    private def initial_level(way : Backward)
       {{ raise "Not yet tested" }}
     end
   end
 
-  # A visitor guide that computes the depths in a network.
+  # A visitor guide that computes the levels in a network.
   #
-  # The depth of a gate refers to the distance to the input furthest from it.
+  # The level of a gate refers to the distance to the input furthest from it.
   # Here distance is counted in terms of gates properly between them, so that
   # the destination gate is excluded from the count.
   #
@@ -56,8 +56,8 @@ module PBTranslate::DepthTracking
   #     struct MyVisitor
   #       include Visitor
   #
-  #       def visit_gate(g, *args, depth) : Nil
-  #         puts "#{g.wires} @ #{depth}"
+  #       def visit_gate(g, *args, level) : Nil
+  #         puts "#{g.wires} @ #{level}"
   #       end
   #     end
   #
@@ -84,21 +84,21 @@ module PBTranslate::DepthTracking
     delegate way, to: @visitor
 
     # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
-    def initialize(*, @visitor : V = PBTranslate::Visitor::Noop::INSTANCE, width w : Int, initial_depth d = Distance.zero)
+    def initialize(*, @visitor : V = PBTranslate::Visitor::Noop::INSTANCE, width w : Int, initial_level d = Distance.zero)
       @array = Array(Distance).new(w, Distance.new(d))
     end
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
-    # additional parameter _depth_.
+    # additional parameter _level_.
     def visit_gate(g : Gate(_, InPlace, _), *args, **options) : Nil
       input_wires = g.wires
-      depth = @array.values_at(*input_wires).max
-      depth += way.first(0, -1)
-      @visitor.visit_gate(g, *args, **options, depth: depth)
-      depth += way.first(+1, 0)
+      level = @array.values_at(*input_wires).max
+      level += way.first(0, -1)
+      @visitor.visit_gate(g, *args, **options, level: level)
+      level += way.first(+1, 0)
       output_wires = g.wires
       output_wires.each do |index|
-        @array[index] = depth
+        @array[index] = level
       end
     end
   end

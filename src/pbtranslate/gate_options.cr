@@ -37,16 +37,16 @@ struct PBTranslate::GateOptions(O)
 
   def self.complete_exact(
                           *,
-                          depth : Element = nil,
+                          level : Element = nil,
                           output_cone : Element = nil)
-    {depth: depth, output_cone: output_cone}
+    {level: level, output_cone: output_cone}
   end
 
   def self.complete_relaxed(
                             *,
-                            depth : Element = nil.as(Element),
+                            level : Element = nil.as(Element),
                             output_cone : Element = nil.as(Element))
-    {depth: depth, output_cone: output_cone}
+    {level: level, output_cone: output_cone}
   end
 
   def self.new(**options)

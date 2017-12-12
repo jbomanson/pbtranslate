@@ -6,9 +6,9 @@ struct PBTranslate::Visitor::Print
   def initialize(@io : IO)
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), *empty_args, depth, **options) : Nil
+  def visit_gate(g : Gate(Comparator, InPlace, _), *empty_args, level, **options) : Nil
     i, j = g.wires
-    @io.puts "comparator(#{i}, #{j}, #{depth})."
+    @io.puts "comparator(#{i}, #{j}, #{level})."
   end
 
   def visit_gate(g, **options) : Nil
