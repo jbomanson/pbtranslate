@@ -1,6 +1,9 @@
+require "../network"
 require "../not_implemented_error"
 
 struct PBTranslate::Network::DivideAndConquer(P, R, E)
+  include Network
+
   def network_depth : Distance
     @widths.max_of { |width| @conquer_scheme.network(width).network_depth } +
       @combine_scheme.network(@widths).network_depth
@@ -19,26 +22,29 @@ struct PBTranslate::Network::DivideAndConquer(P, R, E)
     @widths.last.value
   end
 
-  def host(visitor) : Nil
-    host(visitor, visitor.way)
+  def host_reduce(visitor, memo)
+    host_reduce(visitor, memo, visitor.way)
   end
 
-  private def host(visitor, way : Forward)
-    divide_and_conquer(visitor)
-    combine(visitor)
+  private def host_reduce(visitor, memo, way : Forward)
+    host_reduce_combine(visitor, host_reduce_divide_and_conquer(visitor, memo))
   end
 
-  private def host(visitor, way : Backward)
-    combine(visitor)
-    divide_and_conquer(visitor)
+  private def host_reduce(visitor, memo, way : Backward)
+    host_reduce_divide_and_conquer(visitor, host_reduce_combine(visitor, memo))
   end
 
-  private def divide_and_conquer(visitor)
+  private def host_reduce_divide_and_conquer(visitor, memo)
     each_wire_slice(visitor.way) do |position, width|
       visitor.visit_region(Offset.new(position)) do |region_visitor|
-        @conquer_scheme.network(width).host(region_visitor)
+        memo = @conquer_scheme.network(width).host_reduce(region_visitor, memo)
       end
     end
+    memo
+  end
+
+  private def host_reduce_combine(visitor, memo)
+    @combine_scheme.network(@widths).host_reduce(visitor, memo)
   end
 
   private def each_wire_slice(way)
@@ -47,9 +53,5 @@ struct PBTranslate::Network::DivideAndConquer(P, R, E)
       yield position, width
       position += way.sign * width.value
     end
-  end
-
-  private def combine(visitor)
-    @combine_scheme.network(@widths).host(visitor)
   end
 end

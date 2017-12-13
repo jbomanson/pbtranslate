@@ -1,3 +1,4 @@
+require "../network"
 require "../visitor/default_methods"
 require "../visitor/going"
 
@@ -11,16 +12,12 @@ module PBTranslate::Network
     include Visitor
     include Visitor::DefaultMethods
 
-    def self.compute(network n, way y : Way)
-      v = new
-      n.host(v.going(y))
-      v.count
+    def self.compute(network n, way y : Way) : Area
+      n.host_reduce(new.going(y), Area.new(0))
     end
 
-    getter count = Area.new(0)
-
-    def visit_gate(g, **options) : Nil
-      @count += 1
+    def visit_gate(g, memo, **options)
+      memo += 1
     end
   end
 end

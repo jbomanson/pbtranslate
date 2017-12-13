@@ -21,7 +21,7 @@ struct PBTranslate::Visitor::ArrayLogic(T)
     @accumulator = Accumulator(T).new
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), *empty_args, output_cone, **options) : Nil
+  def visit_gate(g : Gate(Comparator, InPlace, _), memo, *empty_args, output_cone, **options)
     i, j = g.wires
     a = @array[i]
     b = @array[j]
@@ -31,13 +31,15 @@ struct PBTranslate::Visitor::ArrayLogic(T)
     if output_cone[1]
       @array[j] = @context.operate(And, {a, b})
     end
+    memo
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), **options) : Nil
-    visit_gate(g, **options, output_cone: g.wires.map { true })
+  def visit_gate(g : Gate(Comparator, InPlace, _), memo, **options)
+    memo = visit_gate(g, memo, **options, output_cone: g.wires.map { true })
   end
 
-  def visit_gate(g : Gate(Passthrough, _, _), **options) : Nil
+  def visit_gate(g : Gate(Passthrough, _, _), memo, **options)
+    memo
   end
 
   def visit_region(f : OOPSublayer.class) : Nil
@@ -69,13 +71,14 @@ struct PBTranslate::Visitor::ArrayLogic(T)
                    @accumulator : Accumulator(T))
     end
 
-    def visit_gate(g : Gate(F, Output, _), **options) : Nil forall F
+    def visit_gate(g : Gate(F, Output, _), memo, **options) forall F
       index = g.wires.first.to_i
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
           yield output_visitor
         end
       @array[index] = value
+      memo
     end
   end
 
@@ -108,12 +111,14 @@ struct PBTranslate::Visitor::ArrayLogic(T)
                    @storage : Array(T))
     end
 
-    def visit_gate(g : Gate(F, Input, _), **options) : Nil forall F
+    def visit_gate(g : Gate(F, Input, _), memo, **options) forall F
       operands = g.wires.map { |wire| @array[wire] }
       store(@context.operate(F, operands))
+      memo
     end
 
-    def visit_gate(g : Gate(Passthrough, _, _), **options) : Nil
+    def visit_gate(g : Gate(Passthrough, _, _), memo, **options)
+      memo
     end
 
     private def store(t : T) : Nil

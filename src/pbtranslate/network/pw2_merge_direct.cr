@@ -1,9 +1,11 @@
-require "../gate"
 require "./first_class"
+require "../gate"
+require "../network"
 
 class PBTranslate::Network::Pw2MergeDirect
   include FirstClass
   include Gate::Restriction
+  include Network
 
   BASE = Int64.new(-1)
 
@@ -46,24 +48,27 @@ class PBTranslate::Network::Pw2MergeDirect
   end
 
   # Arranges a visit over the AND and OR gates in this network.
-  def host(visitor) : Nil
+  def host_reduce(visitor, memo)
     visitor.visit_region(OOPSublayer) do |layer_visitor|
       half_width = Int64.new(1) << @half_width_log2
       a = Int64.new(1)
       b = half_width << 1
       visitor.way.each_in(a..b) do |out_value| # This is one indexed.
         wire = Distance.new(out_value + BASE)
-        layer_visitor.visit_gate(Gate.or_as(Distance.new(wire))) do |or_visitor|
-          a = {Int64.new(0), out_value - half_width}.max
-          b = {half_width, out_value}.min
-          visitor.way.each_in(a..b) do |left_value|
-            right_value = out_value - left_value
-            g = and_input_gate(half_width, left_value, right_value)
-            or_visitor.visit_gate(g, drop_true: nil)
+        memo =
+          layer_visitor.visit_gate(Gate.or_as(Distance.new(wire)), memo) do |or_visitor|
+            a = {Int64.new(0), out_value - half_width}.max
+            b = {half_width, out_value}.min
+            visitor.way.each_in(a..b) do |left_value|
+              right_value = out_value - left_value
+              g = and_input_gate(half_width, left_value, right_value)
+              memo = or_visitor.visit_gate(g, memo, drop_true: nil)
+            end
+            memo
           end
-        end
       end
     end
+    memo
   end
 
   private def and_input_gate(half_width, left_value, right_value)

@@ -314,7 +314,7 @@ class PBTranslate::Command
       if inspect_please
         ss = s.to_scheme_with_gate_level
         n = ss.network(w)
-        n.host(Visitor::Print.new(output_io))
+        n.host_reduce(Visitor::Print.new, output_io)
       else
         n = s.network(w)
         size = Network.compute_gate_count(n)

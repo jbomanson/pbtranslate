@@ -1,9 +1,11 @@
 require "../compute_depth"
 require "../gate"
+require "../network"
 
 # A network of comparator gates based on a given sequence of wire pairs.
 struct PBTranslate::Network::FlexibleIndexableComparator(T)
   include Gate::Restriction
+  include Network
 
   getter network_width : Distance
   getter wire_pairs : T
@@ -44,10 +46,11 @@ struct PBTranslate::Network::FlexibleIndexableComparator(T)
     pair_to_gate(@wire_pairs[index])
   end
 
-  def host(visitor, at offset = Distance.new(0)) : Nil
+  def host_reduce(visitor, memo, at offset = Distance.new(0))
     visitor.way.each_in(@wire_pairs) do |pair|
-      visitor.visit_gate(pair_to_gate(pair).shifted_by(offset))
+      memo = visitor.visit_gate(pair_to_gate(pair).shifted_by(offset), memo)
     end
+    memo
   end
 
   private def pair_to_gate(pair)

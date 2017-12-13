@@ -3,14 +3,16 @@ struct PBTranslate::Visitor::Print
   include Visitor
   include Visitor::DefaultMethods
 
-  def initialize(@io : IO)
+  def initialize
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), *empty_args, level, **options) : Nil
+  def visit_gate(g : Gate(Comparator, InPlace, _), memo, *empty_args, level, **options)
     i, j = g.wires
-    @io.puts "comparator(#{i}, #{j}, #{level})."
+    memo.puts "comparator(#{i}, #{j}, #{level})."
+    memo
   end
 
-  def visit_gate(g, **options) : Nil
+  def visit_gate(g, memo, **options)
+    memo
   end
 end

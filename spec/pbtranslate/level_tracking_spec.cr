@@ -9,8 +9,9 @@ struct MyVisitor
 
   @array = Array({Distance, Distance} | {Distance, Distance, Distance}).new
 
-  def visit_gate(g, *args, level) : Nil
+  def visit_gate(g, memo, *args, level)
     @array << {level} + g.wires
+    memo
   end
 end
 

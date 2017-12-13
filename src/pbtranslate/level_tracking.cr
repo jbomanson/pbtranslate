@@ -1,4 +1,5 @@
 require "./gate"
+require "./network"
 require "./scheme"
 require "./visitor/default_methods"
 require "./visitor/of_no_yielded_content"
@@ -23,15 +24,17 @@ module PBTranslate::DepthTracking
   end
 
   struct Network(N)
+    include PBTranslate::Network
+
     delegate network_depth, network_read_count, network_width, network_write_count, wire_pairs, to: @network
 
     def initialize(*, @network : N, @width : Distance)
     end
 
-    def host(visitor v) : Nil
+    def host_reduce(visitor v, memo)
       d = initial_level(v.way)
       g = Guide.new(visitor: v, width: @width, initial_level: d)
-      @network.host(g)
+      @network.host_reduce(g, memo)
     end
 
     private def initial_level(way : Forward)
@@ -56,7 +59,7 @@ module PBTranslate::DepthTracking
   #     struct MyVisitor
   #       include Visitor
   #
-  #       def visit_gate(g, *args, level) : Nil
+  #       def visit_gate(g, memo, *args, level)
   #         puts "#{g.wires} @ #{level}"
   #       end
   #     end
@@ -90,16 +93,17 @@ module PBTranslate::DepthTracking
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
     # additional parameter _level_.
-    def visit_gate(g : Gate(_, InPlace, _), *args, **options) : Nil
+    def visit_gate(g : Gate(_, InPlace, _), memo, *args, **options)
       input_wires = g.wires
       level = @array.values_at(*input_wires).max
       level += way.first(0, -1)
-      @visitor.visit_gate(g, *args, **options, level: level)
+      memo = @visitor.visit_gate(g, memo, *args, **options, level: level)
       level += way.first(+1, 0)
       output_wires = g.wires
       output_wires.each do |index|
         @array[index] = level
       end
+      memo
     end
   end
 end

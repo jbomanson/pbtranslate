@@ -9,6 +9,7 @@ struct PBTranslate::Visitor::Noop
   INSTANCE = new
 
   # Does nothing.
-  def visit_gate(*args, **options) : Nil
+  def visit_gate(gate, memo, **options)
+    memo
   end
 end

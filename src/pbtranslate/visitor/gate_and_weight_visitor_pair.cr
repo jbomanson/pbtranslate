@@ -6,16 +6,17 @@ struct PBTranslate::Visitor::GateAndWeightVisitorPair(G, W)
   def initialize(*, @gate_visitor : G, @weight_visitor : W)
   end
 
-  def visit_gate(g, *empty_args, input_weights = Tuple.new, output_weights = Tuple.new, **options) : Nil
+  def visit_gate(g, memo, *empty_args, input_weights = Tuple.new, output_weights = Tuple.new, **options)
     e = g.wires
     v = @weight_visitor
     input_weights.zip(e) do |weight, wire|
-      v.visit_weighted_wire(weight: weight, wire: wire)
+      memo = v.visit_weighted_wire(weight: weight, wire: wire, memo: memo)
     end
-    @gate_visitor.visit_gate(g, **options)
+    memo = @gate_visitor.visit_gate(g, memo, **options)
     output_weights.zip(e) do |weight, wire|
-      v.visit_weighted_wire(weight: weight, wire: wire)
+      memo = v.visit_weighted_wire(weight: weight, wire: wire, memo: memo)
     end
+    memo
   end
 
   def visit_region(region) : Nil

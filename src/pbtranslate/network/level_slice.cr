@@ -1,6 +1,9 @@
+require "../network"
 require "../../util/restrict"
 
 struct PBTranslate::Network::LevelSlice(N)
+  include Network
+
   delegate network_width, to: @network
 
   def initialize(*, @network : N, @range : Range(Distance, Distance))
@@ -16,9 +19,9 @@ struct PBTranslate::Network::LevelSlice(N)
     {@network.network_write_count, Area.new(network_depth) * network_width}.min
   end
 
-  def host(visitor v) : Nil
+  def host_reduce(visitor v, memo)
     vv = Guide.new(v, @range)
-    @network.host(vv)
+    memo = @network.host_reduce(vv, memo)
   end
 
   private struct Guide(V)
@@ -29,8 +32,11 @@ struct PBTranslate::Network::LevelSlice(N)
     def initialize(@visitor : V, @range : Range(Distance, Distance))
     end
 
-    def visit_gate(*args, level, **options) : Nil
-      (@range.includes? level) && @visitor.visit_gate(*args, **options, level: level)
+    def visit_gate(gate, memo, level, **options)
+      if @range.includes? level
+        memo = @visitor.visit_gate(gate, memo, **options, level: level)
+      end
+      memo
     end
 
     def visit_region(region) : Nil

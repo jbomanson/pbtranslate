@@ -1,7 +1,10 @@
 require "../gate"
+require "../network"
 require "../visitor"
 
 struct PBTranslate::Network::WidthSlice(N)
+  include Network
+
   delegate network_depth, network_read_count, to: @network
 
   def self.new(network, count)
@@ -20,9 +23,9 @@ struct PBTranslate::Network::WidthSlice(N)
     {@network.network_write_count, Area.new(network_depth) * network_width}.min
   end
 
-  def host(visitor v) : Nil
+  def host_reduce(visitor v, memo)
     vv = Guide.new(v, @begin, @end)
-    @network.host(vv)
+    @network.host_reduce(vv, memo)
   end
 
   private struct Guide(V)
@@ -35,13 +38,15 @@ struct PBTranslate::Network::WidthSlice(N)
     end
 
     macro define_visit_gate(please_yield)
-      def visit_gate(g : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), **options) : Nil
+      def visit_gate(g : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), memo, **options)
         b, e = @begin, @end
-        return unless w = pick_wires(g, b, e, **options)
-        h = g.class.new(w.map &.- b)
-        @visitor.visit_gate(h, **options) {{
-                                            (please_yield ? "{ |v| yield Guide.new(v, @begin, @end) }" : "").id
-                                          }}
+        if w = pick_wires(g, b, e, **options)
+          h = g.class.new(w.map &.- b)
+          memo = @visitor.visit_gate(h, memo, **options) {{
+                                                           (please_yield ? "{ |v| yield Guide.new(v, @begin, @end) }" : "").id
+                                                         }}
+        end
+        memo
       end
     end
 

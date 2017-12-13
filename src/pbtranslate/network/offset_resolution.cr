@@ -1,22 +1,25 @@
+require "../network"
 require "../number_types"
 require "../offset"
 require "../visitor"
 
 class PBTranslate::Network::OffsetResolution(N)
+  include Network
+
   delegate network_depth, network_read_count, network_width, network_write_count, to: @network
 
   def initialize(@network : N)
   end
 
-  def host(visitor) : Nil
-    Guide.guide(@network, visitor)
+  def host_reduce(visitor, memo)
+    Guide.guide(@network, visitor, memo)
   end
 
   private struct Guide(V)
     include Visitor
 
-    def self.guide(network, visitor)
-      network.host(Guide.new(visitor))
+    def self.guide(network, visitor, memo)
+      network.host_reduce(Guide.new(visitor), memo)
     end
 
     delegate way, to: @visitor
@@ -34,12 +37,12 @@ class PBTranslate::Network::OffsetResolution(N)
       end
     end
 
-    def visit_gate(g, **options) : Nil
-      @visitor.visit_gate(g.shifted_by(@offset), **options)
+    def visit_gate(g, memo, **options)
+      @visitor.visit_gate(g.shifted_by(@offset), memo, **options)
     end
 
-    def visit_gate(g, **options) : Nil
-      @visitor.visit_gate(g.shifted_by @offset, **options) do |gate_visitor|
+    def visit_gate(g, memo, **options)
+      @visitor.visit_gate(g.shifted_by(@offset), memo, **options) do |gate_visitor|
         yield Guide.new(gate_visitor, @offset)
       end
     end

@@ -1,11 +1,13 @@
 require "../gate"
 require "../gate_options"
 require "../named_tuple"
+require "../network"
 require "../util/slice_matrix"
 
 # A network of gates stored explicitly for enumeration layer by layer.
 class PBTranslate::Network::LayerCache(G, O)
   include Gate::Restriction
+  include Network
 
   # Returns the appropriate LayerCache class for storing visit calls with
   # arguments of the types used here.
@@ -35,26 +37,29 @@ class PBTranslate::Network::LayerCache(G, O)
 
   # Hosts a visitor layer by layer through stored gates and generated
   # `Passthrough` gates.
-  def host(visitor) : Nil
+  def host_reduce(visitor, memo)
     visitor.way.each_with_index_in(@layers) do |layer, level_i|
       level = Distance.new(level_i)
       visitor.visit_region(Layer.new(level)) do |layer_visitor|
         visitor.way.each_with_index_in(layer) do |element, index|
-          element_host(level, layer_visitor, element, index)
+          memo = element_host_reduce(level, layer_visitor, element, index, memo)
         end
       end
     end
+    memo
   end
 
-  private def element_host(level, layer_visitor, element, index)
+  private def element_host_reduce(level, layer_visitor, element, index, memo)
     case element
     when Tuple
       gate, options = element
-      layer_visitor.visit_gate(gate, **options)
+      layer_visitor.visit_gate(gate, memo, **options)
     when Unused
       gate = Gate.passthrough_at(Distance.new(index))
       options = {level: level}
-      layer_visitor.visit_gate(gate, **options)
+      layer_visitor.visit_gate(gate, memo, **options)
+    else
+      memo
     end
   end
 
@@ -77,7 +82,7 @@ class PBTranslate::Network::LayerCache(G, O)
     protected def initialize(@layers : Util::SliceMatrix(Used | Unused | {G, O}))
     end
 
-    def visit_gate(g : G, **options : **O) : Nil
+    def visit_gate(g : G, memo, **options : **O)
       f, t = first_and_rest(*g.wires)
       d = options[:level]
       r = @layers[d]
@@ -86,9 +91,11 @@ class PBTranslate::Network::LayerCache(G, O)
       end
       r[f] = {g, options}
       t.each { |i| r[i] = Used.new }
+      memo
     end
 
-    def visit_gate(*args, **options) : Nil
+    def visit_gate(gate, memo, **options)
+      memo
     end
 
     private def first_and_rest(f, *t)

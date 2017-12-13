@@ -1,11 +1,13 @@
 require "bit_array"
 
+require "../aspif/broker"
+require "../aspif/concept"
 require "./base_scheme"
 require "../network/partially_wire_weighted"
 require "../network/wire_weighted"
 require "../object"
-require "../scheme/level_slice"
 require "../scheme/layer_cache"
+require "../scheme/level_slice"
 require "../visitor/gate_and_weight_visitor_pair"
 require "../visitor/noop"
 require "../width"
@@ -212,14 +214,16 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
     def initialize(@literals : Array(Literal(Util::BrokeredId(Int32))), @collector : WeightCollector)
     end
 
-    def visit_weighted_wire(*, wire, weight) : Nil
-      return if weight == 0
-      @collector.add(literal: @literals[wire], weight: weight)
+    def visit_weighted_wire(*, wire, weight, memo)
+      if weight != 0
+        @collector.add(literal: @literals[wire], weight: weight)
+      end
+      memo
     end
   end
 
   private struct WeightCollector
-    @literals = Array(Literal(Util::BrokeredId(Int32))).new
+    @literals = Array(PBTranslate::ASPIF::Concept::Literal(Util::BrokeredId(Int32))).new
     @weights = Array(Int32).new
 
     def add(*, literal, weight) : Nil

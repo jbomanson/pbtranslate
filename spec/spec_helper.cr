@@ -20,8 +20,9 @@ class VisitCallCounter
     @h = Hash({Gate::Function, Gate::Form}, Pair).new(Pair.new)
   end
 
-  def visit_gate(g : Gate(A, B, _), **options) : Nil forall A, B
+  def visit_gate(g : Gate(A, B, _), memo, **options) forall A, B
     @h[{A, B}] += Pair.new(1_u64, g.wires.size.to_u64)
+    memo
   end
 
   def visit_region(region) : Nil
@@ -43,7 +44,7 @@ record WidthCheckingVisitor, width : Distance do
   include Visitor
   include Gate::Restriction
 
-  def visit_gate(g : Gate, *args, **options) : Nil
+  def visit_gate(g : Gate, memo, *args, **options)
     wires = g.wires
     unless wires.all? &.>=(0)
       raise "Expected nonnegative wires, got #{wires}"
@@ -51,14 +52,16 @@ record WidthCheckingVisitor, width : Distance do
     unless wires.all? &.<(width)
       raise "Expected wires less than #{width}, got #{wires}"
     end
+    memo
   end
 
-  def visit_gate(g : Gate, *args, **options) : Nil
-    visit_gate(g, *args, **options)
+  def visit_gate(g : Gate, memo, *args, **options)
+    memo = visit_gate(g, memo, *args, **options)
     yield self
+    memo
   end
 
-  def visit_region(layer : OOPSublayer.class) : Nil
+  def visit_region(layer : OOPSublayer.class)
     yield self
   end
 end

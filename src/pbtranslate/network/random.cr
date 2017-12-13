@@ -1,6 +1,10 @@
+require "../network"
+
 # A comparator network of layers with maximal size and randomly connected wires.
 struct PBTranslate::Network::Random(C)
-  delegate network_depth, network_read_count, network_width, network_write_count, host, to: @cache
+  include Network
+
+  delegate network_depth, network_read_count, network_width, network_write_count, host_reduce, to: @cache
 
   private def self.layer_cache_class_for(w : Width)
     LayerCache.class_for(Gate.comparator_between(Distance.zero, Distance.zero), level: Distance.zero)
@@ -15,6 +19,8 @@ struct PBTranslate::Network::Random(C)
   end
 
   private struct Generator
+    include Network
+
     getter network_depth : Distance
     getter network_width : Distance
 
@@ -31,7 +37,7 @@ struct PBTranslate::Network::Random(C)
       network_read_count
     end
 
-    def host(visitor) : Nil
+    def host_reduce(visitor, memo)
       if @called
         raise "This Generator has already hosted"
       end
@@ -43,9 +49,10 @@ struct PBTranslate::Network::Random(C)
         each_pair(a) do |i, j|
           x, y = i < j ? {i, j} : {j, i}
           g = Gate.comparator_between(x, y)
-          visitor.visit_gate(g, level: d)
+          memo = visitor.visit_gate(g, memo, level: d)
         end
       end
+      memo
     end
 
     private def each_pair(a)

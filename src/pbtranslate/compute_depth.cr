@@ -12,22 +12,22 @@ module PBTranslate::Network
     include Visitor
     include Visitor::DefaultMethods
 
+    record Memo, depth = Distance::MIN, bonus = Distance.new(0) do
+      def sum : Distance
+        depth + bonus
+      end
+
+      def update(level) : self
+        self.class.new({depth, level}.max, Distance.new(1))
+      end
+    end
+
     def self.compute(network n) : Distance
-      v = ComputeDepthVisitor.new
-      n.host(v)
-      v.result
+      n.host_reduce(ComputeDepthVisitor.new, Memo.new).sum
     end
 
-    @depth = Distance::MIN
-    @bonus = Distance.new(0)
-
-    protected def result
-      @depth + @bonus
-    end
-
-    def visit_gate(gate, *empty_args, level, **options) : Nil
-      @depth = {@depth, level}.max
-      @bonus = Distance.new(1)
+    def visit_gate(gate, memo, *empty_args, level, **options)
+      memo.update(level)
     end
   end
 end

@@ -1,9 +1,12 @@
+require "../network"
 require "../number_types"
 
 # An empty network with no gates.
 #
 # Intended for use as a base case in recursively constructed networks.
 struct PBTranslate::Network::Empty
+  include Network
+
   # An instance of this network.
   INSTANCE = new
 
@@ -23,6 +26,7 @@ struct PBTranslate::Network::Empty
   {% end %}
 
   # Does nothing.
-  def host(visitor) : Nil
+  def host_reduce(visitor, memo)
+    memo
   end
 end

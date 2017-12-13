@@ -1,4 +1,5 @@
 require "../gate"
+require "../network"
 require "../visitor/default_methods"
 require "../visitor/of_no_yielded_content"
 
@@ -10,7 +11,10 @@ require "../visitor/of_no_yielded_content"
 # form a cone of influence.
 #
 # There is no corresponding default scheme.
+
 class PBTranslate::Network::Cone(N)
+  include Network
+
   private alias Timestamp = Area
 
   @timestamps : Array(Timestamp?)
@@ -32,26 +36,27 @@ class PBTranslate::Network::Cone(N)
     @is_pending = true
   end
 
-  def host(visitor) : Nil
+  def host_reduce(visitor, memo)
     if @is_pending
-      host_and_compute(visitor, visitor.way)
+      host_reduce_and_compute(visitor, memo, visitor.way)
     else
-      host_and_pass(visitor)
+      host_reduce_and_pass(visitor, memo)
     end
   end
 
-  private def host_and_compute(visitor, way : Forward) : Nil
-    host_and_compute(Visitor::Noop::INSTANCE.going(BACKWARD), BACKWARD)
-    host_and_pass(visitor)
+  private def host_reduce_and_compute(visitor, memo, way : Forward)
+    memo = host_reduce_and_compute(Visitor::Noop::INSTANCE.going(BACKWARD), memo, BACKWARD)
+    memo = host_reduce_and_pass(visitor, memo)
+    memo
   end
 
-  private def host_and_compute(visitor, way : Backward) : Nil
-    ComputingGuide.guide(visitor, @network, @timestamps)
+  private def host_reduce_and_compute(visitor, memo, way : Backward)
     @is_pending = false
+    ComputingGuide.guide(visitor, memo, @network, @timestamps)
   end
 
-  private def host_and_pass(visitor) : Nil
-    PassingGuide.guide(visitor, @network, @timestamps)
+  private def host_reduce_and_pass(visitor, memo)
+    PassingGuide.guide(visitor, memo, @network, @timestamps)
   end
 
   private class ComputingGuide(V)
@@ -63,38 +68,44 @@ class PBTranslate::Network::Cone(N)
     # A visitor that propagates a cone through gates backward from output to
     # input wires while guiding another visitor through the network.
 
-    def self.guide(visitor, network, timestamps) : Nil
+    def self.guide(visitor, memo, network, timestamps)
       Util.restrict(visitor.way, Backward)
       guide = new(visitor, timestamps)
-      network.host(guide)
+      memo = network.host_reduce(guide, memo)
       guide.finish
+      memo
     end
 
     protected def initialize(@visitor : V, @timestamps : Array(Timestamp?))
       @reverse_index = Timestamp.zero.as(Timestamp)
     end
 
-    def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
+    def visit_gate(g : Gate(_, InPlace, _), memo, **options)
       @reverse_index += 1
-      return unless visit_gate_with_cone(g, **options)
-      input_wires = g.wires
-      input_wires.each do |wire|
-        @timestamps[wire] ||= @reverse_index
+      any, memo = visit_gate_with_cone(g, memo, **options)
+      if any
+        input_wires = g.wires
+        input_wires.each do |wire|
+          @timestamps[wire] ||= @reverse_index
+        end
       end
+      memo
     end
 
     def way : Way
       BACKWARD
     end
 
-    private def visit_gate_with_cone(g, **options) : Bool
+    private def visit_gate_with_cone(g, memo, **options)
       output_wires = g.wires
       output_cone =
         @timestamps.values_at(*output_wires).map do |timestamp|
           timestamp || false
         end
-      @visitor.visit_gate(g, **options, output_cone: output_cone)
-      output_cone.any?
+      {
+        output_cone.any?,
+        @visitor.visit_gate(g, memo, **options, output_cone: output_cone),
+      }
     end
 
     protected def finish : Nil
@@ -114,24 +125,24 @@ class PBTranslate::Network::Cone(N)
     # A visitor that guides another and indicates to it which output wires
     # are in a cone.
 
-    def self.guide(visitor, network, timestamps) : Nil
+    def self.guide(visitor, memo, network, timestamps)
       Util.restrict(visitor.way, Forward)
       guide = new(visitor, timestamps)
-      network.host(guide)
+      network.host_reduce(guide, memo)
     end
 
     def initialize(@visitor : V, @timestamps : Array(Timestamp?))
       @index = Timestamp.zero.as(Timestamp)
     end
 
-    def visit_gate(g : Gate(_, InPlace, _), **options) : Nil
+    def visit_gate(g : Gate(_, InPlace, _), memo, **options)
       output_wires = g.wires
       output_cone =
         @timestamps.values_at(*output_wires).map do |timestamp|
           (timestamp && @index < timestamp) || false
         end
-      @visitor.visit_gate(g, **options, output_cone: output_cone)
       @index += 1
+      @visitor.visit_gate(g, memo, **options, output_cone: output_cone)
     end
   end
 end

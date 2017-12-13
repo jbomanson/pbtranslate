@@ -1,9 +1,11 @@
 require "./first_class"
 require "../gate"
+require "../network"
 
 # See `Scheme::Pw2MergeOddEven`.
 struct PBTranslate::Network::Pw2MergeOddEven
   include FirstClass
+  include Network
 
   # The binary logarithm of the width of the input halves of this network.
   getter half_width_log2
@@ -36,22 +38,27 @@ struct PBTranslate::Network::Pw2MergeOddEven
   # Hosts a visit over the comparators in this network.
   #
   # The visit_gate method of *visitor* is called for each comparator.
-  def host(visitor) : Nil
+  def host_reduce(visitor, memo)
     visitor.way.times(network_depth) do |layer_index|
-      layer_host(visitor, layer_index)
+      memo = layer_host_reduce(visitor, memo, layer_index)
     end
+    memo
   end
 
-  private def layer_host(visitor, layer_index)
+  private def layer_host_reduce(visitor, memo, layer_index)
     visitor.way.times(network_width) do |wire_index|
       partner_index = partner(half_width_log2, layer_index, wire_index)
-      case wire_index <=> partner_index
-      when -1
-        visitor.visit_gate(Gate.comparator_between(wire_index, partner_index))
-      when 0
-        visitor.visit_gate(Gate.passthrough_at(wire_index))
-      end
+      memo =
+        case wire_index <=> partner_index
+        when -1
+          visitor.visit_gate(Gate.comparator_between(wire_index, partner_index), memo)
+        when 0
+          visitor.visit_gate(Gate.passthrough_at(wire_index), memo)
+        else
+          memo
+        end
     end
+    memo
   end
 
   private def partner(half_width_log2, layer_index, wire_index)

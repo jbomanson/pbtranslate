@@ -1,4 +1,10 @@
+require "../network"
+
 struct PBTranslate::Network::WrapperWithDepth(N)
+  include Network
+
+  delegate host_reduce, to: @network
+
   getter network_depth : Distance
 
   def self.new(network n)

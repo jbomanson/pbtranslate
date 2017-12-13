@@ -1,10 +1,12 @@
 require "bit_array"
 
 require "../gate"
+require "../network"
 
 # A version of `WireWeighted` with weights on only a subset of layers.
 class PBTranslate::Network::PartiallyWireWeighted(C, W)
   include Gate::Restriction
+  include Network
 
   delegate size, to: @cache
   delegate network_depth, network_read_count, network_width, network_write_count, to: @network
@@ -29,8 +31,8 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
 
   # Hosts a visitor through `Layer` regions containing `Gate`s each together with
   # a named argument *output_weights* that is a tuple of `W`.
-  def host(visitor v) : Nil
-    PassingGuide.guide(@network, @layered_weights, @bit_array, visitor: v)
+  def host_reduce(visitor, memo)
+    PassingGuide.guide(@network, @layered_weights, @bit_array, visitor, memo)
   end
 
   # A visitor that propagates weights through a network and stores some of them.
@@ -56,7 +58,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       march_weights(next_sink) if @bit_array[layer.level]
     end
 
-    def visit_gate(g, *args, **options) : Nil
+    def visit_gate(g, memo, *args, **options)
       # Join the connected components of the wires of g.
       wires = g.wires
       scratch = @scratch
@@ -64,6 +66,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       roots = wires.map { |i| root_of(i) }
       least_root_index = roots.min_by { |i| scratch[i] }.to_i
       (wires + roots).each { |i| parents[i] = least_root_index }
+      memo
     end
 
     protected def flush_weights_last
@@ -112,13 +115,14 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
         end
       end
 
-      protected def pass_sweep(way y)
+      protected def pass_sweep(way y, memo)
         c = next_weights
         @visitor.visit_region(Layer.new(0_u32)) do |v|
           y.each_with_index_in(c) do |weight, index|
-            v.visit_gate(Gate.passthrough_at(Distance.new(index)), output_weights: {weight})
+            memo = v.visit_gate(Gate.passthrough_at(Distance.new(index)), memo, output_weights: {weight})
           end
         end
+        memo
       end
 
       private def next_weights_or_nil
@@ -137,7 +141,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
     end
 
     private struct GateGuide(V, W, L, B) < PassingGuide(V, W, L, B)
-      def visit_gate(g : Gate, **options) : Nil
+      def visit_gate(g : Gate, memo, **options)
         e = g.wires
         c = @current_weights
         o = if c
@@ -145,22 +149,23 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
             else
               e.map { W.zero }
             end
-        @visitor.visit_gate(g, **options, output_weights: o)
+        @visitor.visit_gate(g, memo, **options, output_weights: o)
       end
     end
 
     delegate way, to: @visitor
 
-    def self.guide(network n, layered_weights s, bit_array b, visitor v) : Nil
+    def self.guide(network n, layered_weights s, bit_array b, visitor v, memo)
       y = v.way
       g = LayerGuide.new(v, s.first, y.each_in(s), y.each_in(b))
       if y.is_a? Forward
-        g.pass_sweep(y)
+        memo = g.pass_sweep(y, memo)
       end
-      n.host(g)
+      memo = n.host_reduce(g, memo)
       if y.is_a? Backward
-        g.pass_sweep(y)
+        memo = g.pass_sweep(y, memo)
       end
+      memo
     end
 
     protected def initialize(@visitor : V, @current_weights : Slice(W) | Nil, @layer_iterator : L, @bit_iterator : B)

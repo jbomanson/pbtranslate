@@ -1,5 +1,8 @@
+require "../network"
+
 struct PBTranslate::Network::Pw2DivideAndConquer(M, Q)
   include FirstClass
+  include Network
 
   def initialize(@width : Width::Pw2, @combine_scheme : M, @conquer_scheme : Q)
     @width_log2 = width.log2.as(Distance)
@@ -31,34 +34,35 @@ struct PBTranslate::Network::Pw2DivideAndConquer(M, Q)
     Distance.new(1) << @width_log2
   end
 
-  def host(visitor) : Nil
-    host(visitor, visitor.way)
+  def host_reduce(visitor, memo)
+    host_reduce(visitor, memo, visitor.way)
   end
 
-  private def host(visitor, way : Forward)
-    helper_host(visitor) do |less|
-      pair_host(visitor, less)
-      @combine_scheme.network(less).host(visitor)
+  private def host_reduce(visitor, memo, way : Forward)
+    helper_host_reduce(visitor, memo) do |less|
+      memo = pair_host_reduce(visitor, memo, less)
+      memo = @combine_scheme.network(less).host_reduce(visitor, memo)
     end
   end
 
-  private def host(visitor, way : Backward)
-    helper_host(visitor) do |less|
-      @combine_scheme.network(less).host(visitor)
-      pair_host(visitor, less)
+  private def host_reduce(visitor, memo, way : Backward)
+    helper_host_reduce(visitor, memo) do |less|
+      memo = @combine_scheme.network(less).host_reduce(visitor, memo)
+      memo = pair_host_reduce(visitor, memo, less)
     end
   end
 
-  private def helper_host(*args) : Nil
-    three_cases(nil, host(*args), yield less)
+  private def helper_host_reduce(visitor, memo)
+    three_cases(memo, host_reduce(visitor, memo), yield less)
   end
 
-  private def pair_host(visitor, less)
+  private def pair_host_reduce(visitor, memo, less)
     conquer_network = @conquer_scheme.network(less)
     visitor.way.each_in({typeof(less.value).new(0), less.value}) do |amount|
       visitor.visit_region(Offset.new(amount)) do |region_visitor|
-        conquer_network.host(region_visitor)
+        memo = conquer_network.host_reduce(region_visitor, memo)
       end
     end
+    memo
   end
 end
