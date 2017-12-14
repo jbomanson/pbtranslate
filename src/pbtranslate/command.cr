@@ -6,7 +6,6 @@ require "./scheme/flexible_random_from_depth"
 require "./tool/base_scheme"
 require "./tool/cardinality_translator"
 require "./tool/optimization_rewriter"
-require "./visitor/print"
 
 # A class for processing command line options.
 #
@@ -314,7 +313,13 @@ class PBTranslate::Command
       if inspect_please
         ss = s.to_scheme_with_gate_level
         n = ss.network(w)
-        n.host_reduce(Visitor::Print.new, output_io)
+        n.gates_with_options.each do |(gate, options)|
+          case wires = gate.wires
+          when Tuple(Distance, Distance)
+            i, j = wires
+            output_io.puts "comparator(#{i}, #{j}, #{options[:level]})."
+          end
+        end
       else
         n = s.network(w)
         size = Network.compute_gate_count(n)
