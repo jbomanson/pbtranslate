@@ -1,4 +1,6 @@
+require "./gate_options"
 require "./network/gates_with_options"
+require "./util/restrict"
 require "./visitor"
 require "./visitor/default_methods"
 
@@ -14,7 +16,17 @@ module PBTranslate::Network
     include Visitor::DefaultMethods
 
     def visit_gate(gate, memo, **options)
-      memo || {gate, options}
+      result = memo || {gate, options}
+      check_integrity(result.last)
+      result
+    end
+
+    # Check to make sure that each gate option is either guaranteed to be
+    # present or guaranteed to be absent.
+    def check_integrity(options : NamedTuple)
+      {% for option in GATE_OPTIONS %}
+        Util.restrict_not_nilable_union(options[{{option}}]?)
+      {% end %}
     end
 
     def visit_gate(gate, memo, **options)
