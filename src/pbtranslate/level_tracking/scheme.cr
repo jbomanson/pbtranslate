@@ -12,7 +12,7 @@ module PBTranslate::Scheme
   #
   # See `GateOptions#restrict`.
   def to_scheme_with_gate_level_added
-    DepthTracking::Scheme.new(self)
+    LevelTracking::Scheme.new(self)
   end
 
   # Converts this scheme into one that has the gate option _level_, if needed.

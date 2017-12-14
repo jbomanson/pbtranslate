@@ -15,7 +15,7 @@ struct MyVisitor
   end
 end
 
-describe DepthTracking do
+describe LevelTracking do
   it "computes levels in a small example network correctly" do
     e = [{0, 0, 1}, {0, 2, 3}, {1, 0, 2}, {1, 1, 3}, {2, 1, 2}]
     e = e.map &.map { |v| Distance.new(v) }
@@ -23,7 +23,7 @@ describe DepthTracking do
     network = Network::FlexibleIndexableComparator.new(a)
     width = network.network_width # => 4
     visitor = MyVisitor.new
-    nn = DepthTracking::Network.new(network: network, width: width)
+    nn = LevelTracking::Network.new(network: network, width: width)
     nn.host(visitor)
     visitor.array.select { |t| t.size == 3 }.should eq(e)
   end

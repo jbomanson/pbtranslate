@@ -19,7 +19,7 @@ describe "PBTranslate::Network#gates_with_options" do
         {Gate.comparator_between(i, j), NamedTuple.new(level: level)}
       end
     network =
-      DepthTracking::Network.new(
+      LevelTracking::Network.new(
         network: Network::FlexibleIndexableComparator.new(WIRE_PAIRS),
         width: Distance.new(3),
       )

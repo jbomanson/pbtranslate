@@ -4,7 +4,7 @@ require "./scheme"
 require "./visitor/default_methods"
 require "./visitor/of_no_yielded_content"
 
-module PBTranslate::DepthTracking
+module PBTranslate::LevelTracking
   class Scheme(S)
     include PBTranslate::Scheme
 
@@ -68,7 +68,7 @@ module PBTranslate::DepthTracking
   #     network = Network::FlexibleIndexableComparator.new(a)
   #     width = network.width # => 4
   #     visitor = MyVisitor.new
-  #     wrapper = DepthTracking::Guide.new(width: width, visitor: visitor)
+  #     wrapper = LevelTracking::Guide.new(width: width, visitor: visitor)
   #     network.host(wrapper)
   #
   #     # Output
