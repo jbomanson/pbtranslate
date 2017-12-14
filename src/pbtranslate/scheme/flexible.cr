@@ -1,4 +1,6 @@
 require "../scheme"
+require "../width"
+require "./with_arguments"
 require "./with_fallback"
 
 module PBTranslate::Scheme
@@ -14,6 +16,8 @@ module PBTranslate::Scheme
   # * In Crystal, either all instances of a generic type include a module, or
   #   none of them do.
   module FlexibleMarker
+    include Scheme::WithArguments(Width::Flexible)
+
     # Generates a network of the given width.
     abstract def network(width w : Width)
   end

@@ -5,6 +5,7 @@ require "../scheme"
 # :nodoc:
 class PBTranslate::Scheme::Pw2DivideAndConquer(M, Q)
   include Scheme
+  include Scheme::WithArguments(Width::Pw2)
 
   module ::PBTranslate::Scheme::Pw2Combine
     # Creates a divide and conquer scheme which divides input sequences in

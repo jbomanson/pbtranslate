@@ -4,6 +4,7 @@ require "../scheme"
 # :nodoc:
 struct PBTranslate::Scheme::PartialFlexibleIndexableComparator(T)
   include Scheme
+  include Scheme::WithArguments(Width::Flexible)
 
   struct ::PBTranslate::Network::FlexibleIndexableComparator(T)
     # Creates a scheme that wraps this single network which it returns whenever

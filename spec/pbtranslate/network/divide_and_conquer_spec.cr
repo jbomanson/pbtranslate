@@ -4,6 +4,7 @@ include PBTranslate
 
 class MergeSortByDivideAndConquerScheme(M)
   include Scheme
+  include Scheme::WithArguments(Width::Flexible)
 
   declare_gate_options
 

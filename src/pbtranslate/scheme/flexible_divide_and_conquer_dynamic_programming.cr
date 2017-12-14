@@ -6,6 +6,7 @@ require "../scheme"
 # :nodoc:
 class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   include Scheme
+  include Scheme::WithArguments(Width::Flexible)
 
   module ::PBTranslate::Scheme
     # Creates a divide and conquer scheme that uses dynamic programming

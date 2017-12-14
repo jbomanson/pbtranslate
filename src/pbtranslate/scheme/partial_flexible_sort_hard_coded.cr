@@ -4,6 +4,7 @@ require "../scheme"
 # :nodoc:
 module PBTranslate::Scheme::PartialFlexibleSortHardCoded
   include Scheme
+  include Scheme::WithArguments(Width::Flexible)
   extend self
 
   module ::PBTranslate

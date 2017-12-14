@@ -1,3 +1,5 @@
+require "./with_arguments"
+
 # A module for schemes of networks that perform some combination operation on a
 # pair of sequences of flexible lengths as opposed to only lengths that are
 # powers of two.
@@ -6,7 +8,5 @@
 # operation used in divide and conquer algorithms to combine the results of
 # subproblems.
 module PBTranslate::Scheme::FlexibleCombine
-  # Generates a network that combines pairs of sequences of the given *widths*
-  # that are possibly distinct.
-  abstract def network(widths : {Width, Width})
+  include Scheme::WithArguments(Tuple(Width::Flexible, Width::Flexible))
 end

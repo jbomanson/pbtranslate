@@ -19,9 +19,6 @@ struct PBTranslate::Scheme::Pw2MergeDirect
 
   declare_gate_options
 
-  def initialize
-  end
-
   def network(half_width : Width::Pw2)
     Network::Pw2MergeDirect.new(half_width.log2)
   end
