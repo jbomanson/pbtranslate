@@ -14,6 +14,6 @@ class PBTranslate::Scheme::PartialFlexibleVoid
   declare_void_gate_options
 
   # Returns nil.
-  def network?(*args, **options) : Nil
+  def network?(*args) : Nil
   end
 end
