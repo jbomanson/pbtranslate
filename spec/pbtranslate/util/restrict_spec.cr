@@ -24,3 +24,23 @@ describe "PBTranslate::Util.restrict_not_nilable_union" do
     )
   end
 end
+
+private RESTRICT_TUPLE_UNIFORM_NEGATIVE = <<-EOF
+  require "../src/pbtranslate/util/restrict"
+
+  include PBTranslate::Util
+
+  restrict_tuple_uniform({1, 2, "b"})
+EOF
+
+describe "PBTranslate::Util.restrict_tuple_uniform" do
+  it "accepts uniform tuple types" do
+    restrict_tuple_uniform({1, 2, 3}).should eq({1, 2, 3})
+  end
+
+  it "catches non uniform tuple types at compile time" do
+    SpecHelper.eval(RESTRICT_TUPLE_UNIFORM_NEGATIVE).should match(
+      /\QExpected a tuple type repeating a single type, got\E/
+    )
+  end
+end

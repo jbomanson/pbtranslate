@@ -66,6 +66,30 @@ module PBTranslate::Util
     value
   end
 
+  # A no-op method that returns a _value_ as long as it is a `Tuple` in which
+  # all element types are the same.
+  # Otherwise a compile time error is raised.
+  #
+  # ### Example
+  #
+  # ```
+  # include PBTranslate::Util
+  #
+  # # This is OK.
+  # restrict_tuple_uniform({1, 2, 3})
+  #
+  # # This is caught during compilation.
+  # restrict_tuple_uniform({1, 2, "b"})
+  # # => Expected a tuple type repeating a single type, got
+  # # Tuple(Int32, Int32, String)
+  # ```
+  def restrict_tuple_uniform(tuple : U) : U forall U
+    {% if U.type_vars.uniq.size != 1 %}
+      {{ raise "Expected a tuple type repeating a single type, got #{U}" }}
+    {% end %}
+    tuple
+  end
+
   private def self.restrict_not_reverse(type : E.class, value : E) : Nil forall E
     {{ raise "Negated type restriction failed" }}
   end
