@@ -1,3 +1,8 @@
+module PBTranslate
+  # The set of allowed option names in `visit_gate` calls.
+  GATE_OPTIONS = [:level, :output_cone]
+end
+
 struct NamedTuple
   # :nodoc:
   def pbtranslate_gate_options_to_s(io)
@@ -35,19 +40,35 @@ struct PBTranslate::GateOptions(O)
 
   getter named_tuple : O
 
-  def self.complete_exact(
-                          *,
-                          level : Element = nil,
-                          output_cone : Element = nil)
-    {level: level, output_cone: output_cone}
-  end
-
-  def self.complete_relaxed(
+  {% begin %}
+    def self.complete_exact(
                             *,
-                            level : Element = nil.as(Element),
-                            output_cone : Element = nil.as(Element))
-    {level: level, output_cone: output_cone}
-  end
+                            {% for option in GATE_OPTIONS %}
+                              {{option.id}} : Element = nil,
+                            {% end %}
+                            )
+      NamedTuple.new(
+        {% for option in GATE_OPTIONS %}
+          {{option.id}}: {{option.id}},
+        {% end %}
+      )
+    end
+  {% end %}
+
+  {% begin %}
+    def self.complete_relaxed(
+                            *,
+                            {% for option in GATE_OPTIONS %}
+                              {{option.id}} = nil.as(Element),
+                            {% end %}
+                            )
+      NamedTuple.new(
+        {% for option in GATE_OPTIONS %}
+          {{option.id}}: {{option.id}},
+        {% end %}
+      )
+    end
+  {% end %}
 
   def self.new(**options)
     new(NamedTuple.new, options)
