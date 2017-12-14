@@ -1,4 +1,5 @@
 require "../gate_options"
+require "../scheme"
 
 module PBTranslate::Scheme
   macro delegate_and_declare_gate_options(other, *args)

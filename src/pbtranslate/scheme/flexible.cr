@@ -1,3 +1,4 @@
+require "../scheme"
 require "./with_fallback"
 
 module PBTranslate::Scheme
