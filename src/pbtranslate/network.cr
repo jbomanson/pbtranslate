@@ -1,3 +1,4 @@
+require "./network/gates_with_options"
 require "./visitor"
 require "./visitor/default_methods"
 
