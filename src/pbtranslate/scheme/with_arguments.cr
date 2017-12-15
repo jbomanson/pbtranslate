@@ -5,10 +5,10 @@ require "../util/type_to_value"
 # A module for schemes with `network` and `network?` methods with an argument of
 # type *A*.
 module PBTranslate::Scheme::WithArguments(A)
-  # Returns a potentially uninitialized sample network for use in typeof
-  # expressions.
-  def network_for_typeof : Network
-    network(Util.type_to_value(A))
+  # Returns a potentially uninitialized sample argument of the type expected by
+  # `network` for use in typeof expressions.
+  def network_arguments_for_typeof
+    Util.type_to_value(A)
   end
 
   # Returns a `Network`.

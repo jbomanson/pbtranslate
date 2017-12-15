@@ -15,6 +15,7 @@ class PBTranslate::Scheme::WithFallback(A, B)
     end
   end
 
+  delegate_scheme_details_to @schemes[0], @schemes[1]
   delegate gate_options, to: (true ? @schemes.first : @schemes.last)
 
   def initialize(a : A, b : B)

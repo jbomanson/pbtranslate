@@ -8,6 +8,8 @@ require "../network/layer_cache"
 class PBTranslate::Scheme::LayerCache(S, G, O)
   include Scheme
 
+  delegate_scheme_details_to @scheme
+
   def gate_options(**extra)
     ::PBTranslate::GateOptions.new({{@type.type_vars.last.keys.join(", ").id}}, **extra)
   end

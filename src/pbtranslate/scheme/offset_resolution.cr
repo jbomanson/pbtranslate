@@ -20,6 +20,7 @@ class PBTranslate::Scheme::OffsetResolution(S)
     end
   end
 
+  delegate_scheme_details_to @scheme
   delegate gate_options, to: @scheme
 
   def initialize(@scheme : S)

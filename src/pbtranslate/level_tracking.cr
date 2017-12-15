@@ -8,6 +8,7 @@ module PBTranslate::LevelTracking
   class Scheme(S)
     include PBTranslate::Scheme
 
+    delegate_scheme_details_to @scheme
     delegate_and_declare_gate_options @scheme, level
 
     def initialize(@scheme : S)

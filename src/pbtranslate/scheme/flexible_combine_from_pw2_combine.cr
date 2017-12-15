@@ -47,6 +47,7 @@ struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
   private struct ForTwo(S)
     include Scheme
 
+    delegate_scheme_details_to @scheme
     delegate gate_options, to: @scheme
 
     def initialize(@scheme : S)
