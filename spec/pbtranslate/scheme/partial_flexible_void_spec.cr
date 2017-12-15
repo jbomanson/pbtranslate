@@ -3,15 +3,11 @@ require "../../spec_helper"
 include PBTranslate
 
 private struct DummyScheme
-  include Scheme
-
-  declare_gate_options
+  Scheme.declare_gate_options
 end
 
 private struct DummySchemeWithDepth
-  include Scheme
-
-  declare_gate_options level
+  Scheme.declare_gate_options level
 end
 
 private record DummyUnionScheme(A, B), one : A, two : B do
