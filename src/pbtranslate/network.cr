@@ -1,10 +1,13 @@
 require "./gate_options"
 require "./network/gates_with_options"
+require "./network_or_scheme"
 require "./util/restrict"
 require "./visitor"
 require "./visitor/default_methods"
 
 module PBTranslate::Network
+  include NetworkOrScheme
+
   # Returns a tuple containing a gate and a named tuple of options intended for
   # use in typeof expressions only.
   def gate_with_options_for_typeof

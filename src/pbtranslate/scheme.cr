@@ -1,4 +1,5 @@
 require "./gate_options/scheme"
+require "./network_or_scheme"
 
 # This module contains schemes for generating networks.
 #
