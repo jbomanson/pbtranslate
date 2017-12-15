@@ -20,57 +20,39 @@ layer_cache_class =
 
 # A visitor that accumulates the total sum of the *output_weights* fields of
 # gates.
-class GateWeightAccumulatingVisitor(T)
+struct GateWeightAccumulatingVisitor
   include Visitor
   include Visitor::DefaultMethods
 
-  # The sum of all *output_weights* seen so far.
-  getter sum : T
-
-  def initialize
-    @sum = T.zero.as(T)
-  end
-
   def visit_gate(gate, memo, output_weights, **options)
-    @sum += output_weights.sum
-    memo
+    memo + output_weights.sum
   end
 end
 
 # A visitor for applying a comparator network to an array of values, and
 # computing the weighted sum of the generated wire values and *output_weights*
 # fields of the respective gates.
-class WireWeightSumComputingVisitor(T)
+struct WireWeightSumComputingVisitor
   include Visitor
   include Visitor::DefaultMethods
 
-  # An array representing the current values of all wires.
-  getter values : Array(T)
-
-  # The weighted sum accumulated so far.
-  getter sum : T
-
-  # Create an insance based on given initial *values*.
-  def initialize(@values : Array(T))
-    @sum = T.zero.as(T)
-  end
-
   def visit_gate(gate, memo, *, output_weights, **options)
+    values, sum = memo
     wires = gate.wires.to_a
     # Sort the values of the _wires_ in place.
     local_values =
       wires.map do |wire|
-        @values[wire]
+        values[wire]
       end
     local_values.sort!
     wires.zip(local_values) do |wire, value|
-      @values[wire] = value
+      values[wire] = value
     end
     # Accumulate the dynamic sum.
     local_values.zip(output_weights.to_a) do |value, weight|
-      @sum += value * weight
+      sum += value * weight
     end
-    memo
+    {values, sum}
   end
 end
 
@@ -100,16 +82,18 @@ end
 def sum_test(network_count, scheme, layer_cache_class, random, weight_range, way)
   array_of_random_width(network_count, random).each do |value|
     width = Width.from_value(value)
-    v = GateWeightAccumulatingVisitor(typeof(random.next_int)).new
     w = Array.new(width.value) { random.rand(weight_range) }
     n = scheme.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
     nn = layer_cache_class.new(network: n, width: width)
     nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: w.clone)
-    nnn.host(v.going(way))
-    a, b = {v, w}.map &.sum
-    a.should eq(b)
+    sum =
+      nnn.host_reduce(
+        GateWeightAccumulatingVisitor.new.going(way),
+        typeof(w.first).zero,
+      )
+    sum.should eq(w.sum)
   end
 end
 
@@ -120,15 +104,18 @@ def weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_r
   array_of_random_width(network_count, random).each do |value|
     width = Width.from_value(value)
     x = Array.new(width.value) { random.rand(value_range) }
-    v = WireWeightSumComputingVisitor.new(x.clone)
     w = Array.new(width.value) { random.rand(weight_range) }
     n = scheme.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
     nn = layer_cache_class.new(network: n, width: width)
     nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: w.clone)
-    nnn.host(v.going(FORWARD))
-    a, b = {v, w.zip(x).map { |u, v| u * v }}.map &.sum
+    a =
+      nnn.host_reduce(
+        WireWeightSumComputingVisitor.new.going(FORWARD),
+        {x.clone, typeof(w.first).zero},
+      ).last
+    b = w.zip(x).map { |u, v| u * v }.sum
     a.should eq(b)
   end
 end
