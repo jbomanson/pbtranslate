@@ -32,11 +32,9 @@ module PBTranslate::Scheme
   # Implements `#network_arguments_for_typeof`.
   macro delegate_scheme_details_to(*fields)
     def network_arguments_for_typeof
-      network_arguments_for_typeof_of({{fields}})
+      arguments = {{fields.map { |f| "(#{f}).network_arguments_for_typeof".id }}}
+      Util.restrict_tuple_uniform(arguments)
+      arguments.first
     end
-  end
-
-  private def network_arguments_for_typeof_of(fields : Tuple)
-    Util.restrict_tuple_uniform(fields).to_a.first.network_arguments_for_typeof
   end
 end
