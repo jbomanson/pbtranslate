@@ -7,7 +7,7 @@ allowed_mean_square_error = 0.01
 
 seed = SEED ^ __FILE__.hash
 
-def pick_depth(w : Width)
+private def pick_depth(w : Width)
   Distance.new(10) * w.log2ceil
 end
 

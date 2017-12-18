@@ -2,7 +2,7 @@ require "../sorting_network_helper"
 
 include PBTranslate
 
-class MergeSortByDivideAndConquerScheme(M)
+private class MergeSortByDivideAndConquerScheme(M)
   include Scheme
   include Scheme::WithArguments(Width::Flexible)
 

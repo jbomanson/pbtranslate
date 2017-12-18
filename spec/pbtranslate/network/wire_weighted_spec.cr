@@ -5,7 +5,7 @@ include SpecHelper
 network_count = 10
 scheme = SpecHelper.pw2_sort_odd_even.to_scheme_flexible
 
-class WeightCountingVisitor(T)
+private class WeightCountingVisitor(T)
   getter sum
 
   def initialize(@sum : T = T.zero)

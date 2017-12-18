@@ -16,14 +16,14 @@ direct_scheme =
 
 # Randomly partitions a range of numbers into three parts so that the middle
 # one is nonempty. Returns the two points that separate the parts.
-def partition_in_three(n, random)
+private def partition_in_three(n, random)
   points = Array.new(2) { Distance.new(random.rand(n)) }
   points.sort!
   left, right = points
   {left, right + 1}
 end
 
-def for_some_networks_of_random_width(network_count, random, sub_scheme)
+private def for_some_networks_of_random_width(network_count, random, sub_scheme)
   array_of_random_width(network_count, random).each do |width|
     sub_width = Math.pw2ceil(width)
     sub_network = sub_scheme.network(Width.from_pw2(sub_width))
@@ -33,7 +33,7 @@ def for_some_networks_of_random_width(network_count, random, sub_scheme)
   end
 end
 
-def test_limits_with_sub_scheme(sub_scheme, network_count)
+private def test_limits_with_sub_scheme(sub_scheme, network_count)
   random = Random.new(SEED)
   for_some_networks_of_random_width(network_count, random, sub_scheme) do |network, width|
     visitor = WidthCheckingVisitor.new(width)
@@ -41,7 +41,7 @@ def test_limits_with_sub_scheme(sub_scheme, network_count)
   end
 end
 
-def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
+private def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
   random = Random.new(SEED)
   for_some_networks_of_random_width(network_count, random, sub_scheme) do |network, width|
     a = Array.new(width) { yield random }

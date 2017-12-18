@@ -2,7 +2,7 @@ require "../sorting_network_helper"
 
 include PBTranslate
 
-class EmptyScheme
+private class EmptyScheme
   include Scheme
   include Scheme::WithArguments(Width::Flexible)
 

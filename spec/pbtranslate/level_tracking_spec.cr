@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 include PBTranslate
 
-struct MyVisitor
+private struct MyVisitor
   include Visitor
 
   getter array

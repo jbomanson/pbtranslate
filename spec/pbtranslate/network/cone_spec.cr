@@ -4,7 +4,7 @@ require "../../spec_helper"
 
 include PBTranslate
 
-class ArrayConeSwap(T)
+private class ArrayConeSwap(T)
   include Gate::Restriction
   include Visitor
 

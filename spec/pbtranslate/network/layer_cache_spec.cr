@@ -5,7 +5,7 @@ include Gate::Restriction
 
 scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_level
 
-class WirePairCollector
+private class WirePairCollector
   include Visitor
 
   getter wire_count

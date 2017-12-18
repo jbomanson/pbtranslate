@@ -14,7 +14,7 @@ direct_scheme =
         .to_scheme_pw2_divide_and_conquer
         .to_scheme_with_offset_resolution
 
-def test_limits_with_sub_scheme(sub_scheme, network_count)
+private def test_limits_with_sub_scheme(sub_scheme, network_count)
   scheme = Scheme::FlexibleFromPw2.new(sub_scheme)
   random = Random.new(SEED)
   array_of_random_width(network_count, random).each do |width|
@@ -23,7 +23,7 @@ def test_limits_with_sub_scheme(sub_scheme, network_count)
   end
 end
 
-def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
+private def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
   scheme = Scheme::FlexibleFromPw2.new(sub_scheme)
   random = Random.new(SEED)
   array_of_random_width(network_count, random).each do |width|

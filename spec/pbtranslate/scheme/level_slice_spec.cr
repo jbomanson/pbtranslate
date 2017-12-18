@@ -4,7 +4,7 @@ include PBTranslate
 
 scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_level
 
-struct RecordingVisitor
+private struct RecordingVisitor
   include Visitor
 
   getter array

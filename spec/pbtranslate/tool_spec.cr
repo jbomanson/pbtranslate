@@ -7,7 +7,7 @@ private FILTER_PROGRAM = %x(spec/script/find-lpconvert.sh).chomp
 
 private INSTANCE = File.read(INSTANCE_PATH)
 
-def describe_translator_class(translator_class)
+private def describe_translator_class(translator_class)
   describe translator_class do
     it "produces output accepted by #{FILTER_PROGRAM}" do
       process = Process.new(FILTER_PROGRAM, input: nil, output: false, error: nil)
