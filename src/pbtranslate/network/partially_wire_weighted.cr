@@ -2,6 +2,7 @@ require "bit_array"
 
 require "../gate"
 require "../network"
+require "../object"
 
 # A version of `WireWeighted` with weights on only a subset of layers.
 class PBTranslate::Network::PartiallyWireWeighted(C, W)
@@ -58,9 +59,13 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       march_weights(next_sink) if @bit_array[layer.level]
     end
 
-    def visit_gate(g, memo, *args, **options)
-      # Join the connected components of the wires of g.
-      wires = g.wires
+    def visit_gate(gate, memo, *args, **options)
+      gate.pbtranslate_receive_call_from(self, memo, **options)
+    end
+
+    def call(gate, memo, **options)
+      # Join the connected components of the wires of gate.
+      wires = gate.wires
       scratch = @scratch
       parents = @parents
       roots = wires.map { |i| root_of(i) }
@@ -141,15 +146,19 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
     end
 
     private struct GateGuide(V, W, L, B) < PassingGuide(V, W, L, B)
-      def visit_gate(g : Gate, memo, **options)
-        e = g.wires
+      def visit_gate(gate : Gate, memo, **options)
+        gate.pbtranslate_receive_call_from(self, memo, **options)
+      end
+
+      def call(gate : Gate, memo, **options)
+        e = gate.wires
         c = @current_weights
         o = if c
               c.values_at(*e)
             else
               e.map { W.zero }
             end
-        @visitor.visit_gate(g, memo, **options, output_weights: o)
+        @visitor.visit_gate(gate, memo, **options, output_weights: o)
       end
     end
 
