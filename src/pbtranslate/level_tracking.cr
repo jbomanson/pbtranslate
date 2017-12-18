@@ -60,7 +60,7 @@ module PBTranslate::LevelTracking
   #     struct MyVisitor
   #       include Visitor
   #
-  #       def visit_gate(g, memo, *args, level)
+  #       def visit_gate(g, memo, *empty_args, level)
   #         puts "#{g.wires} @ #{level}"
   #       end
   #     end
@@ -94,11 +94,11 @@ module PBTranslate::LevelTracking
 
     # Guides the wrapped visitor through a visit to a _gate_ and provides an
     # additional parameter _level_.
-    def visit_gate(g : Gate(_, InPlace, _), memo, *args, **options)
+    def visit_gate(g : Gate(_, InPlace, _), memo, **options)
       input_wires = g.wires
       level = @array.values_at(*input_wires).max
       level += way.first(0, -1)
-      memo = @visitor.visit_gate(g, memo, *args, **options, level: level)
+      memo = @visitor.visit_gate(g, memo, **options, level: level)
       level += way.first(+1, 0)
       output_wires = g.wires
       output_wires.each do |index|

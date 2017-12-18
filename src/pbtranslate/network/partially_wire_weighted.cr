@@ -59,7 +59,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       march_weights(next_sink) if @bit_array[layer.level]
     end
 
-    def visit_gate(gate, memo, *args, **options)
+    def visit_gate(gate, memo, **options)
       gate.pbtranslate_receive_call_from(self, memo, **options)
     end
 

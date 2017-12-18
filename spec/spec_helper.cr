@@ -44,7 +44,7 @@ record WidthCheckingVisitor, width : Distance do
   include Visitor
   include Gate::Restriction
 
-  def visit_gate(g : Gate, memo, *args, **options)
+  def visit_gate(g : Gate, memo, **options)
     wires = g.wires
     unless wires.all? &.>=(0)
       raise "Expected nonnegative wires, got #{wires}"
@@ -55,8 +55,8 @@ record WidthCheckingVisitor, width : Distance do
     memo
   end
 
-  def visit_gate(g : Gate, memo, *args, **options)
-    memo = visit_gate(g, memo, *args, **options)
+  def visit_gate(g : Gate, memo, **options)
+    memo = visit_gate(g, memo, **options)
     yield self
     memo
   end

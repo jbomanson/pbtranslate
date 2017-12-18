@@ -11,7 +11,7 @@ struct RecordingVisitor
 
   @array = Array(Array(Distance)).new
 
-  def visit_gate(g, memo, *args, **options)
+  def visit_gate(g, memo, **options)
     @array << g.wires.to_a
     memo
   end
