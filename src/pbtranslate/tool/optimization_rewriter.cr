@@ -109,7 +109,7 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
 
   private struct TailoredPartiallyWireWeightedScheme(S)
     def self.new(scheme, weight_step, weight_last)
-      new(Scheme::LayerCache.new(scheme), weight_step, weight_last, overload: nil)
+      new(scheme.to_scheme_layer_cache, weight_step, weight_last, overload: nil)
     end
 
     private def initialize(@scheme : S, @weight_step : Int32, @weight_last : Bool, *, overload : Nil)

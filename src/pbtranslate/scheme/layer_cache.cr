@@ -1,12 +1,20 @@
 require "../network/layer_cache"
 
-# A scheme of networks that cache the gates of networks of a given scheme and
-# then present the gates in increasing order of layers.
-#
-# Note however that the networks themselves are not cached.
-# That is, repeated calls to `network` may return different network instances.
+# :nodoc:
 class PBTranslate::Scheme::LayerCache(S)
   include Scheme
+
+  module ::PBTranslate::Scheme
+    # Creates scheme of networks that cache the gates of the networks of this
+    # scheme and then present the gates in increasing order of layers.
+    #
+    # Note however that the networks themselves are not cached.
+    # That is, repeated calls to `network` may return different network
+    # instances.
+    def to_scheme_layer_cache : Scheme
+      LayerCache.new(self)
+    end
+  end
 
   delegate_scheme_details_to @scheme
 
