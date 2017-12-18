@@ -12,6 +12,7 @@ scheme =
     .pw2_sort_odd_even
     .to_scheme_flexible
     .to_scheme_with_gate_level
+    .to_scheme_layer_cache
 
 # A visitor that accumulates the total sum of the *output_weights* fields of
 # gates.
@@ -81,10 +82,9 @@ def sum_test(network_count, scheme, random, weight_range, way)
     n = scheme.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
-    nn = Network::LayerCache.new(n, width)
-    nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: w.clone)
+    nn = Network::PartiallyWireWeighted.new(network: n, bit_array: y, weights: w.clone)
     sum =
-      nnn.host_reduce(
+      nn.host_reduce(
         GateWeightAccumulatingVisitor.new.going(way),
         typeof(w.first).zero,
       )
@@ -103,10 +103,9 @@ def weighted_sum_test(network_count, scheme, random, weight_range, value_range)
     n = scheme.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
-    nn = Network::LayerCache.new(n, width)
-    nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: w.clone)
+    nn = Network::PartiallyWireWeighted.new(network: n, bit_array: y, weights: w.clone)
     a =
-      nnn.host_reduce(
+      nn.host_reduce(
         WireWeightSumComputingVisitor.new.going(FORWARD),
         {x.clone, typeof(w.first).zero},
       ).last
@@ -122,9 +121,9 @@ def weight_grid_test(comparators, depth, initial_weights, bit_array, expected_fi
       network_depth: Distance.new(depth),
     )
   n.network_width.should eq(initial_weights.size)
-  nn = LevelTracking::Network.new(network: n, width: n.network_width)
-  nnn = Network::LayerCache.new(nn, Width.from_value(n.network_width))
-  nnnn = Network::PartiallyWireWeighted.new(network: nnn, bit_array: bit_array, weights: initial_weights.clone)
+  n = LevelTracking::Network.new(network: n, width: n.network_width)
+  nn = Network::LayerCache.new(n, Width.from_value(n.network_width))
+  nnnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: bit_array, weights: initial_weights.clone)
   v = WireWeightCollectingVisitor(typeof(initial_weights.first)).new(nnnn.network_width)
   nnnn.host(v.going(FORWARD))
   v.grid.should eq(expected_final_weights)
@@ -137,9 +136,8 @@ def corner_case_weight_test_helper(scheme, random, weight_range, width_value, bi
   n = scheme.network(width)
   bit_array = BitArray.new(n.network_depth.to_i, bit_value)
   bit_array[-1] = last_bit_value
-  nn = Network::LayerCache.new(n, width)
-  nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: bit_array, weights: weights.clone)
-  nnn.host(visitor.going(FORWARD))
+  nn = Network::PartiallyWireWeighted.new(network: n, bit_array: bit_array, weights: weights.clone)
+  nn.host(visitor.going(FORWARD))
   {weights, visitor.grid}
 end
 
