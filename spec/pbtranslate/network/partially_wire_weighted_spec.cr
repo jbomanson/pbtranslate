@@ -13,11 +13,6 @@ scheme =
     .to_scheme_flexible
     .to_scheme_with_gate_level
 
-layer_cache_class =
-  Network::LayerCache.class_for(
-    Gate.comparator_between(Distance.zero, Distance.zero),
-    level: Distance.zero)
-
 # A visitor that accumulates the total sum of the *output_weights* fields of
 # gates.
 struct GateWeightAccumulatingVisitor
@@ -79,14 +74,14 @@ end
 
 # A rather useless test for checking that the sum of wire weights in a
 # partially wire weighted network is the same as the sum of input weights.
-def sum_test(network_count, scheme, layer_cache_class, random, weight_range, way)
+def sum_test(network_count, scheme, random, weight_range, way)
   array_of_random_width(network_count, random).each do |value|
     width = Width.from_value(value)
     w = Array.new(width.value) { random.rand(weight_range) }
     n = scheme.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
-    nn = layer_cache_class.new(network: n, width: width)
+    nn = Network::LayerCache.new(n, width)
     nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: w.clone)
     sum =
       nnn.host_reduce(
@@ -100,7 +95,7 @@ end
 # A test for checking that the sum of wire weights weighted by wire values is
 # the same as the sum of initial weights weighted by initial values.
 # Both the wire weigths and wire values are based on random initial values.
-def weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range)
+def weighted_sum_test(network_count, scheme, random, weight_range, value_range)
   array_of_random_width(network_count, random).each do |value|
     width = Width.from_value(value)
     x = Array.new(width.value) { random.rand(value_range) }
@@ -108,7 +103,7 @@ def weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_r
     n = scheme.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
-    nn = layer_cache_class.new(network: n, width: width)
+    nn = Network::LayerCache.new(n, width)
     nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: y, weights: w.clone)
     a =
       nnn.host_reduce(
@@ -120,7 +115,7 @@ def weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_r
   end
 end
 
-def weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
+def weight_grid_test(comparators, depth, initial_weights, bit_array, expected_final_weights)
   n =
     Network::WrapperWithDepth.new(
       Network::FlexibleIndexableComparator.new(comparators),
@@ -128,21 +123,21 @@ def weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit
     )
   n.network_width.should eq(initial_weights.size)
   nn = LevelTracking::Network.new(network: n, width: n.network_width)
-  nnn = layer_cache_class.new(network: nn, width: Width.from_value(n.network_width))
+  nnn = Network::LayerCache.new(nn, Width.from_value(n.network_width))
   nnnn = Network::PartiallyWireWeighted.new(network: nnn, bit_array: bit_array, weights: initial_weights.clone)
   v = WireWeightCollectingVisitor(typeof(initial_weights.first)).new(nnnn.network_width)
   nnnn.host(v.going(FORWARD))
   v.grid.should eq(expected_final_weights)
 end
 
-def corner_case_weight_test_helper(scheme, layer_cache_class, random, weight_range, width_value, bit_value, last_bit_value)
+def corner_case_weight_test_helper(scheme, random, weight_range, width_value, bit_value, last_bit_value)
   width = Width.from_value(width_value)
   weights = Array.new(width_value) { random.rand(weight_range) }
   visitor = WireWeightCollectingVisitor(typeof(weights.first)).new(width_value)
   n = scheme.network(width)
   bit_array = BitArray.new(n.network_depth.to_i, bit_value)
   bit_array[-1] = last_bit_value
-  nn = layer_cache_class.new(network: n, width: width)
+  nn = Network::LayerCache.new(n, width)
   nnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: bit_array, weights: weights.clone)
   nnn.host(visitor.going(FORWARD))
   {weights, visitor.grid}
@@ -151,32 +146,32 @@ end
 describe Network::PartiallyWireWeighted do
   it "preserves sums of weights placed on all layers when going forward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, layer_cache_class, random, weight_range, FORWARD) { true }
+    sum_test(network_count, scheme, random, weight_range, FORWARD) { true }
   end
 
   it "preserves sums of weights placed on all layers when going backward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, layer_cache_class, random, weight_range, BACKWARD) { true }
+    sum_test(network_count, scheme, random, weight_range, BACKWARD) { true }
   end
 
   it "preserves sums of weights placed on random layers when going forward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, layer_cache_class, random, weight_range, FORWARD) { random.next_bool }
+    sum_test(network_count, scheme, random, weight_range, FORWARD) { random.next_bool }
   end
 
   it "preserves sums of weights placed on random layers when going backward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, layer_cache_class, random, weight_range, BACKWARD) { random.next_bool }
+    sum_test(network_count, scheme, random, weight_range, BACKWARD) { random.next_bool }
   end
 
   it "preserves sums of wire values and weights placed on all layers when going forward" do
     random = Random.new(seed)
-    weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range) { true }
+    weighted_sum_test(network_count, scheme, random, weight_range, value_range) { true }
   end
 
   it "preserves sums of wire values and weights placed on random layers when going forward" do
     random = Random.new(seed)
-    weighted_sum_test(network_count, scheme, layer_cache_class, random, weight_range, value_range) { random.next_bool }
+    weighted_sum_test(network_count, scheme, random, weight_range, value_range) { random.next_bool }
   end
 
   it "works as expected with all layers on a sample 3-sorting network" do
@@ -189,7 +184,7 @@ describe Network::PartiallyWireWeighted do
       [0, 0, 0, 354],
       [0, 600, 0, 354],
     ]
-    weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
+    weight_grid_test(comparators, depth, initial_weights, bit_array, expected_final_weights)
   end
 
   it "works as expected with a step of 2 and offset 0 on a sample 4-sorting network" do
@@ -222,7 +217,7 @@ describe Network::PartiallyWireWeighted do
       [0, 0, 0, 1],
       [0, 0, 0, 1],
     ]
-    weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
+    weight_grid_test(comparators, depth, initial_weights, bit_array, expected_final_weights)
   end
 
   it "works as expected with a step of 2 and offset 1 on a sample 4-sorting network" do
@@ -255,13 +250,13 @@ describe Network::PartiallyWireWeighted do
       [0, 0, 1, 0],
       [0, 0, 1, 0],
     ]
-    weight_grid_test(comparators, depth, initial_weights, layer_cache_class, bit_array, expected_final_weights)
+    weight_grid_test(comparators, depth, initial_weights, bit_array, expected_final_weights)
   end
 
   it "propagates nothing when given a false bit array" do
     random = Random.new(seed)
     array_of_random_width(network_count, random).each do |width_value|
-      weights, grid = corner_case_weight_test_helper(scheme, layer_cache_class, random, weight_range, width_value, false, false)
+      weights, grid = corner_case_weight_test_helper(scheme, random, weight_range, width_value, false, false)
       grid.map(&.first).should eq(weights)
       grid.each do |single_wire_weights|
         t = single_wire_weights[1..-1]
@@ -273,7 +268,7 @@ describe Network::PartiallyWireWeighted do
   it "propagates in one step over everything when given a bit array with a single true bit at the end" do
     random = Random.new(seed)
     array_of_random_width(network_count, random).each do |width_value|
-      weights, grid = corner_case_weight_test_helper(scheme, layer_cache_class, random, weight_range, width_value, false, true)
+      weights, grid = corner_case_weight_test_helper(scheme, random, weight_range, width_value, false, true)
       least = weights.min
       grid.map(&.first).should eq(weights.map &.-(least))
       grid.map(&.last).should eq(weights.map { least })

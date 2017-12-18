@@ -6,13 +6,9 @@ struct PBTranslate::Network::Random(C)
 
   delegate network_depth, network_read_count, network_width, network_write_count, host_reduce, to: @cache
 
-  private def self.layer_cache_class_for(w : Width)
-    LayerCache.class_for(Gate.comparator_between(Distance.zero, Distance.zero), level: Distance.zero)
-  end
-
   def self.new(*, random r : ::Random, width w : Width, depth d : Distance)
     n = Generator.new(random: r, width: w, depth: d)
-    new(layer_cache_class_for(w).new(network: n, width: w))
+    new(LayerCache.new(n, w))
   end
 
   protected def initialize(@cache : C)

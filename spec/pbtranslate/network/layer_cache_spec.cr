@@ -5,11 +5,6 @@ include Gate::Restriction
 
 scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_level
 
-cache_class =
-  Network::LayerCache.class_for(
-    Gate.comparator_between(Distance.zero, Distance.zero),
-    level: Distance.zero)
-
 class WirePairCollector
   include Visitor
 
@@ -47,7 +42,7 @@ describe Network::LayerCache do
     (Distance.new(1)..WIDTH_LOG2_MAX - 1).each do |width_log2|
       w = Width.from_log2(width_log2)
       n = scheme.network(w)
-      nn = cache_class.new(network: n, width: w)
+      nn = Network::LayerCache.new(n, w)
       v, vv = {0, 0}.map { WirePairCollector.new }
       p, q =
         { {n, v}, {nn, vv} }.map do |(x, y)|

@@ -5,24 +5,25 @@ require "../network"
 require "../util/slice_matrix"
 
 # A network of gates stored explicitly for enumeration layer by layer.
-class PBTranslate::Network::LayerCache(G, O)
+class PBTranslate::Network::LayerCache(G)
   include Gate::Restriction
   include Network
-
-  # Returns the appropriate LayerCache class for storing visit calls with
-  # arguments of the types used here.
-  def self.class_for(gate : G, **options : **O) forall G, O
-    LayerCache(G, O)
-  end
 
   # Delegated to the original network.
   getter network_write_count : Area
 
   # Caches gates of _network_ and returns a network for enumerating them layer
   # by layer.
-  def initialize(*, network n, width w : Width)
-    @network_write_count = n.network_write_count.as(Area)
-    @layers = Collector(G, O).collect(network: n, width: w)
+  def self.new(network : Network, width : Width)
+    new(network, width, typeof(network.gate_with_options_for_typeof))
+  end
+
+  private def initialize(
+                         network : Network,
+                         width : Width,
+                         gate_with_options : G.class)
+    @network_write_count = network.network_write_count.as(Area)
+    @layers = Collector(G).collect(network: network, width: width)
   end
 
   # Returns the computed depth of the network of stored gates.
@@ -69,32 +70,28 @@ class PBTranslate::Network::LayerCache(G, O)
   private struct Unused
   end
 
-  private struct Collector(G, O)
+  private struct Collector(G)
     include Visitor
     include Visitor::DefaultMethods
 
-    def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | {G, O})
-      s = Util::SliceMatrix(Used | Unused | {G, O}).new(n.network_depth, w.value) { Unused.new }
+    def self.collect(*, network n, width w) : Util::SliceMatrix(Used | Unused | G)
+      s = Util::SliceMatrix(Used | Unused | G).new(n.network_depth, w.value) { Unused.new }
       n.host(new(s))
       s
     end
 
-    protected def initialize(@layers : Util::SliceMatrix(Used | Unused | {G, O}))
+    protected def initialize(@layers : Util::SliceMatrix(Used | Unused | G))
     end
 
-    def visit_gate(g : G, memo, **options : **O)
-      f, t = first_and_rest(*g.wires)
+    def visit_gate(gate, memo, **options)
+      f, t = first_and_rest(*gate.wires)
       d = options[:level]
       r = @layers[d]
       unless r[f].is_a? Unused
         raise "Internal error: two gates for wire #{f} at level #{d}"
       end
-      r[f] = {g, options}
+      r[f] = {gate, options}
       t.each { |i| r[i] = Used.new }
-      memo
-    end
-
-    def visit_gate(gate, memo, **options)
       memo
     end
 
