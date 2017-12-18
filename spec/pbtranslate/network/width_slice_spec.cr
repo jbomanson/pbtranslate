@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 include SpecHelper
 
-network_count = 10
+private NETWORK_COUNT = 10
 
 oe_scheme =
   Scheme.pw2_merge_odd_even
@@ -23,8 +23,8 @@ private def partition_in_three(n, random)
   {left, right + 1}
 end
 
-private def for_some_networks_of_random_width(network_count, random, sub_scheme)
-  array_of_random_width(network_count, random).each do |width|
+private def for_some_networks_of_random_width(random, sub_scheme)
+  array_of_random_width(NETWORK_COUNT, random).each do |width|
     sub_width = Math.pw2ceil(width)
     sub_network = sub_scheme.network(Width.from_pw2(sub_width))
     left, right = partition_in_three(sub_width, random)
@@ -33,17 +33,17 @@ private def for_some_networks_of_random_width(network_count, random, sub_scheme)
   end
 end
 
-private def test_limits_with_sub_scheme(sub_scheme, network_count)
+private def test_limits_with_sub_scheme(sub_scheme)
   random = Random.new(SEED)
-  for_some_networks_of_random_width(network_count, random, sub_scheme) do |network, width|
+  for_some_networks_of_random_width(random, sub_scheme) do |network, width|
     visitor = WidthCheckingVisitor.new(width)
     network.host(visitor)
   end
 end
 
-private def test_sorting_with_sub_scheme(sub_scheme, network_count, visitor_factory)
+private def test_sorting_with_sub_scheme(sub_scheme, visitor_factory)
   random = Random.new(SEED)
-  for_some_networks_of_random_width(network_count, random, sub_scheme) do |network, width|
+  for_some_networks_of_random_width(random, sub_scheme) do |network, width|
     a = Array.new(width) { yield random }
     b = a.clone
     c = sort(a)
@@ -55,18 +55,18 @@ end
 
 describe Network::WidthSlice do
   it "trims oe merge sorting networks to within limits" do
-    test_limits_with_sub_scheme(oe_scheme, network_count)
+    test_limits_with_sub_scheme(oe_scheme)
   end
 
   it "trims direct merge sorting networks to within limits" do
-    test_limits_with_sub_scheme(direct_scheme, network_count)
+    test_limits_with_sub_scheme(direct_scheme)
   end
 
   it "sorts with the help of oe merge sorting networks" do
-    test_sorting_with_sub_scheme(oe_scheme, network_count, Visitor::ArraySwap, &.next_float)
+    test_sorting_with_sub_scheme(oe_scheme, Visitor::ArraySwap, &.next_float)
   end
 
   it "sorts with the help of direct merge sorting networks" do
-    test_sorting_with_sub_scheme(direct_scheme, network_count, Visitor::ArrayLogic, &.next_bool)
+    test_sorting_with_sub_scheme(direct_scheme, Visitor::ArrayLogic, &.next_bool)
   end
 end
