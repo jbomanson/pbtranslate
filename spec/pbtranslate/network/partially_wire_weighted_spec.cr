@@ -2,21 +2,22 @@ require "../../spec_helper"
 
 include SpecHelper
 
-network_count = 10
-weight_range = 0..1000
-value_range = 0..1
-seed = SEED ^ __FILE__.hash
+private NETWORK_COUNT = 10
+private WEIGHT_RANGE  = 0..1000
+private VALUE_RANGE   = 0..1
 
-scheme =
+private SCHEME =
   SpecHelper
     .pw2_sort_odd_even
     .to_scheme_flexible
     .to_scheme_with_gate_level
     .to_scheme_layer_cache
 
+seed = SEED ^ __FILE__.hash
+
 # A visitor that accumulates the total sum of the *output_weights* fields of
 # gates.
-struct GateWeightAccumulatingVisitor
+private struct GateWeightAccumulatingVisitor
   include Visitor
   include Visitor::DefaultMethods
 
@@ -28,7 +29,7 @@ end
 # A visitor for applying a comparator network to an array of values, and
 # computing the weighted sum of the generated wire values and *output_weights*
 # fields of the respective gates.
-struct WireWeightSumComputingVisitor
+private struct WireWeightSumComputingVisitor
   include Visitor
   include Visitor::DefaultMethods
 
@@ -54,7 +55,7 @@ end
 
 # A visitor for collecting the wire weights of a network into a two dimensional
 # grid.
-class WireWeightCollectingVisitor(T)
+private class WireWeightCollectingVisitor(T)
   include Visitor
   include Visitor::DefaultMethods
 
@@ -75,11 +76,11 @@ end
 
 # A rather useless test for checking that the sum of wire weights in a
 # partially wire weighted network is the same as the sum of input weights.
-def sum_test(network_count, scheme, random, weight_range, way)
-  array_of_random_width(network_count, random).each do |value|
+private def sum_test(random, way)
+  array_of_random_width(NETWORK_COUNT, random).each do |value|
     width = Width.from_value(value)
-    w = Array.new(width.value) { random.rand(weight_range) }
-    n = scheme.network(width)
+    w = Array.new(width.value) { random.rand(WEIGHT_RANGE) }
+    n = SCHEME.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
     nn = Network::PartiallyWireWeighted.new(network: n, bit_array: y, weights: w.clone)
@@ -95,12 +96,12 @@ end
 # A test for checking that the sum of wire weights weighted by wire values is
 # the same as the sum of initial weights weighted by initial values.
 # Both the wire weigths and wire values are based on random initial values.
-def weighted_sum_test(network_count, scheme, random, weight_range, value_range)
-  array_of_random_width(network_count, random).each do |value|
+private def weighted_sum_test(random)
+  array_of_random_width(NETWORK_COUNT, random).each do |value|
     width = Width.from_value(value)
-    x = Array.new(width.value) { random.rand(value_range) }
-    w = Array.new(width.value) { random.rand(weight_range) }
-    n = scheme.network(width)
+    x = Array.new(width.value) { random.rand(VALUE_RANGE) }
+    w = Array.new(width.value) { random.rand(WEIGHT_RANGE) }
+    n = SCHEME.network(width)
     y = BitArray.new(n.network_depth.to_i)
     y.each_index { |i| y[i] = yield }
     nn = Network::PartiallyWireWeighted.new(network: n, bit_array: y, weights: w.clone)
@@ -114,7 +115,7 @@ def weighted_sum_test(network_count, scheme, random, weight_range, value_range)
   end
 end
 
-def weight_grid_test(comparators, depth, initial_weights, bit_array, expected_final_weights)
+private def weight_grid_test(comparators, depth, initial_weights, bit_array, expected_final_weights)
   n =
     Network::WrapperWithDepth.new(
       Network::FlexibleIndexableComparator.new(comparators),
@@ -129,11 +130,11 @@ def weight_grid_test(comparators, depth, initial_weights, bit_array, expected_fi
   v.grid.should eq(expected_final_weights)
 end
 
-def corner_case_weight_test_helper(scheme, random, weight_range, width_value, bit_value, last_bit_value)
+private def corner_case_weight_test_helper(random, width_value, bit_value, last_bit_value)
   width = Width.from_value(width_value)
-  weights = Array.new(width_value) { random.rand(weight_range) }
+  weights = Array.new(width_value) { random.rand(WEIGHT_RANGE) }
   visitor = WireWeightCollectingVisitor(typeof(weights.first)).new(width_value)
-  n = scheme.network(width)
+  n = SCHEME.network(width)
   bit_array = BitArray.new(n.network_depth.to_i, bit_value)
   bit_array[-1] = last_bit_value
   nn = Network::PartiallyWireWeighted.new(network: n, bit_array: bit_array, weights: weights.clone)
@@ -144,32 +145,32 @@ end
 describe Network::PartiallyWireWeighted do
   it "preserves sums of weights placed on all layers when going forward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, random, weight_range, FORWARD) { true }
+    sum_test(random, FORWARD) { true }
   end
 
   it "preserves sums of weights placed on all layers when going backward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, random, weight_range, BACKWARD) { true }
+    sum_test(random, BACKWARD) { true }
   end
 
   it "preserves sums of weights placed on random layers when going forward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, random, weight_range, FORWARD) { random.next_bool }
+    sum_test(random, FORWARD) { random.next_bool }
   end
 
   it "preserves sums of weights placed on random layers when going backward" do
     random = Random.new(seed)
-    sum_test(network_count, scheme, random, weight_range, BACKWARD) { random.next_bool }
+    sum_test(random, BACKWARD) { random.next_bool }
   end
 
   it "preserves sums of wire values and weights placed on all layers when going forward" do
     random = Random.new(seed)
-    weighted_sum_test(network_count, scheme, random, weight_range, value_range) { true }
+    weighted_sum_test(random) { true }
   end
 
   it "preserves sums of wire values and weights placed on random layers when going forward" do
     random = Random.new(seed)
-    weighted_sum_test(network_count, scheme, random, weight_range, value_range) { random.next_bool }
+    weighted_sum_test(random) { random.next_bool }
   end
 
   it "works as expected with all layers on a sample 3-sorting network" do
@@ -253,8 +254,8 @@ describe Network::PartiallyWireWeighted do
 
   it "propagates nothing when given a false bit array" do
     random = Random.new(seed)
-    array_of_random_width(network_count, random).each do |width_value|
-      weights, grid = corner_case_weight_test_helper(scheme, random, weight_range, width_value, false, false)
+    array_of_random_width(NETWORK_COUNT, random).each do |width_value|
+      weights, grid = corner_case_weight_test_helper(random, width_value, false, false)
       grid.map(&.first).should eq(weights)
       grid.each do |single_wire_weights|
         t = single_wire_weights[1..-1]
@@ -265,8 +266,8 @@ describe Network::PartiallyWireWeighted do
 
   it "propagates in one step over everything when given a bit array with a single true bit at the end" do
     random = Random.new(seed)
-    array_of_random_width(network_count, random).each do |width_value|
-      weights, grid = corner_case_weight_test_helper(scheme, random, weight_range, width_value, false, true)
+    array_of_random_width(NETWORK_COUNT, random).each do |width_value|
+      weights, grid = corner_case_weight_test_helper(random, width_value, false, true)
       least = weights.min
       grid.map(&.first).should eq(weights.map &.-(least))
       grid.map(&.last).should eq(weights.map { least })
