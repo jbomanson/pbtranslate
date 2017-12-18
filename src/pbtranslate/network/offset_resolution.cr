@@ -37,12 +37,12 @@ class PBTranslate::Network::OffsetResolution(N)
       end
     end
 
-    def visit_gate(g, memo, **options)
-      @visitor.visit_gate(g.shifted_by(@offset), memo, **options)
+    def visit_gate(gate, memo, **options)
+      @visitor.visit_gate(gate.shifted_by(@offset), memo, **options)
     end
 
-    def visit_gate(g, memo, **options)
-      @visitor.visit_gate(g.shifted_by(@offset), memo, **options) do |gate_visitor|
+    def visit_gate(gate, memo, **options)
+      @visitor.visit_gate(gate.shifted_by(@offset), memo, **options) do |gate_visitor|
         yield Guide.new(gate_visitor, @offset)
       end
     end

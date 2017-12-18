@@ -80,11 +80,11 @@ class PBTranslate::Network::Cone(N)
       @reverse_index = Timestamp.zero.as(Timestamp)
     end
 
-    def visit_gate(g : Gate(_, InPlace, _), memo, **options)
+    def visit_gate(gate : Gate(_, InPlace, _), memo, **options)
       @reverse_index += 1
-      any, memo = visit_gate_with_cone(g, memo, **options)
+      any, memo = visit_gate_with_cone(gate, memo, **options)
       if any
-        input_wires = g.wires
+        input_wires = gate.wires
         input_wires.each do |wire|
           @timestamps[wire] ||= @reverse_index
         end
@@ -96,15 +96,15 @@ class PBTranslate::Network::Cone(N)
       BACKWARD
     end
 
-    private def visit_gate_with_cone(g, memo, **options)
-      output_wires = g.wires
+    private def visit_gate_with_cone(gate, memo, **options)
+      output_wires = gate.wires
       output_cone =
         @timestamps.values_at(*output_wires).map do |timestamp|
           timestamp || false
         end
       {
         output_cone.any?,
-        @visitor.visit_gate(g, memo, **options, output_cone: output_cone),
+        @visitor.visit_gate(gate, memo, **options, output_cone: output_cone),
       }
     end
 
@@ -135,14 +135,14 @@ class PBTranslate::Network::Cone(N)
       @index = Timestamp.zero.as(Timestamp)
     end
 
-    def visit_gate(g : Gate(_, InPlace, _), memo, **options)
-      output_wires = g.wires
+    def visit_gate(gate : Gate(_, InPlace, _), memo, **options)
+      output_wires = gate.wires
       output_cone =
         @timestamps.values_at(*output_wires).map do |timestamp|
           (timestamp && @index < timestamp) || false
         end
       @index += 1
-      @visitor.visit_gate(g, memo, **options, output_cone: output_cone)
+      @visitor.visit_gate(gate, memo, **options, output_cone: output_cone)
     end
   end
 end

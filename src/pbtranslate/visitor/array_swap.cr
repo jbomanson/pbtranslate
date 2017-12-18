@@ -4,8 +4,8 @@ record PBTranslate::Visitor::ArraySwap(T), array : Array(T) do
   include Gate::Restriction
   include Visitor
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), memo, **options)
-    i, j = g.wires
+  def visit_gate(gate : Gate(Comparator, InPlace, _), memo, **options)
+    i, j = gate.wires
     a = @array[i]
     b = @array[j]
     c = a < b
@@ -14,7 +14,7 @@ record PBTranslate::Visitor::ArraySwap(T), array : Array(T) do
     memo
   end
 
-  def visit_gate(g : Gate(Passthrough, _, _), memo, **options)
+  def visit_gate(gate : Gate(Passthrough, _, _), memo, **options)
     memo
   end
 

@@ -44,8 +44,8 @@ struct PBTranslate::Network::Random(C)
         a.shuffle! random: r
         each_pair(a) do |i, j|
           x, y = i < j ? {i, j} : {j, i}
-          g = Gate.comparator_between(x, y)
-          memo = visitor.visit_gate(g, memo, level: d)
+          gate = Gate.comparator_between(x, y)
+          memo = visitor.visit_gate(gate, memo, level: d)
         end
       end
       memo

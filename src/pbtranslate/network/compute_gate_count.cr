@@ -16,7 +16,7 @@ module PBTranslate::Network
       n.host_reduce(new.going(y), Area.new(0))
     end
 
-    def visit_gate(g, memo, **options)
+    def visit_gate(gate, memo, **options)
       memo += 1
     end
   end

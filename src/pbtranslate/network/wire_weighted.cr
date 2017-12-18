@@ -36,13 +36,13 @@ class PBTranslate::Network::WireWeighted(N, W)
     protected def initialize(*, @visitor : V, @weights : Array(W))
     end
 
-    def visit_gate(g : Gate(Comparator, InPlace, _), memo, **options)
-      o = propagate_weights_at(g.wires)
-      @visitor.visit_gate(g, memo, **options, input_weights: o)
+    def visit_gate(gate : Gate(Comparator, InPlace, _), memo, **options)
+      o = propagate_weights_at(gate.wires)
+      @visitor.visit_gate(gate, memo, **options, input_weights: o)
     end
 
-    def visit_gate(g : Gate(Passthrough, _, _), memo, **options)
-      @visitor.visit_gate(g, memo, **options, input_weights: g.wires.map { W.zero })
+    def visit_gate(gate : Gate(Passthrough, _, _), memo, **options)
+      @visitor.visit_gate(gate, memo, **options, input_weights: gate.wires.map { W.zero })
     end
 
     private def propagate_weights_at(wires)

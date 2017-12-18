@@ -15,8 +15,8 @@ class ArrayConeSwap(T)
   def initialize(@array : Array(T), way : Forward)
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), memo, *, output_cone, **options)
-    i, j = g.wires
+  def visit_gate(gate : Gate(Comparator, InPlace, _), memo, *, output_cone, **options)
+    i, j = gate.wires
     x, y = output_cone
     a = @array[i]
     b = @array[j]
@@ -27,7 +27,7 @@ class ArrayConeSwap(T)
     memo
   end
 
-  def visit_gate(g : Gate(Passthrough, _, _), memo, **options)
+  def visit_gate(gate : Gate(Passthrough, _, _), memo, **options)
     memo
   end
 end

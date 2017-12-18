@@ -15,14 +15,14 @@ class WirePairCollector
     @wire_count = 0
   end
 
-  def visit_gate(g : Gate(_, _, {Distance, Distance}), memo, **options)
-    @wire_pairs << g.wires
-    @wire_count += g.wires.size
+  def visit_gate(gate : Gate(_, _, {Distance, Distance}), memo, **options)
+    @wire_pairs << gate.wires
+    @wire_count += gate.wires.size
     memo
   end
 
-  def visit_gate(g, memo, **options)
-    @wire_count += g.wires.size
+  def visit_gate(gate, memo, **options)
+    @wire_count += gate.wires.size
     memo
   end
 

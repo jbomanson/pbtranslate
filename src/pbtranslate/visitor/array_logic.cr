@@ -21,8 +21,8 @@ struct PBTranslate::Visitor::ArrayLogic(T)
     @accumulator = Accumulator(T).new
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), memo, *empty_args, output_cone, **options)
-    i, j = g.wires
+  def visit_gate(gate : Gate(Comparator, InPlace, _), memo, *empty_args, output_cone, **options)
+    i, j = gate.wires
     a = @array[i]
     b = @array[j]
     if output_cone[0]
@@ -34,11 +34,11 @@ struct PBTranslate::Visitor::ArrayLogic(T)
     memo
   end
 
-  def visit_gate(g : Gate(Comparator, InPlace, _), memo, **options)
-    memo = visit_gate(g, memo, **options, output_cone: g.wires.map { true })
+  def visit_gate(gate : Gate(Comparator, InPlace, _), memo, **options)
+    visit_gate(gate, memo, **options, output_cone: gate.wires.map { true })
   end
 
-  def visit_gate(g : Gate(Passthrough, _, _), memo, **options)
+  def visit_gate(gate : Gate(Passthrough, _, _), memo, **options)
     memo
   end
 
@@ -71,8 +71,8 @@ struct PBTranslate::Visitor::ArrayLogic(T)
                    @accumulator : Accumulator(T))
     end
 
-    def visit_gate(g : Gate(F, Output, _), memo, **options) forall F
-      index = g.wires.first.to_i
+    def visit_gate(gate : Gate(F, Output, _), memo, **options) forall F
+      index = gate.wires.first.to_i
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
           yield output_visitor
@@ -111,13 +111,13 @@ struct PBTranslate::Visitor::ArrayLogic(T)
                    @storage : Array(T))
     end
 
-    def visit_gate(g : Gate(F, Input, _), memo, **options) forall F
-      operands = g.wires.map { |wire| @array[wire] }
+    def visit_gate(gate : Gate(F, Input, _), memo, **options) forall F
+      operands = gate.wires.map { |wire| @array[wire] }
       store(@context.operate(F, operands))
       memo
     end
 
-    def visit_gate(g : Gate(Passthrough, _, _), memo, **options)
+    def visit_gate(gate : Gate(Passthrough, _, _), memo, **options)
       memo
     end
 

@@ -61,8 +61,8 @@ class PBTranslate::Network::Pw2MergeDirect
             b = {half_width, out_value}.min
             visitor.way.each_in(a..b) do |left_value|
               right_value = out_value - left_value
-              g = and_input_gate(half_width, left_value, right_value)
-              memo = or_visitor.visit_gate(g, memo, drop_true: nil)
+              gate = and_input_gate(half_width, left_value, right_value)
+              memo = or_visitor.visit_gate(gate, memo, drop_true: nil)
             end
             memo
           end

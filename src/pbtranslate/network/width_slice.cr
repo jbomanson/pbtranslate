@@ -38,10 +38,10 @@ struct PBTranslate::Network::WidthSlice(N)
     end
 
     macro define_visit_gate(please_yield)
-      def visit_gate(g : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), memo, **options)
+      def visit_gate(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), memo, **options)
         b, e = @begin, @end
-        if w = pick_wires(g, b, e, **options)
-          h = g.class.new(w.map &.- b)
+        if w = pick_wires(gate, b, e, **options)
+          h = gate.class.new(w.map &.- b)
           memo = @visitor.visit_gate(h, memo, **options) {{
                                                            (please_yield ? "{ |v| yield Guide.new(v, @begin, @end) }" : "").id
                                                          }}
