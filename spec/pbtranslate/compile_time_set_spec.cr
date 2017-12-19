@@ -1,0 +1,143 @@
+require "../eval_spec_helper_spec"
+require "../../src/pbtranslate/compile_time_set"
+
+include PBTranslate
+
+empty = CompileTimeSet.create
+a = CompileTimeSet.create(:a)
+b = CompileTimeSet.create(:b)
+c = CompileTimeSet.create(:c)
+ab = CompileTimeSet.create(:a, :b)
+ac = CompileTimeSet.create(:a, :c)
+bc = CompileTimeSet.create(:b, :c)
+abc = CompileTimeSet.create(:a, :b, :c)
+
+private PROGRAM_FORMAT = <<-EOF
+  require "../../src/pbtranslate/compile_time_set"
+
+  include PBTranslate
+
+  empty = CompileTimeSet.create
+  a = CompileTimeSet.create(:a)
+  b = CompileTimeSet.create(:b)
+  c = CompileTimeSet.create(:c)
+  ab = CompileTimeSet.create(:a, :b)
+  ac = CompileTimeSet.create(:a, :c)
+  bc = CompileTimeSet.create(:b, :c)
+  abc = CompileTimeSet.create(:a, :b, :c)
+
+  %s
+EOF
+
+describe PBTranslate::CompileTimeSet do
+  it "prints nicely" do
+    abc.to_s.should eq("{a, b, c}")
+    a.to_s.should eq("{a}")
+    empty.to_s.should eq("{}")
+  end
+
+  it "compares sets" do
+    a.should eq(a)
+    a.should_not eq(abc)
+  end
+
+  it "constructs sets with .create and .from_option_keys" do
+    CompileTimeSet.create(:a).should eq(CompileTimeSet.from_option_keys(a: 1))
+  end
+
+  it "constructs sets with .create and .from_named_tuple_type" do
+    CompileTimeSet.create(:a).should eq(
+      CompileTimeSet.from_named_tuple_type(typeof({a: 1}))
+    )
+  end
+
+  it "implements the union operator |" do
+    (empty | empty).should eq(empty)
+    (empty | a).should eq(a)
+    (a | empty).should eq(a)
+    (a | a).should eq(a)
+    (a | b).should eq(ab)
+    (a | b | c).should eq(abc)
+    (ab | c).should eq(abc)
+    (a | b | c | ab | abc).should eq(abc)
+  end
+
+  it "implements the intersection operator &" do
+    (empty & empty).should eq(empty)
+    (empty & a).should eq(empty)
+    (a & empty).should eq(empty)
+    (a & a).should eq(a)
+    (a & b).should eq(empty)
+    (ab & a).should eq(a)
+    (ab & b).should eq(b)
+    (abc & c).should eq(c)
+    (abc & ab).should eq(ab)
+    (ab & bc).should eq(b)
+  end
+
+  it "implements the difference operator -" do
+    (empty - empty).should eq(empty)
+    (empty - a).should eq(empty)
+    (a - empty).should eq(a)
+    (a - a).should eq(empty)
+    (a - b).should eq(a)
+    (ab - a).should eq(b)
+    (ab - b).should eq(a)
+    (abc - c).should eq(ab)
+    (abc - ab).should eq(c)
+  end
+
+  it "implements the symmetric difference operator ^" do
+    (empty ^ empty).should eq(empty)
+    (empty ^ a).should eq(a)
+    (a ^ empty).should eq(a)
+    (a ^ a).should eq(empty)
+    (a ^ b).should eq(ab)
+    (ab ^ a).should eq(b)
+    (ab ^ b).should eq(a)
+    (abc ^ c).should eq(ab)
+    (abc ^ ab).should eq(c)
+    (ab ^ bc).should eq(ac)
+  end
+
+  it "implements size" do
+    empty.size.should eq(0)
+    a.size.should eq(1)
+    ab.size.should eq(2)
+    abc.size.should eq(3)
+  end
+
+  it "implements superset!" do
+    a.superset! empty
+    b.superset! empty
+    ab.superset! empty
+    abc.superset! empty
+    ab.superset! a
+    abc.superset! a
+    ab.superset! b
+    abc.superset! b
+  end
+
+  it "catches superset! violations at compile time" do
+    output = eval(PROGRAM_FORMAT % "a.superset! b")
+    output.should match(/\QCompileTimeSet(NamedTuple(a: In))#superset!\E/)
+    output.should match(/\QExpected {a} to be a superset of {b}\E/)
+  end
+
+  it "implements subset!" do
+    empty.subset! a
+    empty.subset! b
+    empty.subset! ab
+    empty.subset! abc
+    a.subset! ab
+    a.subset! abc
+    b.subset! ab
+    b.subset! abc
+  end
+
+  it "catches subset! violations at compile time" do
+    output = eval(PROGRAM_FORMAT % "a.subset! b")
+    output.should match(/\QCompileTimeSet(NamedTuple(a: In))#subset!\E/)
+    output.should match(/\QExpected {a} to be a subset of {b}\E/)
+  end
+end
