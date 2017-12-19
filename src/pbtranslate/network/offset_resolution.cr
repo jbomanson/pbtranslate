@@ -31,19 +31,19 @@ class PBTranslate::Network::OffsetResolution(N)
       yield Guide.new(@visitor, @offset + offset.value)
     end
 
-    def visit_region(region) : Nil
-      @visitor.visit_region(region) do |region_visitor|
-        yield Guide.new(region_visitor, @offset)
-      end
-    end
-
     def visit_gate(gate, memo, **options)
       @visitor.visit_gate(gate.shifted_by(@offset), memo, **options)
     end
 
-    def visit_gate(gate, memo, **options)
-      @visitor.visit_gate(gate.shifted_by(@offset), memo, **options) do |gate_visitor|
-        yield Guide.new(gate_visitor, @offset)
+    def visit_region(region) : Nil
+      shifted_region =
+        if region.responds_to? :shifted_by
+          region.shifted_by(@offset)
+        else
+          region
+        end
+      @visitor.visit_region(shifted_region) do |region_visitor|
+        yield Guide.new(region_visitor, @offset)
       end
     end
   end

@@ -55,10 +55,9 @@ record WidthCheckingVisitor, width : Distance do
     memo
   end
 
-  def visit_gate(gate : Gate, memo, **options)
-    memo = visit_gate(gate, memo, **options)
+  def visit_region(gate : Gate) : Nil
+    visit_gate(gate, nil)
     yield self
-    memo
   end
 
   def visit_region(layer : OOPSublayer.class)

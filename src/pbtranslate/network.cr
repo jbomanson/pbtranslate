@@ -32,10 +32,6 @@ module PBTranslate::Network
       {% end %}
     end
 
-    def visit_gate(gate, memo, **options)
-      visit_gate(gate, yield(self), **options)
-    end
-
     def visit_region(offset : Offset) : Nil
       yield self
     end

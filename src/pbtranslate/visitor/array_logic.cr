@@ -61,7 +61,7 @@ struct PBTranslate::Visitor::ArrayLogic(T)
     {% end %}
   end
 
-  # A visitor that operates on an array while visiting gates in a layer.
+  # A visitor that operates on an array while visiting regions in a layer.
   #
   # The gates are expected to be split into input and output parts.
   private struct LayerVisitor(A, T)
@@ -71,14 +71,13 @@ struct PBTranslate::Visitor::ArrayLogic(T)
                    @accumulator : Accumulator(T))
     end
 
-    def visit_gate(gate : Gate(F, Output, _), memo, **options) forall F
+    def visit_region(gate : Gate(F, Output, _)) : Nil forall F
       index = gate.wires.first.to_i
       value =
         @accumulator.accumulate(F, @array.to_a, @context) do |output_visitor|
           yield output_visitor
         end
       @array[index] = value
-      memo
     end
   end
 

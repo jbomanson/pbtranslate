@@ -37,21 +37,28 @@ struct PBTranslate::Network::WidthSlice(N)
     def initialize(@visitor : V, @begin : Distance, @end : Distance)
     end
 
-    macro define_visit_gate(please_yield)
-      def visit_gate(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), memo, **options)
-        b, e = @begin, @end
-        if w = pick_wires(gate, b, e, **options)
-          h = gate.class.new(w.map &.- b)
-          memo = @visitor.visit_gate(h, memo, **options) {{
-                                                           (please_yield ? "{ |v| yield Guide.new(v, @begin, @end) }" : "").id
-                                                         }}
+    def visit_gate(gate : Gate(_, Output, _) | Gate(_, InPlace, _) | Gate(And, _, _), memo, **options)
+      b, e = @begin, @end
+      if w = pick_wires(gate, b, e, **options)
+        h = gate.class.new(w.map &.- b)
+        memo = @visitor.visit_gate(h, memo, **options)
+      end
+      memo
+    end
+
+    def visit_region(gate : Gate(_, Output, _)) : Nil
+      b, e = @begin, @end
+      if w = pick_wires(gate, b, e)
+        h = gate.class.new(w.map &.- b)
+        @visitor.visit_region(h) do |v|
+          yield Guide.new(v, @begin, @end)
         end
-        memo
       end
     end
 
-    define_visit_gate false
-    define_visit_gate true
+    def visit_region(region) : Nil
+      @visitor.visit_region(region) { |v| yield Guide.new(v, @begin, @end) }
+    end
 
     private def pick_wires(g : Gate(_, Output, _) | Gate(_, InPlace, _), b, e, **options)
       s = g.wires
@@ -87,10 +94,6 @@ struct PBTranslate::Network::WidthSlice(N)
 
     private def false_and(s, b, **options)
       raise "Simplification of And gates to constant false is not supported"
-    end
-
-    def visit_region(region) : Nil
-      @visitor.visit_region(region) { |v| yield Guide.new(v, @begin, @end) }
     end
   end
 end

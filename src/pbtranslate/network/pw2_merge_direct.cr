@@ -55,17 +55,15 @@ class PBTranslate::Network::Pw2MergeDirect
       b = half_width << 1
       visitor.way.each_in(a..b) do |out_value| # This is one indexed.
         wire = Distance.new(out_value + BASE)
-        memo =
-          layer_visitor.visit_gate(Gate.or_as(Distance.new(wire)), memo) do |or_visitor|
-            a = {Int64.new(0), out_value - half_width}.max
-            b = {half_width, out_value}.min
-            visitor.way.each_in(a..b) do |left_value|
-              right_value = out_value - left_value
-              gate = and_input_gate(half_width, left_value, right_value)
-              memo = or_visitor.visit_gate(gate, memo, drop_true: nil)
-            end
-            memo
+        layer_visitor.visit_region(Gate.or_as(Distance.new(wire))) do |or_visitor|
+          a = {Int64.new(0), out_value - half_width}.max
+          b = {half_width, out_value}.min
+          visitor.way.each_in(a..b) do |left_value|
+            right_value = out_value - left_value
+            gate = and_input_gate(half_width, left_value, right_value)
+            memo = or_visitor.visit_gate(gate, memo, drop_true: nil)
           end
+        end
       end
     end
     memo
