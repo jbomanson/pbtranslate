@@ -1,3 +1,4 @@
+require "./compile_time_set"
 require "./util/type_to_value.cr"
 
 # Either a `Network` or a `Scheme`.
@@ -18,5 +19,13 @@ module PBTranslate::NetworkOrScheme
         typeof(Util.type_to_value(self).gate_with_options_for_typeof)
       \{% end %}
     end
+  end
+
+  # Returns the keys in the gate options of this network or scheme as a
+  # `CompileTimeSet`.
+  def gate_option_keys : CompileTimeSet
+    CompileTimeSet.from_named_tuple_type(
+      typeof(gate_with_options_for_typeof.last)
+    )
   end
 end
