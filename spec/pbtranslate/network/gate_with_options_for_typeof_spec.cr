@@ -21,6 +21,18 @@ private struct NetworkOfInt32AndString
   end
 end
 
+private struct NetworkWithOffsets
+  include Network
+
+  def host_reduce(visitor, memo)
+    visitor.visit_region(Offset.new(Distance.new(100))) do |region_visitor|
+      memo = region_visitor.visit_gate(1, memo)
+      memo = region_visitor.visit_gate(2, memo)
+    end
+    memo
+  end
+end
+
 private NETWORK_WITH_AMBIGUOUS_OPTIONS = <<-EOF
   require "../src/pbtranslate/network"
   require "../src/pbtranslate/number_types"
@@ -50,6 +62,12 @@ describe "PBTranslate::Network#gate_with_options_for_typeof" do
   it "gives the right type of gates for a network of Int32 and String values" do
     typeof(NetworkOfInt32AndString.new.gate_with_options_for_typeof).should eq(
       Tuple(Int32 | String, typeof(NamedTuple.new))
+    )
+  end
+
+  it "gives the right type of gates for a network of Int32 and String values" do
+    typeof(NetworkWithOffsets.new.gate_with_options_for_typeof).should eq(
+      Tuple(Int32, typeof(NamedTuple.new))
     )
   end
 
