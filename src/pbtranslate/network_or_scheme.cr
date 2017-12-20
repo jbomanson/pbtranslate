@@ -7,8 +7,6 @@ require "./util/type_to_value.cr"
 module PBTranslate::NetworkOrScheme
   # Returns a potentially uninitialized sample gate and a named tuple of options
   # intended for use in typeof expressions.
-  #
-  # See `Network#gate_with_options_for_typeof`.
   abstract def gate_with_options_for_typeof
 
   macro included

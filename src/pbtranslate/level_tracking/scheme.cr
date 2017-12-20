@@ -3,14 +3,6 @@ require "../scheme"
 
 module PBTranslate::Scheme
   # Converts this scheme into one that has the gate option _level_.
-  #
-  # Calls to this method on schemes that already have the gate option should be
-  # caught by the compiler, but the error message will not necessarily be nice.
-  # To verify that a scheme does not have the gate option in a way that results
-  # in potentially nicer error messages, use
-  # `scheme.gate_options.restrict(level: nil)`.
-  #
-  # See `GateOptions#restrict`.
   def to_scheme_with_gate_level_added
     LevelTracking::Scheme.new(self)
   end

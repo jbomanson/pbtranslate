@@ -8,8 +8,7 @@ require "./visitor/default_methods"
 module PBTranslate::Network
   include NetworkOrScheme
 
-  # Returns a tuple containing a gate and a named tuple of options intended for
-  # use in typeof expressions only.
+  # See `NetworkOrScheme#gate_with_options_for_typeof`.
   def gate_with_options_for_typeof
     host_reduce(GateWithOptionsForTypeof.new, nil).not_nil!
   end

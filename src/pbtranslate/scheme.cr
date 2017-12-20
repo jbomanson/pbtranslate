@@ -11,10 +11,7 @@ require "./network_or_scheme"
 module PBTranslate::Scheme
   include NetworkOrScheme
 
-  # Returns a potentially uninitialized sample gate and a named tuple of options
-  # intended for use in typeof expressions.
-  #
-  # See `Network#gate_with_options_for_typeof`.
+  # See `NetworkOrScheme#gate_with_options_for_typeof`.
   def gate_with_options_for_typeof
     network_for_typeof.gate_with_options_for_typeof
   end
