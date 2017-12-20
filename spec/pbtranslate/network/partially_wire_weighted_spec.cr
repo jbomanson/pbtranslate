@@ -118,7 +118,7 @@ end
 private def weight_grid_test(comparators, depth, initial_weights, bit_array, expected_final_weights)
   n =
     Network::WrapperWithDepth.new(
-      Network::FlexibleIndexableComparator.new(comparators),
+      Network.flexible_comparator(comparators),
       network_depth: Distance.new(depth),
     )
   n.network_width.should eq(initial_weights.size)

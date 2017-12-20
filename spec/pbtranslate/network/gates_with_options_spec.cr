@@ -9,7 +9,7 @@ describe "PBTranslate::Network#gates_with_options" do
   it "returns correct comparators" do
     expected_comparators =
       WIRE_PAIRS.map { |i, j| {Gate.comparator_between(i, j), NamedTuple.new} }
-    network = Network::FlexibleIndexableComparator.new(WIRE_PAIRS)
+    network = Network.flexible_comparator(WIRE_PAIRS)
     network.gates_with_options.to_a.should eq(expected_comparators)
   end
 
@@ -18,9 +18,7 @@ describe "PBTranslate::Network#gates_with_options" do
       WIRE_PAIRS_WITH_LEVELS.map do |i, j, level|
         {Gate.comparator_between(i, j), NamedTuple.new(level: level)}
       end
-    network =
-      Network::FlexibleIndexableComparator.new(WIRE_PAIRS)
-                                          .to_network_with_gate_level
+    network = Network.flexible_comparator(WIRE_PAIRS).to_network_with_gate_level
     network.gates_with_options.to_a.should eq(expected_comparators)
   end
 end
