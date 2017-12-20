@@ -1,4 +1,4 @@
-require "../level_tracking/scheme"
+require "../level_tracking"
 require "../network/offset_resolution"
 require "../scheme"
 

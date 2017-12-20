@@ -19,10 +19,8 @@ describe "PBTranslate::Network#gates_with_options" do
         {Gate.comparator_between(i, j), NamedTuple.new(level: level)}
       end
     network =
-      LevelTracking::Network.new(
-        network: Network::FlexibleIndexableComparator.new(WIRE_PAIRS),
-        width: Distance.new(3),
-      )
+      Network::FlexibleIndexableComparator.new(WIRE_PAIRS)
+                                          .to_network_with_gate_level
     network.gates_with_options.to_a.should eq(expected_comparators)
   end
 end

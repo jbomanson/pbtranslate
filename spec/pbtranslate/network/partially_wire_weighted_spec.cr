@@ -122,7 +122,7 @@ private def weight_grid_test(comparators, depth, initial_weights, bit_array, exp
       network_depth: Distance.new(depth),
     )
   n.network_width.should eq(initial_weights.size)
-  n = LevelTracking::Network.new(network: n, width: n.network_width)
+  n = n.to_network_with_gate_level
   nn = Network::LayerCache.new(n, Width.from_value(n.network_width))
   nnnn = Network::PartiallyWireWeighted.new(network: nn, bit_array: bit_array, weights: initial_weights.clone)
   v = WireWeightCollectingVisitor(typeof(initial_weights.first)).new(nnnn.network_width)
