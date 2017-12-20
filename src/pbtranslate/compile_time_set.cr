@@ -80,23 +80,34 @@ struct PBTranslate::CompileTimeSet(T)
     (self - other) | (other - self)
   end
 
+  # Checks at compile time that this set is empty.
+  def empty! : Nil
+    self.try_nonempty do
+      {{
+        raise "Expected #{T.keys} to be empty".tr("[]", "{}")
+      }}
+    end
+  end
+
   # Returns the number of elements in the set.
   def size : Int32
     {{ T.size }}
   end
 
-  def superset!(other : CompileTimeSet(U)) : Nil forall U
-    (other - self).try_nonempty do
-      {{
-        raise "Expected #{T.keys} to be a superset of #{U.keys}".tr("[]", "{}")
-      }}
-    end
-  end
-
+  # Checks at compile time that this set is a subset of the *other* set.
   def subset!(other : CompileTimeSet(U)) : Nil forall U
     (self - other).try_nonempty do
       {{
         raise "Expected #{T.keys} to be a subset of #{U.keys}".tr("[]", "{}")
+      }}
+    end
+  end
+
+  # Checks at compile time that this set is a superset of the *other* set.
+  def superset!(other : CompileTimeSet(U)) : Nil forall U
+    (other - self).try_nonempty do
+      {{
+        raise "Expected #{T.keys} to be a superset of #{U.keys}".tr("[]", "{}")
       }}
     end
   end
@@ -108,6 +119,7 @@ struct PBTranslate::CompileTimeSet(T)
     {% end %}
   end
 
+  # Writes a string representation of the set to *io*.
   def to_s(io)
     io << '{'
     {% for key, index in T.keys.sort %}

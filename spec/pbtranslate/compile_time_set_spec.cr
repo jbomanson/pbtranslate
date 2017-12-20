@@ -140,4 +140,14 @@ describe PBTranslate::CompileTimeSet do
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#subset!\E/)
     output.should match(/\QExpected {a} to be a subset of {b}\E/)
   end
+
+  it "implements empty!" do
+    empty.empty!
+  end
+
+  it "catches empty! violations at compile time" do
+    output = eval(PROGRAM_FORMAT % "a.empty!")
+    output.should match(/\QCompileTimeSet(NamedTuple(a: In))#empty!\E/)
+    output.should match(/\QExpected {a} to be empty\E/)
+  end
 end
