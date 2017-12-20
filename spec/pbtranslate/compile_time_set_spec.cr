@@ -100,6 +100,33 @@ describe PBTranslate::CompileTimeSet do
     (ab ^ bc).should eq(ac)
   end
 
+  it "implements disjoint!" do
+    empty.disjoint! a
+    empty.disjoint! b
+    empty.disjoint! ab
+    empty.disjoint! abc
+    a.disjoint! b
+    a.disjoint! c
+    a.disjoint! bc
+    ab.disjoint! c
+  end
+
+  it "catches empty! violations at compile time" do
+    output = eval(PROGRAM_FORMAT % "a.disjoint! abc")
+    output.should match(/\QCompileTimeSet(NamedTuple(a: In))#disjoint!\E/)
+    output.should match(/\QExpected {a} and {a, b, c} to be disjoint\E/)
+  end
+
+  it "implements empty!" do
+    empty.empty!
+  end
+
+  it "catches empty! violations at compile time" do
+    output = eval(PROGRAM_FORMAT % "a.empty!")
+    output.should match(/\QCompileTimeSet(NamedTuple(a: In))#empty!\E/)
+    output.should match(/\QExpected {a} to be empty\E/)
+  end
+
   it "implements size" do
     empty.size.should eq(0)
     a.size.should eq(1)
@@ -139,15 +166,5 @@ describe PBTranslate::CompileTimeSet do
     output = eval(PROGRAM_FORMAT % "a.subset! b")
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#subset!\E/)
     output.should match(/\QExpected {a} to be a subset of {b}\E/)
-  end
-
-  it "implements empty!" do
-    empty.empty!
-  end
-
-  it "catches empty! violations at compile time" do
-    output = eval(PROGRAM_FORMAT % "a.empty!")
-    output.should match(/\QCompileTimeSet(NamedTuple(a: In))#empty!\E/)
-    output.should match(/\QExpected {a} to be empty\E/)
   end
 end

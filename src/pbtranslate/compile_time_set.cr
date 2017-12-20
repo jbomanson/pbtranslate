@@ -80,6 +80,16 @@ struct PBTranslate::CompileTimeSet(T)
     (self - other) | (other - self)
   end
 
+  # Checks at compile time that this and the *other* set have no common
+  # elements.
+  def disjoint!(other : CompileTimeSet(U)) : Nil forall U
+    (self & other).try_nonempty do
+      {{
+        raise "Expected #{T.keys} and #{U.keys} to be disjoint".tr("[]", "{}")
+      }}
+    end
+  end
+
   # Checks at compile time that this set is empty.
   def empty! : Nil
     self.try_nonempty do
@@ -94,20 +104,20 @@ struct PBTranslate::CompileTimeSet(T)
     {{ T.size }}
   end
 
-  # Checks at compile time that this set is a subset of the *other* set.
-  def subset!(other : CompileTimeSet(U)) : Nil forall U
-    (self - other).try_nonempty do
-      {{
-        raise "Expected #{T.keys} to be a subset of #{U.keys}".tr("[]", "{}")
-      }}
-    end
-  end
-
   # Checks at compile time that this set is a superset of the *other* set.
   def superset!(other : CompileTimeSet(U)) : Nil forall U
     (other - self).try_nonempty do
       {{
         raise "Expected #{T.keys} to be a superset of #{U.keys}".tr("[]", "{}")
+      }}
+    end
+  end
+
+  # Checks at compile time that this set is a subset of the *other* set.
+  def subset!(other : CompileTimeSet(U)) : Nil forall U
+    (self - other).try_nonempty do
+      {{
+        raise "Expected #{T.keys} to be a subset of #{U.keys}".tr("[]", "{}")
       }}
     end
   end
