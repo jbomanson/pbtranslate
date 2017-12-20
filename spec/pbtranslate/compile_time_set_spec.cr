@@ -30,12 +30,6 @@ private PROGRAM_FORMAT = <<-EOF
 EOF
 
 describe PBTranslate::CompileTimeSet do
-  it "prints nicely" do
-    abc.to_s.should eq("{a, b, c}")
-    a.to_s.should eq("{a}")
-    empty.to_s.should eq("{}")
-  end
-
   it "compares sets" do
     a.should eq(a)
     a.should_not eq(abc)
@@ -166,5 +160,16 @@ describe PBTranslate::CompileTimeSet do
     output = eval(PROGRAM_FORMAT % "a.subset! b")
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#subset!\E/)
     output.should match(/\QExpected {a} to be a subset of {b}\E/)
+  end
+
+  it "implements #to_named_tuple" do
+    a.to_named_tuple.should eq({a: 1})
+    abc.to_named_tuple("value").should eq({a: "value", b: "value", c: "value"})
+  end
+
+  it "implements #to_s" do
+    abc.to_s.should eq("{a, b, c}")
+    a.to_s.should eq("{a}")
+    empty.to_s.should eq("{}")
   end
 end

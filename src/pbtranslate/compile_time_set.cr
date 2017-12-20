@@ -129,6 +129,17 @@ struct PBTranslate::CompileTimeSet(T)
     {% end %}
   end
 
+  # Returns a named tuple that maps each element of this set to *value*.
+  def to_named_tuple(value = 1)
+    {% begin %}
+      NamedTuple.new(
+        {% for key in T.keys %}
+          {{key}}: value,
+        {% end %}
+      )
+    {% end %}
+  end
+
   # Writes a string representation of the set to *io*.
   def to_s(io)
     io << '{'
