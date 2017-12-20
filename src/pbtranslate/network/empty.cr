@@ -3,7 +3,9 @@ require "../number_types"
 
 # An empty network with no gates.
 #
-# Intended for use as a base case in recursively constructed networks.
+# Intended for use as an identity element in composite networks, such as a base
+# case in recursively constructed networks.
+# Does not have well defined gate options when used alone.
 struct PBTranslate::Network::Empty
   include Network
 

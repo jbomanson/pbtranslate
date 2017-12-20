@@ -22,5 +22,5 @@ seed = SEED ^ __FILE__.hash
 scheme = EmptyScheme.new.to_scheme_with_offset_resolution
 
 describe Network::Empty do
-  it_acts_like_a_sorting_network(scheme, seed, range, rounds)
+  it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
 end
