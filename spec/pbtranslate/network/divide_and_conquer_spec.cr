@@ -6,8 +6,6 @@ private class MergeSortByDivideAndConquerScheme(M)
   include Scheme
   include Scheme::WithArguments(Width::Flexible)
 
-  declare_gate_options
-
   def initialize(@merge_scheme : M)
   end
 

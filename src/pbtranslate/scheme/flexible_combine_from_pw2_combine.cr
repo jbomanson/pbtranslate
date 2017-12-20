@@ -23,8 +23,6 @@ struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
     end
   end
 
-  delegate gate_options, to: @combine_scheme
-
   def initialize(@combine_scheme : S = Pw2MergeOddEven)
   end
 
@@ -48,7 +46,6 @@ struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
     include Scheme
 
     delegate_scheme_details_to @scheme
-    delegate gate_options, to: @scheme
 
     def initialize(@scheme : S)
     end

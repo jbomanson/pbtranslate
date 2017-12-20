@@ -23,27 +23,19 @@ module PBTranslate::Scheme
   # checked to not already have the gate option _level_.
   def to_scheme_with_gate_level
     scheme_with_level =
-      to_scheme_with_gate_level_helper(**gate_options.named_tuple) do |scheme|
-        (scheme.gate_option_keys & CompileTimeSet.create(:level)).empty!
+      to_scheme_with_gate_level_helper(gate_option_keys.to_named_tuple[:level]?) do |scheme|
+        scheme.gate_option_keys.disjoint! CompileTimeSet.create(:level)
         yield scheme
       end
     scheme_with_level.gate_option_keys.superset! CompileTimeSet.create(:level)
     scheme_with_level
   end
 
-  private def to_scheme_with_gate_level_helper(*empty_args, level : Bool, **options, &block)
+  private def to_scheme_with_gate_level_helper(level : Nil)
+    yield self
+  end
+
+  private def to_scheme_with_gate_level_helper(level, &block)
     self
-  end
-
-  private def to_scheme_with_gate_level_helper(*empty_args, level : Nil, **options)
-    yield self
-  end
-
-  private def to_scheme_with_gate_level_helper(*empty_args, level : Bool | Nil, **options, &block)
-    {{ raise "Ambiguity error: depth is and is not provided by #{@type}" }}
-  end
-
-  private def to_scheme_with_gate_level_helper(*empty_args, **options)
-    yield self
   end
 end

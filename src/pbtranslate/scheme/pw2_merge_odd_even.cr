@@ -24,8 +24,6 @@ class PBTranslate::Scheme::Pw2MergeOddEven
     end
   end
 
-  declare_gate_options
-
   def network(half_width : Width::Pw2)
     Network::Pw2MergeOddEven.new(half_width.log2)
   end

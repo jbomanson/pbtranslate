@@ -37,8 +37,6 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   # :nodoc:
   record Details, point : Distance, cost : Area
 
-  delegate gate_options, to: (true ? @base_scheme : @combine_scheme)
-
   @cache = Array(Details | Nil).new
 
   def initialize(@combine_scheme : M, @base_scheme : Q)

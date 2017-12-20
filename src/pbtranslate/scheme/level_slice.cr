@@ -21,7 +21,6 @@ class PBTranslate::Scheme::LevelSlice(S)
   end
 
   delegate_scheme_details_to @scheme
-  delegate gate_options, to: @scheme
 
   def initialize(@scheme : S, @range_proc : Width, Distance -> Range(Distance, Distance))
     gate_option_keys.superset! CompileTimeSet.create(:level)

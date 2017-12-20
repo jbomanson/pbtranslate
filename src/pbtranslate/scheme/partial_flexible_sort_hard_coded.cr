@@ -14,8 +14,6 @@ module PBTranslate::Scheme::PartialFlexibleSortHardCoded
     end
   end
 
-  declare_gate_options
-
   # The range of width values for which `.network` is defined.
   def width_value_range
     Distance.new(0)..Distance.new(24)

@@ -1,5 +1,4 @@
 require "../gate"
-require "../gate_options"
 require "../named_tuple"
 require "../network"
 require "../util/slice_matrix"

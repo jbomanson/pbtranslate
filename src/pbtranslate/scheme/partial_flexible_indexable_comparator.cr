@@ -16,8 +16,6 @@ struct PBTranslate::Scheme::PartialFlexibleIndexableComparator(T)
     end
   end
 
-  declare_gate_options
-
   def initialize(@unique_network : Network::FlexibleIndexableComparator(T))
   end
 

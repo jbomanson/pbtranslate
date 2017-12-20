@@ -18,10 +18,6 @@ class PBTranslate::Scheme::LayerCache(S)
 
   delegate_scheme_details_to @scheme
 
-  def gate_options(**extra)
-    ::PBTranslate::GateOptions.new({{@type.type_vars.last.keys.join(", ").id}}, **extra)
-  end
-
   # Creates a scheme of networks that cache the gates of the networks of the
   # given _scheme_.
   def self.new(scheme : Scheme)

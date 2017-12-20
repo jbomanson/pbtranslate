@@ -18,8 +18,6 @@ struct PBTranslate::Scheme::FlexibleFromPw2(S)
     end
   end
 
-  delegate gate_options, to: @scheme
-
   def initialize(@scheme : S)
   end
 

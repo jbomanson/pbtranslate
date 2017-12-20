@@ -6,8 +6,6 @@ private class EmptyScheme
   include Scheme
   include Scheme::WithArguments(Width::Flexible)
 
-  declare_gate_options
-
   def network(width : Width)
     unless width.value == 0
       raise "Unexpected nonzero width #{width}"

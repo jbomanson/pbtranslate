@@ -5,6 +5,9 @@ require "./util/type_to_value.cr"
 #
 # Both are ultimately used to obtain `Gate`s.
 module PBTranslate::NetworkOrScheme
+  # The set of allowed option names in `visit_gate` calls.
+  GATE_OPTIONS = [:level, :output_cone]
+
   # Returns a potentially uninitialized sample gate and a named tuple of options
   # intended for use in typeof expressions.
   abstract def gate_with_options_for_typeof

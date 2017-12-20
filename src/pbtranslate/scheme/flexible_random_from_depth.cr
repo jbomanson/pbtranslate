@@ -21,8 +21,6 @@ struct PBTranslate::Scheme::FlexibleRandomFromDepth
     end
   end
 
-  declare_gate_options level
-
   def initialize(@random : ::Random, @depth : Distance)
   end
 

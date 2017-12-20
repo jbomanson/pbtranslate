@@ -9,10 +9,9 @@ module PBTranslate::LevelTracking
     include PBTranslate::Scheme
 
     delegate_scheme_details_to @scheme
-    delegate_and_declare_gate_options @scheme, level
 
     def initialize(@scheme : S)
-      (scheme.gate_option_keys & CompileTimeSet.create(level)).empty!
+      scheme.gate_option_keys.disjoint! CompileTimeSet.create(:level)
     end
 
     def network(width w : Width)

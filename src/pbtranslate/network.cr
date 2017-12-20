@@ -1,4 +1,3 @@
-require "./gate_options"
 require "./network/gates_with_options"
 require "./network_or_scheme"
 require "./util/restrict"

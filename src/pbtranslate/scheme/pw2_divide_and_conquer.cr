@@ -21,8 +21,6 @@ class PBTranslate::Scheme::Pw2DivideAndConquer(M, Q)
     end
   end
 
-  delegate gate_options, to: (true ? @combine_scheme : @base_scheme)
-
   def initialize(@combine_scheme : M, @base_scheme : Q)
   end
 
