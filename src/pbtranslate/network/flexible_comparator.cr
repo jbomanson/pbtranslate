@@ -25,7 +25,7 @@ module PBTranslate::Network
                                wire_pairs : Enumerable(Tuple(Distance, Distance)),
                                *,
                                width : Distance | Nil = nil)
-    FlexibleComparatorNetwork.new(wire_pairs, width: width)
+    FlexibleComparatorNetwork.new(wire_pairs, width)
   end
 end
 
@@ -37,7 +37,7 @@ private struct FlexibleComparatorNetwork(T)
   getter wire_pairs : T
   delegate size, to: @wire_pairs
 
-  def initialize(@wire_pairs : T, *, width : Distance | Nil)
+  def initialize(@wire_pairs : T, width : Distance | Nil)
     @network_width = width || (@wire_pairs.map(&.max).max + 1)
   end
 
