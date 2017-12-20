@@ -1,3 +1,4 @@
+require "../compile_time_set"
 require "../network/level_slice"
 require "./parameterized_by_depth"
 require "../scheme"
@@ -23,7 +24,7 @@ class PBTranslate::Scheme::LevelSlice(S)
   delegate gate_options, to: @scheme
 
   def initialize(@scheme : S, @range_proc : Width, Distance -> Range(Distance, Distance))
-    gate_options &.restrict(level: true)
+    gate_option_keys.superset! CompileTimeSet.create(:level)
   end
 
   def network(width w : Width)

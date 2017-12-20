@@ -12,7 +12,7 @@ module PBTranslate::LevelTracking
     delegate_and_declare_gate_options @scheme, level
 
     def initialize(@scheme : S)
-      scheme.gate_options.restrict(level: nil)
+      (scheme.gate_option_keys & CompileTimeSet.create(level)).empty!
     end
 
     def network(width w : Width)

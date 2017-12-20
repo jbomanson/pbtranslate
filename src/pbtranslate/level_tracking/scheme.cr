@@ -1,3 +1,4 @@
+require "../compile_time_set"
 require "../level_tracking"
 require "../scheme"
 
@@ -21,8 +22,13 @@ module PBTranslate::Scheme
   # In the case that this scheme is yielded to the block, it is statically
   # checked to not already have the gate option _level_.
   def to_scheme_with_gate_level
-    s = to_scheme_with_gate_level_helper(**gate_options.named_tuple) { |x| yield x.tap &.gate_options.restrict(level: nil) }
-    s.tap &.gate_options.restrict(level: true)
+    scheme_with_level =
+      to_scheme_with_gate_level_helper(**gate_options.named_tuple) do |scheme|
+        (scheme.gate_option_keys & CompileTimeSet.create(:level)).empty!
+        yield scheme
+      end
+    scheme_with_level.gate_option_keys.superset! CompileTimeSet.create(:level)
+    scheme_with_level
   end
 
   private def to_scheme_with_gate_level_helper(*empty_args, level : Bool, **options, &block)
