@@ -8,7 +8,7 @@ module PBTranslate::Network
   def self.flexible_comparator(
                                wire_pairs : Enumerable(Tuple(Int32, Int32)),
                                *,
-                               width : Int32? = nil)
+                               width : Int32 | Nil = nil)
     flexible_comparator(
       wire_pairs.map &.map { |index| Distance.new(index) },
       width: width.try { |value| Distance.new(value) },
@@ -24,7 +24,7 @@ module PBTranslate::Network
   def self.flexible_comparator(
                                wire_pairs : Enumerable(Tuple(Distance, Distance)),
                                *,
-                               width : Distance? = nil)
+                               width : Distance | Nil = nil)
     FlexibleComparatorNetwork.new(wire_pairs, width: width)
   end
 end
@@ -37,7 +37,7 @@ private struct FlexibleComparatorNetwork(T)
   getter wire_pairs : T
   delegate size, to: @wire_pairs
 
-  def initialize(@wire_pairs : T, *, width : Distance? = nil)
+  def initialize(@wire_pairs : T, *, width : Distance | Nil)
     @network_width = width || (@wire_pairs.map(&.max).max + 1)
   end
 
@@ -49,19 +49,14 @@ private struct FlexibleComparatorNetwork(T)
     network_read_count
   end
 
-  # Returns the `Gate` at _index_.
-  def gate_at(index) : Gate(Comparator, InPlace, Tuple(Distance, Distance))
-    pair_to_gate(@wire_pairs[index])
-  end
-
   def host_reduce(visitor, memo, at offset = Distance.new(0))
     visitor.way.each_in(@wire_pairs) do |pair|
-      memo = visitor.visit_gate(pair_to_gate(pair).shifted_by(offset), memo)
+      memo =
+        visitor.visit_gate(
+          Gate.comparator_between(*pair).shifted_by(offset),
+          memo,
+        )
     end
     memo
-  end
-
-  private def pair_to_gate(pair)
-    Gate.comparator_between(*pair)
   end
 end
