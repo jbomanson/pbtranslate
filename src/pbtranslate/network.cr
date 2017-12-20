@@ -46,7 +46,8 @@ module PBTranslate::Network
     {{ raise "Expected Nothing, got #{U}" }}
   end
 
-  private record Nothing
-
   abstract def host_reduce(visitor, memo)
 end
+
+# :nodoc:
+private record Nothing
