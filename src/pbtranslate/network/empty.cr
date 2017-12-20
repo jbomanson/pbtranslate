@@ -1,20 +1,22 @@
 require "../network"
 require "../number_types"
 
-# An empty network with no gates.
-#
-# Intended for use as an identity element in composite networks, such as a base
-# case in recursively constructed networks.
-# Does not have well defined gate options when used alone.
-struct PBTranslate::Network::Empty
-  include Network
-
-  # An instance of this network.
-  INSTANCE = new
-
-  # :nodoc:
-  def initialize
+module PBTranslate::Network
+  # Creates an empty network with no gates.
+  #
+  # This is intended for use as an identity element in composite networks, such
+  # as a base case in recursively constructed networks.
+  # The returned network does not have well defined gate options when used
+  # alone.
+  def self.empty : Network
+    Empty.new
   end
+end
+
+include PBTranslate
+
+private struct Empty
+  include Network
 
   {% for message_and_type in [
                                {:network_depth, Distance},

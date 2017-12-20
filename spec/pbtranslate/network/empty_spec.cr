@@ -10,7 +10,7 @@ private class EmptyScheme
     unless width.value == 0
       raise "Unexpected nonzero width #{width}"
     end
-    Network::Empty::INSTANCE
+    Network.empty
   end
 end
 
@@ -19,6 +19,6 @@ rounds = 1
 seed = SEED ^ __FILE__.hash
 scheme = EmptyScheme.new.to_scheme_with_offset_resolution
 
-describe Network::Empty do
+describe "Network.empty" do
   it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
 end
