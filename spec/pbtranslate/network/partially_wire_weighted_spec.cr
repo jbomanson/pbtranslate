@@ -136,7 +136,9 @@ private def corner_case_weight_test_helper(random, width_value, bit_value, last_
   visitor = WireWeightCollectingVisitor(typeof(weights.first)).new(width_value)
   n = SCHEME.network(width)
   bit_array = BitArray.new(n.network_depth.to_i, bit_value)
-  bit_array[-1] = last_bit_value
+  unless bit_array.empty?
+    bit_array[-1] = last_bit_value
+  end
   nn = Network::PartiallyWireWeighted.new(network: n, bit_array: bit_array, weights: weights.clone)
   nn.host(visitor.going(FORWARD))
   {weights, visitor.grid}
@@ -269,7 +271,9 @@ describe Network::PartiallyWireWeighted do
     array_of_random_width(NETWORK_COUNT, random).each do |width_value|
       weights, grid = corner_case_weight_test_helper(random, width_value, false, true)
       least = weights.min
-      grid.map(&.first).should eq(weights.map &.-(least))
+      if grid.size >= 2
+        grid.map(&.first).should eq(weights.map &.-(least))
+      end
       grid.map(&.last).should eq(weights.map { least })
       grid.each do |single_wire_weights|
         t = single_wire_weights[1..-2]
