@@ -4,7 +4,7 @@ require "../../eval_spec_helper_spec"
 include PBTranslate::Util
 
 private RESTRICT_NOT_NILABLE_UNION_NEGATIVE = <<-EOF
-  require "../src/pbtranslate/util/restrict"
+  require "./src/pbtranslate/util/restrict"
 
   include PBTranslate::Util
 
@@ -26,7 +26,7 @@ describe "PBTranslate::Util.restrict_not_nilable_union" do
 end
 
 private RESTRICT_TUPLE_UNIFORM_NEGATIVE = <<-EOF
-  require "../src/pbtranslate/util/restrict"
+  require "./src/pbtranslate/util/restrict"
 
   include PBTranslate::Util
 

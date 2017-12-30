@@ -1,5 +1,4 @@
 require "../gate"
-require "../named_tuple"
 require "../network"
 require "../util/slice_matrix"
 
@@ -18,9 +17,10 @@ class PBTranslate::Network::LayerCache(G)
   end
 
   private def initialize(
-                         network : Network,
-                         width : Width,
-                         gate_with_options : G.class)
+    network : Network,
+    width : Width,
+    gate_with_options : G.class
+  )
     @network_write_count = network.network_write_count.as(Area)
     @layers = Collector(G).collect(network: network, width: width)
   end

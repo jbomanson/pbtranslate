@@ -34,8 +34,8 @@ private struct NetworkWithOffsets
 end
 
 private NETWORK_WITH_AMBIGUOUS_OPTIONS = <<-EOF
-  require "../src/pbtranslate/network"
-  require "../src/pbtranslate/number_types"
+  require "./src/pbtranslate/network"
+  require "./src/pbtranslate/number_types"
 
   include PBTranslate
 

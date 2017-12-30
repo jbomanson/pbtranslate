@@ -10,18 +10,10 @@ private INSTANCE = File.read(INSTANCE_PATH)
 private def describe_translator_class(translator_class)
   describe translator_class do
     it "produces output accepted by #{FILTER_PROGRAM}" do
-      process = Process.new(FILTER_PROGRAM, input: nil, output: false, error: nil)
-      begin
-        pipe = process.input
-        t = translator_class.new(INSTANCE, pipe)
-        t.parse
-        status = process.wait
-        status.exit_code.should eq(0)
-      rescue ex
-        process.error.gets_to_end.should eq("")
-        process.kill rescue Errno
-        raise ex
-      end
+      Process.run(FILTER_PROGRAM, output: Process::Redirect::Close) do |process|
+        translator_class.new(INSTANCE, process.input).parse
+        process.wait
+      end.exit_code.should eq(0)
     end
   end
 end

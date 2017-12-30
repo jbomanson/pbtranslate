@@ -186,9 +186,11 @@ class PBTranslate::ASPIF::Reader
   end
 
   private describe EXISTING, version do
-    ((m = nonnegative_integer) &&
-      (n = nonnegative_integer) &&
-      (r = nonnegative_integer)) ? Version.new(m, n, r) : nil
+    if ((m = nonnegative_integer) &&
+       (n = nonnegative_integer) &&
+       (r = nonnegative_integer))
+      Version.new(m, n, r)
+    end
   end
 
   private describe POSSIBLY_EMPTY, tag_list do
@@ -339,40 +341,66 @@ class PBTranslate::ASPIF::Reader
   end
 
   private describe EXISTING, integer_list do
-    (n = nonnegative_integer) ? visit(IntegerListStart.new(n)) {
-      instances(n) { integer(self) }
-    } : false
+    if n = nonnegative_integer
+      visit(IntegerListStart.new(n)) {
+        instances(n) { integer(self) }
+      }
+    else
+      false
+    end
   end
 
   private describe EXISTING, literal_list do
-    (n = nonnegative_integer) ? visit(LiteralListStart.new(n)) {
-      instances(n) { literal(self) }
-    } : false
+    if n = nonnegative_integer
+      visit(LiteralListStart.new(n)) {
+        instances(n) { literal(self) }
+      }
+    else
+      false
+    end
   end
 
   private describe EXISTING, weighted_literal_list do
-    (n = nonnegative_integer) ? visit(WeightedLiteralListStart.new(n)) {
-      instances(n) { weighted_literal(self) }
-    } : false
+    if n = nonnegative_integer
+      visit(WeightedLiteralListStart.new(n)) {
+        instances(n) { weighted_literal(self) }
+      }
+    else
+      false
+    end
   end
 
   # Variations of numbers
 
   private describe EXISTING, integer(visitor) do
-    (i = integer) ? visitor.visit(i) : false
+    if i = integer
+      visitor.visit(i)
+    else
+      false
+    end
   end
 
   private describe EXISTING, weighted_literal(visitor) do
     # See_c864c0f4c7
-    (l = literal) && (w = nonnegative_integer) ? visitor.visit(l, w) : false
+    if (l = literal) && (w = nonnegative_integer)
+      visitor.visit(l, w)
+    else
+      false
+    end
   end
 
   private describe EXISTING, literal(visitor) do
-    (l = literal) ? visitor.visit(l) : false
+    if l = literal
+      visitor.visit(l)
+    else
+      false
+    end
   end
 
   private describe EXISTING, literal do
-    (i = integer) ? Literal.new(i, @helper) : nil
+    if i = integer
+      Literal.new(i, @helper)
+    end
   end
 
   private describe EXISTING, positive_literal do
@@ -382,7 +410,9 @@ class PBTranslate::ASPIF::Reader
   # Misc
 
   private describe EXISTING, byte_string(m) do
-    space ? byte_string_plain(m) : nil
+    if space
+      byte_string_plain(m)
+    end
   end
 
   private def byte_string_plain(m)

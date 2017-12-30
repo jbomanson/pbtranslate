@@ -13,7 +13,7 @@ bc = CompileTimeSet.create(:b, :c)
 abc = CompileTimeSet.create(:a, :b, :c)
 
 private PROGRAM_FORMAT = <<-EOF
-  require "../../src/pbtranslate/compile_time_set"
+  require "./src/pbtranslate/compile_time_set"
 
   include PBTranslate
 
