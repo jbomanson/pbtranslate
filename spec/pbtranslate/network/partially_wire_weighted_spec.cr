@@ -13,7 +13,7 @@ private SCHEME =
     .to_scheme_with_gate_level
     .to_scheme_layer_cache
 
-seed = SEED ^ __FILE__.hash
+private SEED = SpecHelper.file_specific_seed
 
 # A visitor that accumulates the total sum of the *output_weights* fields of
 # gates.
@@ -144,32 +144,32 @@ end
 
 describe Network::PartiallyWireWeighted do
   it "preserves sums of weights placed on all layers when going forward" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     sum_test(random, FORWARD) { true }
   end
 
   it "preserves sums of weights placed on all layers when going backward" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     sum_test(random, BACKWARD) { true }
   end
 
   it "preserves sums of weights placed on random layers when going forward" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     sum_test(random, FORWARD) { random.next_bool }
   end
 
   it "preserves sums of weights placed on random layers when going backward" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     sum_test(random, BACKWARD) { random.next_bool }
   end
 
   it "preserves sums of wire values and weights placed on all layers when going forward" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     weighted_sum_test(random) { true }
   end
 
   it "preserves sums of wire values and weights placed on random layers when going forward" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     weighted_sum_test(random) { random.next_bool }
   end
 
@@ -253,7 +253,7 @@ describe Network::PartiallyWireWeighted do
   end
 
   it "propagates nothing when given a false bit array" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     array_of_random_width(NETWORK_COUNT, random).each do |width_value|
       weights, grid = corner_case_weight_test_helper(random, width_value, false, false)
       grid.map(&.first).should eq(weights)
@@ -265,7 +265,7 @@ describe Network::PartiallyWireWeighted do
   end
 
   it "propagates in one step over everything when given a bit array with a single true bit at the end" do
-    random = Random.new(seed)
+    random = Random.new(SEED)
     array_of_random_width(NETWORK_COUNT, random).each do |width_value|
       weights, grid = corner_case_weight_test_helper(random, width_value, false, true)
       least = weights.min

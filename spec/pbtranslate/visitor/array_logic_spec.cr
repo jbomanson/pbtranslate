@@ -2,6 +2,7 @@ require "../../spec_helper"
 
 include PBTranslate
 
+private SEED = SpecHelper.file_specific_seed
 scheme = SpecHelper.pw2_sort_odd_even
 
 describe Visitor::ArrayLogic do

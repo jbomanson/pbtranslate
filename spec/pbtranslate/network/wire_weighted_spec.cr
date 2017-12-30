@@ -2,6 +2,7 @@ require "../../spec_helper"
 
 include SpecHelper
 
+private SEED = SpecHelper.file_specific_seed
 network_count = 10
 scheme = SpecHelper.pw2_sort_odd_even.to_scheme_flexible
 

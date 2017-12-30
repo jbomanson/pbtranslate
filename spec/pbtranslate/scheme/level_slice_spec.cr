@@ -3,6 +3,7 @@ require "../../spec_helper"
 include PBTranslate
 
 scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_level
+private SEED = SpecHelper.file_specific_seed
 
 private struct RecordingVisitor
   include Visitor

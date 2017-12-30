@@ -1,10 +1,11 @@
+require "digest"
 require "spec"
 require "../src/pbtranslate"
 
 include PBTranslate
 
 WIDTH_LOG2_MAX = Distance.new(10)
-SEED           = 482382392
+private SEED           = 482382392
 
 # An object that counts the number of times its visit forward and backward.
 class VisitCallCounter
@@ -94,6 +95,10 @@ end
 module SpecHelper
   include PBTranslate
   extend self
+
+  def file_specific_seed(file = __FILE__)
+    SEED ^ Digest::MD5.hexdigest(file)[0...16].to_u64(base: 16)
+  end
 
   def sort(a : Array(Bool))
     a.sort_by { |w| w ? 0 : 1 }

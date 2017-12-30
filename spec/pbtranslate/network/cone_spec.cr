@@ -4,6 +4,8 @@ require "../../spec_helper"
 
 include PBTranslate
 
+private SEED = SpecHelper.file_specific_seed
+
 private class ArrayConeSwap(T)
   include Gate::Restriction
   include Visitor

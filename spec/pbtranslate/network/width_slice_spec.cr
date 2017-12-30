@@ -2,6 +2,7 @@ require "../../spec_helper"
 
 include SpecHelper
 
+private SEED          = SpecHelper.file_specific_seed
 private NETWORK_COUNT = 10
 
 oe_scheme =
