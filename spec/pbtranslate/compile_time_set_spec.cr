@@ -105,7 +105,7 @@ describe PBTranslate::CompileTimeSet do
     ab.disjoint! c
   end
 
-  it "catches empty! violations at compile time" do
+  it "catches disjoint! violations at compile time" do
     output = eval(PROGRAM_FORMAT % "a.disjoint! abc")
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#disjoint!\E/)
     output.should match(/\QExpected {a} and {a, b, c} to be disjoint\E/)
