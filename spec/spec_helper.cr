@@ -5,6 +5,7 @@ require "../src/pbtranslate"
 include PBTranslate
 
 WIDTH_LOG2_MAX = Distance.new(10)
+private WIDTH_MAX      = Distance.new(1) << WIDTH_LOG2_MAX
 private SEED           = 482382392
 
 # An object that counts the number of times its visit forward and backward.
@@ -108,12 +109,19 @@ module SpecHelper
     a.sort
   end
 
-  def array_of_random_width(n, random, log_max = WIDTH_LOG2_MAX)
-    a =
-      Array.new(n) do
-        Distance.new(2 ** (random.next_float * log_max))
-      end
-    a.sort
+  # Returns an array of up to *size* distinct `Distance` values that starts with
+  # `min + 0`, `min + 1`, `min + 2` and then continues with random values from
+  # *min* to to *max* whose logarithms are uniformly distributed.
+  def array_of_random_width(size, random, *, min = 0, max = WIDTH_MAX)
+    unless min < max
+      raise ArgumentError.new("Expected min < max, got #{min}, #{max}")
+    end
+    span_log = Math.log2(max - min + 1)
+    Array
+      .new(size) { |i| i < 3 ? i : 2.0 ** (random.next_float * span_log) }
+      .uniq!
+      .sort!
+      .map { |value| Distance.new(min + value) }
   end
 
   def pw2_sort_odd_even(*args)

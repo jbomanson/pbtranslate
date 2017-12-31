@@ -268,7 +268,7 @@ describe Network::PartiallyWireWeighted do
 
   it "propagates in one step over everything when given a bit array with a single true bit at the end" do
     random = Random.new(SEED)
-    array_of_random_width(NETWORK_COUNT, random).each do |width_value|
+    array_of_random_width(NETWORK_COUNT, random, min: 1).each do |width_value|
       weights, grid = corner_case_weight_test_helper(random, width_value, false, true)
       least = weights.min
       if grid.size >= 2

@@ -11,8 +11,8 @@ scheme =
     .to_scheme_with_offset_resolution
 private SEED = SpecHelper.file_specific_seed
 random = Random.new(SEED)
-log_max = Distance.new(7)
-range = array_of_random_width(network_count, random, log_max).map { |v| Width.from_value(v) }
+max = 128
+range = array_of_random_width(network_count, random, max: max).map { |v| Width.from_value(v) }
 rounds = 5
 
 describe Scheme::FlexibleDivideAndConquerDynamicProgramming do
