@@ -21,6 +21,9 @@ abstract struct PBTranslate::Width
     getter log2 : Distance
 
     def self.new(*, pw2 : Distance)
+      if pw2 == 0
+        raise ArgumentError.new("Expected a power of two, got #{pw2}")
+      end
       new(log2: Distance.zero + (pw2 - 1).popcount)
     end
 
