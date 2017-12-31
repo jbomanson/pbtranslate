@@ -22,6 +22,7 @@ struct PBTranslate::Scheme::FlexibleFromPw2(S)
   end
 
   def network(width : Width)
-    Network::WidthSlice.new(@scheme.network(width.to_pw2), width.value)
+    pw2 = width.value == 0 ? Width.from_pw2(Distance.new(1)) : width.to_pw2
+    Network::WidthSlice.new(@scheme.network(pw2), width.value)
   end
 end
