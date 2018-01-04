@@ -2,19 +2,28 @@ require "../sorting_network_helper"
 
 include SpecHelper
 
-private NETWORK_COUNT = 10
-private SCHEME        =
-  Scheme
-    .pw2_merge_odd_even
-    .to_scheme_flexible_combine
-    .to_scheme_flexible_divide_and_conquer_dynamic_programming
-    .to_scheme_with_offset_resolution
-private SEED   = SpecHelper.file_specific_seed
-private RANDOM = Random.new(SEED)
-private MAX    = 128
-private RANGE  = array_of_random_width(NETWORK_COUNT, RANDOM, max: MAX).map { |v| Width.from_value(v) }
-private ROUNDS = 5
+private def create_scheme
+  dynamic_programming_scheme =
+    Scheme
+      .pw2_merge_odd_even
+      .to_scheme_flexible_combine
+      .to_scheme_flexible_divide_and_conquer_dynamic_programming
+  yield dynamic_programming_scheme
+  dynamic_programming_scheme.to_scheme_with_offset_resolution
+end
+
+private MAX             = 128
+private NETWORK_COUNT   =  10
+private RANDOM          = Random.new(SEED)
+private RANGE           = array_of_random_width(NETWORK_COUNT, RANDOM, max: MAX).map { |v| Width.from_value(v) }
+private ROUNDS          = 5
+private SCHEME_BALANCE  = create_scheme &.imbalance_limit=(Distance.new(0))
+private SCHEME_DEFAULT  = create_scheme { }
+private SCHEME_POPCOUNT = create_scheme &.popcount_limit=(1)
+private SEED            = SpecHelper.file_specific_seed
 
 describe Scheme::FlexibleDivideAndConquerDynamicProgramming do
-  it_hosts_like_a_sorting_network(SCHEME, SEED, RANGE, ROUNDS)
+  it_hosts_like_a_sorting_network(SCHEME_BALANCE, SEED, RANGE, ROUNDS)
+  it_hosts_like_a_sorting_network(SCHEME_DEFAULT, SEED, RANGE, ROUNDS)
+  it_hosts_like_a_sorting_network(SCHEME_POPCOUNT, SEED, RANGE, ROUNDS)
 end

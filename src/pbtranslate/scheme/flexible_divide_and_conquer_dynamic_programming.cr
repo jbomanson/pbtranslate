@@ -32,13 +32,13 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   # A limit on the ratio of sizes of parts that are considered when splitting.
   # Lower values lead to lower computation time at the risk of missing some
   # good ways of arranging network structure.
-  IMBALANCE_LIMIT = Distance.new(3)
+  property imbalance_limit = Distance.new(3)
 
   # A limit on the lesser popcount of parts that are considered when splitting.
   # This must be at least 1.
   # Lower values lead to lower computation time at the risk of missing some
   # good ways of arranging network structure.
-  POPCOUNT_LIMIT = Distance.new(64)
+  property popcount_limit = 64
 
   # :nodoc:
   record Details, point : Distance, cost : Area
@@ -100,7 +100,7 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   # Heuristically determines whether to try to split a number of wires into
   # parts of the given sizes.
   private def consider?(l, r) : Bool
-    l < r * IMBALANCE_LIMIT && {l, r}.map(&.popcount).min <= POPCOUNT_LIMIT
+    l < r * imbalance_limit && {l, r}.map(&.popcount).min <= popcount_limit
   end
 
   # Returns the cost to conquer and combine `l + r` wires.
