@@ -34,6 +34,12 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   # good ways of arranging network structure.
   IMBALANCE_LIMIT = Distance.new(3)
 
+  # A limit on the lesser popcount of parts that are considered when splitting.
+  # This must be at least 1.
+  # Lower values lead to lower computation time at the risk of missing some
+  # good ways of arranging network structure.
+  POPCOUNT_LIMIT = Distance.new(64)
+
   # :nodoc:
   record Details, point : Distance, cost : Area
 
@@ -83,12 +89,18 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
     best = Details.new((w + 1) / 2, Area::MAX)
     best.point.upto(w - 1) do |l|
       r = w - l
-      break unless l < r * IMBALANCE_LIMIT
+      next unless consider?(l, r)
       s = evaluate(l, r)
       next unless s < best.cost
       best = Details.new(l, s)
     end
     best
+  end
+
+  # Heuristically determines whether to try to split a number of wires into
+  # parts of the given sizes.
+  private def consider?(l, r) : Bool
+    l < r * IMBALANCE_LIMIT && {l, r}.map(&.popcount).min <= POPCOUNT_LIMIT
   end
 
   # Returns the cost to conquer and combine `l + r` wires.
