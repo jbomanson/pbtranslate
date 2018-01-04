@@ -262,7 +262,12 @@ class PBTranslate::Command
 
     option_parser =
       OptionParser.parse(options) do |opts|
-        opts.banner = "Usage: pbtranslate measure [options] [--] <parameter>\n\nOptions:"
+        opts.banner =
+          if inspect_please
+            "Usage: pbtranslate inspect [options] [--] <parameter>\n\nOptions:"
+          else
+            "Usage: pbtranslate measure [options] [--] <parameter>\n\nOptions:"
+          end
 
         description =
           if inspect_please
