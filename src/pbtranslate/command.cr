@@ -76,34 +76,22 @@ class PBTranslate::Command
   end
 
   private def translate
-    type = nil
     input_filename = nil
     output_filename = nil
-    crop_depth = nil
+    random_seed = RANDOM_SEED_DEFAULT
+    scheme_options = SchemeOptions.new(self)
+    type = nil
     weight_last = nil
     weight_step = nil
-    scheme_description = nil
-    random_seed = RANDOM_SEED_DEFAULT
-    crop_depth_unit = nil
 
     option_parser =
       OptionParser.parse(options) do |opts|
         opts.banner = "Usage: pbtranslate translate [options] [--] [input file]\n\nOptions:"
 
-        opts.on("--network-scheme sorting|random", "Use a sorting network or a random comparator network.") do |s|
-          scheme_description = s
-        end
+        scheme_options.parse(opts)
 
         opts.on("--type cardinality|optimization|nothing", "Translate cardinality rules, rewrite optimization statements or do nothing.") do |t|
           type = t
-        end
-
-        opts.on("--crop-depth <d>", "Use first <d> or last -<d> layers of a comparator network. The value <d> can be given as a percentage as well.") do |d|
-          if d.ends_with? '%'
-            d = d.rchop
-            crop_depth_unit = 100
-          end
-          crop_depth = string_to_i32(d, label: "--crop-depth")
         end
 
         opts.on("--weight-step <p>", "Place weights on every <p>th layer of a comparator network.") do |p|
@@ -148,19 +136,22 @@ class PBTranslate::Command
 
     initialize_random_seeds(random_seed)
 
-    scheme = scheme_from_description(scheme_description, crop_depth: crop_depth, crop_depth_unit: crop_depth_unit)
+    scheme =
+      scheme_options.pick_scheme(
+        Random.new(@random_seed_for_random_from_depth),
+      )
 
     with_file_or_io(input_filename, "r", STDIN) do |input_io|
       with_file_or_io(output_filename, "w", STDOUT) do |output_io|
         translator_class = translator_class_of(type)
         translator = translator_class.new(input_io, output_io)
-        if d = crop_depth
+        if d = scheme_options.crop_depth
           unless translator.responds_to? :"crop_depth="
             error "the --crop-depth option is not supported with --type #{type}"
           end
           translator.crop_depth = d
         end
-        if u = crop_depth_unit
+        if u = scheme_options.crop_depth_unit
           unless translator.responds_to? :"crop_depth_unit="
             error "the --crop-depth option must be absolute with --type #{type}"
           end
@@ -195,28 +186,6 @@ class PBTranslate::Command
   private def initialize_random_seeds(random_seed)
     random = Random.new(random_seed)
     @random_seed_for_random_from_depth = random.next_int
-  end
-
-  private def scheme_from_description(s : String?, *, crop_depth d, crop_depth_unit u)
-    case
-    when !s
-      Tool::BASE_SCHEME
-    when "sorting".starts_with? s
-      Tool::BASE_SCHEME
-    when "random".starts_with? s
-      unless d
-        error "the --network-scheme random option works only with --crop-depth"
-      end
-      if u
-        error "the --network-scheme random option works only with an absolute --crop-depth"
-      end
-      Scheme.flexible_random_from_depth(
-        random: Random.new(@random_seed_for_random_from_depth),
-        depth: Distance.new(d),
-      )
-    else
-      error "unknown argument '#{s}' to --network-scheme"
-    end
   end
 
   private def translator_class_of(type : String?)
@@ -345,7 +314,7 @@ class PBTranslate::Command
     end
   end
 
-  private def string_to_i32(s : String, *, label : String, min bound : Int32 | Nil = nil) : Int32
+  def string_to_i32(s : String, *, label : String, min bound : Int32 | Nil = nil) : Int32
     unless (i = s.to_i? underscore: true) && (!bound || bound <= i)
       x =
         case bound
@@ -358,7 +327,7 @@ class PBTranslate::Command
     i
   end
 
-  private def error(msg, *, extra = "", exit_code = 1, stderr = STDERR)
+  def error(msg, *, extra = "", exit_code = 1, stderr = STDERR)
     c = @use_color && stderr.tty?
     stderr << "pbtranslate: "
     stderr << "error: ".colorize.toggle(c).red.bold
@@ -366,5 +335,61 @@ class PBTranslate::Command
     stderr << "\n"
     stderr << extra
     exit(exit_code)
+  end
+end
+
+private class SchemeOptions
+  getter crop_depth : Int32 | Nil = nil
+  getter crop_depth_unit : Int32 | Nil = nil
+
+  @network_scheme : String | Nil = nil
+
+  delegate error, to: @command
+  delegate string_to_i32, to: @command
+
+  def initialize(@command : Command)
+  end
+
+  def parse(opts)
+    opts.on(
+      "--network-scheme sorting|random",
+      "Use a sorting network or a random comparator network.") do |s|
+      @network_scheme = s
+    end
+
+    opts.on(
+      "--crop-depth <d>",
+      "Use first <d> or last -<d> layers of a comparator network." +
+      " The value <d> can be given as a percentage as well.") do |d|
+      if d.ends_with? '%'
+        d = d.rchop
+        @crop_depth_unit = 100
+      end
+      @crop_depth = string_to_i32(d, label: "--crop-depth")
+    end
+  end
+
+  def pick_scheme(random : Random)
+    network_scheme = @network_scheme
+    case
+    when !network_scheme
+      Tool::BASE_SCHEME
+    when "sorting".starts_with? network_scheme
+      Tool::BASE_SCHEME
+    when "random".starts_with? network_scheme
+      unless crop_depth = @crop_depth
+        error "the --network-scheme random option works only with --crop-depth"
+      end
+      if @crop_depth_unit
+        error "the --network-scheme random option works only with an absolute" +
+              "--crop-depth"
+      end
+      Scheme.flexible_random_from_depth(
+        random: random,
+        depth: Distance.new(crop_depth),
+      )
+    else
+      error "unknown argument '#{network_scheme}' to --network-scheme"
+    end
   end
 end
