@@ -21,8 +21,6 @@ class PBTranslate::Tool::OptimizationRewriter(S) < PBTranslate::ASPIF::Broker
     Write
   end
 
-  property crop_depth
-  property crop_depth_unit
   property scheme
   property weight_last
   property weight_step
@@ -31,8 +29,6 @@ class PBTranslate::Tool::OptimizationRewriter(S) < PBTranslate::ASPIF::Broker
   @priority = 0
   @input_visitor = WeightCollector.new
   @output_visitor = WeightCollector.new
-  @crop_depth = nil.as(Int32 | Nil)
-  @crop_depth_unit = nil.as(Int32 | Nil)
   @weight_last = true
   @weight_step = nil.as(Int32 | Nil)
 
@@ -145,38 +141,11 @@ class PBTranslate::Tool::OptimizationRewriter(S) < PBTranslate::ASPIF::Broker
   end
 
   private def wire_weighted_scheme
-    s = @scheme
-    ss =
-      if d = @crop_depth
-        s.pbtranslate_as(Scheme::ParameterizedByDepth) do |scheme|
-          scheme
-            .to_scheme_with_gate_level
-            .to_scheme_level_slice &depth_range_proc(d)
-        end
-      else
-        s
-      end
     if p = @weight_step
-      TailoredPartiallyWireWeightedScheme.new(ss, p, weight_last)
+      TailoredPartiallyWireWeightedScheme.new(@scheme, p, weight_last)
     else
-      WireWeightedScheme.new(ss)
+      WireWeightedScheme.new(@scheme)
     end
-  end
-
-  private def depth_range_proc(d : Int32)
-    if d >= 0
-      ->(width : Width, depth : Distance) {
-        Distance.new(0)...Distance.new(preprocess_depth(d, depth))
-      }
-    else
-      ->(width : Width, depth : Distance) {
-        depth + Distance.new(preprocess_depth(d, depth))...depth
-      }
-    end
-  end
-
-  private def preprocess_depth(want : Int32, got : UInt32)
-    (u = @crop_depth_unit) ? got * want / u : want
   end
 
   private def network_of_width(n, weights w)
