@@ -5,15 +5,19 @@ require "../network/cone"
 require "../util/id_broker"
 require "../visitor/array_logic"
 
-# An object that translates cardinality rules into normal rules in ASPIF::Reader.
-class PBTranslate::Tool::CardinalityTranslator < PBTranslate::ASPIF::Broker
+# An object that translates cardinality rules into normal rules in the ASPIF
+# format using a scheme of type *S*.
+class PBTranslate::Tool::CardinalityTranslator(S) < PBTranslate::ASPIF::Broker
   property scheme
 
   @in_weight_rule = false
   @lower_bound = 0
   @literals = Array(Literal(Util::BrokeredId(Int32))).new
   @weights = Array(Int32).new
-  @scheme = BASE_SCHEME.as(Scheme::Flexible)
+
+  def initialize(@scheme : S, input, output)
+    super(input, output)
+  end
 
   def visit(b : Body, lower_bound : Int) : Bool
     unless Body::Weight == b

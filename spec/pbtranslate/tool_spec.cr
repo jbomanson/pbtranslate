@@ -7,11 +7,11 @@ private FILTER_PROGRAM = %x(spec/script/find-lpconvert.sh).chomp
 
 private INSTANCE = File.read(INSTANCE_PATH)
 
-private def describe_translator_class(translator_class)
+private def describe_translator_class(translator_class, *args)
   describe translator_class do
     it "produces output accepted by #{FILTER_PROGRAM}" do
       Process.run(FILTER_PROGRAM, output: Process::Redirect::Close) do |process|
-        translator_class.new(INSTANCE, process.input).parse
+        translator_class.new(*args, INSTANCE, process.input).parse
         process.wait
       end.exit_code.should eq(0)
     end
@@ -25,5 +25,5 @@ describe "FILTER_PROGRAM" do
 end
 
 describe_translator_class(ASPIF::Broker)
-describe_translator_class(Tool::CardinalityTranslator)
-describe_translator_class(Tool::OptimizationRewriter)
+describe_translator_class(Tool::CardinalityTranslator, Tool::BASE_SCHEME)
+describe_translator_class(Tool::OptimizationRewriter, Tool::BASE_SCHEME)

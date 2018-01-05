@@ -9,8 +9,7 @@ module PBTranslate::Scheme
   #
   # In addition to the schemes that include this module, there are other
   # schemes that generate such networks.
-  # Some of them are included in `Flexible`.
-  # The reason that they do not include this module is two fold:
+  # The reason for them to not include this module is two fold:
   # * They are generic types of schemes that generate such networks only when
   #   instantiated with certain type arguments.
   # * In Crystal, either all instances of a generic type include a module, or
@@ -21,10 +20,4 @@ module PBTranslate::Scheme
     # Generates a network of the given width.
     abstract def network(width w : Width)
   end
-
-  # An alias for some schemes that generate networks of any `Width`, as
-  # opposed to only `Width::Pw2`.
-  alias Flexible = FlexibleMarker |
-                   OffsetResolution(FlexibleDivideAndConquerDynamicProgramming(FlexibleCombineFromPw2Combine(Pw2MergeOddEven), Scheme::PartialFlexibleSortHardCoded.class)) |
-                   WithFallback(Scheme::PartialFlexibleSortHardCoded.class, FlexibleMarker)
 end

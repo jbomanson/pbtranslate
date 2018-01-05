@@ -12,8 +12,9 @@ require "../visitor/gate_and_weight_visitor_pair"
 require "../visitor/noop"
 require "../width"
 
-# An object that rewrites optimization statements using normal rules in ASPIF::Reader.
-class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
+# An object that rewrites optimization statements using normal rules in the
+# ASPIF format using a scheme of type *S*.
+class PBTranslate::Tool::OptimizationRewriter(S) < PBTranslate::ASPIF::Broker
   enum Task
     Pass
     Read
@@ -34,7 +35,10 @@ class PBTranslate::Tool::OptimizationRewriter < PBTranslate::ASPIF::Broker
   @crop_depth_unit = nil.as(Int32 | Nil)
   @weight_last = true
   @weight_step = nil.as(Int32 | Nil)
-  @scheme = BASE_SCHEME.as(Scheme::Flexible)
+
+  def initialize(@scheme : S, input, output)
+    super(input, output)
+  end
 
   def quick_dry_test : Nil
     network_of_width(1, [Int32.new(0)]).host(Visitor::Noop::INSTANCE)

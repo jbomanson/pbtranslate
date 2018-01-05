@@ -1,5 +1,5 @@
 require "../network/random"
-require "./flexible"
+require "./flexible_marker"
 require "./parameterized_by_depth"
 require "../scheme"
 

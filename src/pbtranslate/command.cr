@@ -143,8 +143,7 @@ class PBTranslate::Command
 
     with_file_or_io(input_filename, "r", STDIN) do |input_io|
       with_file_or_io(output_filename, "w", STDOUT) do |output_io|
-        translator_class = translator_class_of(type)
-        translator = translator_class.new(input_io, output_io)
+        translator = pick_translator(type, input_io, output_io, scheme)
         if d = scheme_options.crop_depth
           unless translator.responds_to? :"crop_depth="
             error "the --crop-depth option is not supported with --type #{type}"
@@ -188,16 +187,16 @@ class PBTranslate::Command
     @random_seed_for_random_from_depth = random.next_int
   end
 
-  private def translator_class_of(type : String?)
+  private def pick_translator(type : String | Nil, input_io, output_io, scheme)
     case
     when !type
       error "missing required option --type"
     when "cardinality".starts_with? type
-      Tool::CardinalityTranslator
+      Tool::CardinalityTranslator.new(scheme, input_io, output_io)
     when "optimization".starts_with? type
-      Tool::OptimizationRewriter
+      Tool::OptimizationRewriter.new(scheme, input_io, output_io)
     when "nothing".starts_with? type
-      ASPIF::Broker
+      ASPIF::Broker.new(input_io, output_io)
     else
       if type
         error "unknown argument '#{type}' to --type"
