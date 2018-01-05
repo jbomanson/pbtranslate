@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../sorting_network_helper"
 
 include PBTranslate
@@ -15,4 +16,8 @@ scheme = SpecHelper.pw2_sort_odd_even(Scheme.partial_flexible_sort_hard_coded)
 
 describe Scheme::Pw2DivideAndConquer do
   it_acts_like_a_sorting_network(scheme, SEED, range, rounds)
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    scheme.network(Width.from_log2(Distance.new(3)))
+  }
 end

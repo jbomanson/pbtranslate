@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "./merging_network_helper"
 
 private SCHEME = Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
@@ -18,4 +19,8 @@ describe Scheme::FlexibleCombineFromPw2Combine do
       )
     end
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    SCHEME.network(wrap(3, 2))
+  }
 end

@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "./merging_network_helper"
 
 private SCHEME = Scheme.pw2_merge_odd_even
@@ -10,5 +11,9 @@ describe Scheme::Pw2MergeOddEven do
       Visitor::ArrayLogic,
       SCHEME.network(Width.from_pw2(Distance.new(half_width)))
     )
+
+    BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+      SCHEME.network(Width.from_pw2(Distance.new(half_width)))
+    }
   end
 end

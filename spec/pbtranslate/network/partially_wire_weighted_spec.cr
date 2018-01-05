@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include SpecHelper
@@ -91,6 +92,14 @@ private def abstract_test(random, bool_generator : -> Bool)
   end
 end
 
+private def bidirectional_test(random, &block : -> Bool)
+  abstract_test(random, block) do |network, weights|
+    BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+      network
+    }
+  end
+end
+
 # A rather useless test for checking that the sum of wire weights in a
 # partially wire weighted network is the same as the sum of input weights.
 private def sum_test(random, way, &block : -> Bool)
@@ -150,6 +159,9 @@ private def corner_case_weight_test_helper(random, width_value, bit_value, last_
 end
 
 describe Network::PartiallyWireWeighted do
+  random = Random.new(SEED)
+  bidirectional_test(random) { random.next_bool }
+
   it "preserves sums of weights placed on all layers when going forward" do
     random = Random.new(SEED)
     sum_test(random, FORWARD) { true }

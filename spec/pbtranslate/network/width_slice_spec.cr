@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include SpecHelper
@@ -24,13 +25,17 @@ private def partition_in_three(n, random)
   {left, right + 1}
 end
 
+private def network_with_random_split(random, sub_scheme, width)
+  sub_width = Math.pw2ceil(width)
+  sub_network = sub_scheme.network(Width.from_pw2(sub_width))
+  left, right = partition_in_three(sub_width, random)
+  network = Network::WidthSlice.new(sub_network, begin: left, end: right)
+  {network, right - left}
+end
+
 private def for_some_networks_of_random_width(random, sub_scheme)
   array_of_random_width(NETWORK_COUNT, random, min: 1).each do |width|
-    sub_width = Math.pw2ceil(width)
-    sub_network = sub_scheme.network(Width.from_pw2(sub_width))
-    left, right = partition_in_three(sub_width, random)
-    network = Network::WidthSlice.new(sub_network, begin: left, end: right)
-    yield network, right - left
+    yield network_with_random_split(random, sub_scheme, width)
   end
 end
 
@@ -70,4 +75,12 @@ describe Network::WidthSlice do
   it "sorts with the help of direct merge sorting networks" do
     test_sorting_with_sub_scheme(direct_scheme, Visitor::ArrayLogic, &.next_bool)
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    network_with_random_split(
+      Random.new(SEED),
+      oe_scheme,
+      Distance.new(15),
+    ).first
+  }
 end

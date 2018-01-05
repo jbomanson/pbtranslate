@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../sorting_network_helper"
 
 include SpecHelper
@@ -26,4 +27,8 @@ describe Scheme::FlexibleDivideAndConquerDynamicProgramming do
   it_hosts_like_a_sorting_network(SCHEME_BALANCE, SEED, RANGE, ROUNDS)
   it_hosts_like_a_sorting_network(SCHEME_DEFAULT, SEED, RANGE, ROUNDS)
   it_hosts_like_a_sorting_network(SCHEME_POPCOUNT, SEED, RANGE, ROUNDS)
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    SCHEME_DEFAULT.network(Width.from_value(Distance.new(5)))
+  }
 end

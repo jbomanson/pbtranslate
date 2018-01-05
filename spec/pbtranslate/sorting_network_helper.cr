@@ -68,6 +68,12 @@ def it_reports_like_a_sorting_network(scheme, seed, range, rounds)
       a.should eq(b)
     end
   end
+
+  it "returns consistent #network_width values" do
+    range.each do |width|
+      scheme.network(width).network_width.should eq(width.value)
+    end
+  end
 end
 
 def it_acts_like_a_sorting_network(scheme, seed, range, rounds)

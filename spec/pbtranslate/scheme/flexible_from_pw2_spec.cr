@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include SpecHelper
@@ -53,4 +54,12 @@ describe Scheme::FlexibleFromPw2 do
   it "sorts with the help of direct merge sorting networks" do
     test_sorting_with_sub_scheme(direct_scheme, network_count, Visitor::ArrayLogic, &.next_bool)
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    oe_scheme.to_scheme_flexible.network(Width.from_log2(Distance.new(3)))
+  }
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    direct_scheme.to_scheme_flexible.network(Width.from_log2(Distance.new(3)))
+  }
 end

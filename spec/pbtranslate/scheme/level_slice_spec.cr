@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include PBTranslate
@@ -40,4 +41,8 @@ describe Scheme::LevelSlice do
       visitor_x.array.sort.should eq(visitor_y.array.sort)
     end
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    scheme.network(Width.from_log2(Distance.new(3)))
+  }
 end

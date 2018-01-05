@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include PBTranslate
@@ -54,4 +55,8 @@ describe Network::LayerCache do
       vv.wire_count.should eq(n.network_depth * w.value)
     end
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    scheme.network(Width.from_log2(Distance.new(3)))
+  }
 end

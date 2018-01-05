@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include PBTranslate
@@ -40,4 +41,10 @@ describe Network::Random do
       f.should be < g
     end
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    random = Random.new(SEED)
+    width = Width.from_value(Distance.new(15))
+    Network::Random.new(random: random, width: width, depth: pick_depth(width))
+  }
 end

@@ -1,3 +1,4 @@
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include PBTranslate
@@ -29,4 +30,8 @@ describe typeof(scheme) do
       end
     end
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    scheme.network(Width.from_log2(Distance.new(3)))
+  }
 end
