@@ -19,6 +19,10 @@ class PBTranslate::Tool::CardinalityTranslator(S) < PBTranslate::ASPIF::Broker
     super(input, output)
   end
 
+  def quick_dry_test : Nil
+    network_of_width(1).host(Visitor::Noop::INSTANCE)
+  end
+
   def visit(b : Body, lower_bound : Int) : Bool
     unless Body::Weight == b
       raise "Strange Body #{b}"
