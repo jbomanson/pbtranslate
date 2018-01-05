@@ -1,5 +1,6 @@
 require "bit_array"
 
+require "../../bidirectional_host_helper"
 require "../../spec_helper"
 
 include PBTranslate
@@ -34,14 +35,20 @@ private class ArrayConeSwap(T)
   end
 end
 
+# Returns a `Network::Cone` instance for testing.
+private def create_cone_network(width_log2, wanted) : Network::Cone
+  width = Width.from_log2(width_log2)
+  Network::Cone.new(
+    network: SpecHelper.pw2_sort_odd_even.network(width),
+    width: width.value,
+    output: wanted,
+  )
+end
+
 # Hosts a visitor through a network with a cone and returns the size of the cone
 private def host_with_cone(width_log2, wanted, array) : Int32
-  scheme = SpecHelper.pw2_sort_odd_even
-  w = Width.from_log2(width_log2)
-  n = scheme.network(w)
-  nn = Network::Cone.new(network: n, width: w.value, output: wanted)
   visitor = ArrayConeSwap.new(array, FORWARD)
-  nn.host(visitor)
+  create_cone_network(width_log2, wanted).host(visitor)
   visitor.cone_size
 end
 
@@ -109,4 +116,13 @@ describe Network::Cone do
       size_one.should be < size_all
     end
   end
+
+  BidirectionalHostHelper.it_works_predictably_in_reverse ->{
+    random = Random.new(SEED)
+    width_log2 = Distance.new(2)
+    width = 1 << width_log2
+    wanted_one = BitArray.new(width)
+    wanted_one[random.rand(width)] = true
+    create_cone_network(width_log2, wanted_one)
+  }
 end

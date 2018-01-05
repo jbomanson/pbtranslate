@@ -18,6 +18,7 @@ class PBTranslate::Network::Cone(N)
   private alias Timestamp = Area
 
   @timestamps : Array(Timestamp?)
+  @gate_count : Area | Nil = nil
 
   # Creates a version of a _network_ that augments visits with a named parameter
   # *output_cone*.
@@ -33,11 +34,10 @@ class PBTranslate::Network::Cone(N)
   # Like the other `new` but using a block for picking network outputs.
   def initialize(*, @network : N, width, &block : Int32 -> Bool)
     @timestamps = Array.new(width) { |index| (yield index) ? Timestamp.zero : nil }
-    @is_pending = true
   end
 
   def host_reduce(visitor, memo)
-    if @is_pending
+    if !@gate_count
       host_reduce_and_compute(visitor, memo, visitor.way)
     else
       host_reduce_and_pass(visitor, memo)
@@ -51,12 +51,19 @@ class PBTranslate::Network::Cone(N)
   end
 
   private def host_reduce_and_compute(visitor, memo, way : Backward)
-    @is_pending = false
-    ComputingGuide.guide(visitor, memo, @network, @timestamps)
+    memo, @gate_count =
+      ComputingGuide.guide(visitor, memo, @network, @timestamps)
+    memo
   end
 
   private def host_reduce_and_pass(visitor, memo)
-    PassingGuide.guide(visitor, memo, @network, @timestamps)
+    PassingGuide.guide(
+      visitor,
+      memo,
+      @network,
+      @timestamps,
+      @gate_count.not_nil!,
+    )
   end
 
   private class ComputingGuide(V)
@@ -72,8 +79,7 @@ class PBTranslate::Network::Cone(N)
       Util.restrict(visitor.way, Backward)
       guide = new(visitor, timestamps)
       memo = network.host_reduce(guide, memo)
-      guide.finish
-      memo
+      {memo, guide.finish}
     end
 
     protected def initialize(@visitor : V, @timestamps : Array(Timestamp?))
@@ -100,7 +106,7 @@ class PBTranslate::Network::Cone(N)
       output_wires = gate.wires
       output_cone =
         @timestamps.values_at(*output_wires).map do |timestamp|
-          timestamp || false
+          timestamp ? true : false
         end
       {
         output_cone.any?,
@@ -108,11 +114,12 @@ class PBTranslate::Network::Cone(N)
       }
     end
 
-    protected def finish : Nil
+    protected def finish : Area
       last = @reverse_index
       @timestamps.map! do |value|
         value && last - value
       end
+      last
     end
   end
 
@@ -125,14 +132,14 @@ class PBTranslate::Network::Cone(N)
     # A visitor that guides another and indicates to it which output wires
     # are in a cone.
 
-    def self.guide(visitor, memo, network, timestamps)
-      Util.restrict(visitor.way, Forward)
-      guide = new(visitor, timestamps)
-      network.host_reduce(guide, memo)
+    def self.guide(visitor, memo, network, timestamps, gate_count)
+      network.host_reduce(new(visitor, timestamps, gate_count), memo)
     end
 
-    def initialize(@visitor : V, @timestamps : Array(Timestamp?))
-      @index = Timestamp.zero.as(Timestamp)
+    delegate way, to: @visitor
+
+    def initialize(@visitor : V, @timestamps : Array(Timestamp?), gate_count)
+      @index = Timestamp.new(way.first(0, gate_count - 1))
     end
 
     def visit_gate(gate : Gate(_, InPlace, _), memo, **options)
@@ -141,7 +148,7 @@ class PBTranslate::Network::Cone(N)
         @timestamps.values_at(*output_wires).map do |timestamp|
           (timestamp && @index < timestamp) || false
         end
-      @index += 1
+      @index += way.sign
       @visitor.visit_gate(gate, memo, **options, output_cone: output_cone)
     end
   end
