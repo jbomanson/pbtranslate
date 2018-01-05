@@ -74,6 +74,13 @@ struct PBTranslate::Gate(F, S, T)
   def initialize(@wires : T)
   end
 
+  def inspect(io)
+    io << F.name[/[^:]+$/]
+    io << '('
+    wires.join(", ", io)
+    io << ')'
+  end
+
   def shifted_by(amount)
     self.class.new(wires.map &.+ amount)
   end
