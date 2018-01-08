@@ -1,7 +1,7 @@
 require "../spec_helper"
 
 describe PBTranslate::Gate do
-  it "is implements #inspect" do
+  it "implements #inspect" do
     one = Distance.new(1)
     two = Distance.new(2)
     Gate.passthrough_at(one).inspect.should eq("Passthrough(1)")
