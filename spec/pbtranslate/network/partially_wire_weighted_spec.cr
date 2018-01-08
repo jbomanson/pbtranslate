@@ -129,6 +129,10 @@ private def weight_grid_test(comparators, depth, initial_weights, bit_array, exp
   v = WireWeightCollectingVisitor(typeof(initial_weights.first)).new(nnnn.network_width)
   nnnn.host(v.going(FORWARD))
   v.grid.should eq(expected_final_weights)
+  nnnn.network_depth.should eq(expected_final_weights.first.size)
+  nnnn.gates_with_options.to_a.max_of(&.last[:level]).should eq(
+    nnnn.network_depth - 1
+  )
 end
 
 private def corner_case_weight_test_helper(random, width_value, bit_value, last_bit_value)

@@ -9,7 +9,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
   include Gate::Restriction
   include Network
 
-  delegate size, to: @cache
+  delegate size, to: @network
   delegate network_depth, network_read_count, network_width, network_write_count, to: @network
 
   # Enhances a _network_ with _weights_ propagated through its gates and placed
@@ -27,7 +27,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
   # Returns the depth of this network that is the depth of the wrapped network
   # plus one.
   def network_depth
-    @cache.network_depth + 1
+    @network.network_depth + 1
   end
 
   # Hosts a visitor through `Layer` regions containing `Gate`s each together with
@@ -124,7 +124,13 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
         c = next_weights
         @visitor.visit_region(Layer.new(0_u32)) do |v|
           y.each_with_index_in(c) do |weight, index|
-            memo = v.visit_gate(Gate.passthrough_at(Distance.new(index)), memo, output_weights: {weight})
+            memo =
+              v.visit_gate(
+                Gate.passthrough_at(Distance.new(index)),
+                memo,
+                level: Distance.new(0),
+                output_weights: {weight},
+              )
           end
         end
         memo
@@ -150,7 +156,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
         gate.pbtranslate_receive_call_from(self, memo, **options)
       end
 
-      def call(gate : Gate, memo, **options)
+      def call(gate : Gate, memo, *empty_args, level, **options)
         e = gate.wires
         c = @current_weights
         o = if c
@@ -158,7 +164,13 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
             else
               e.map { W.zero }
             end
-        @visitor.visit_gate(gate, memo, **options, output_weights: o)
+        @visitor.visit_gate(
+          gate,
+          memo,
+          **options,
+          level: level + 1,
+          output_weights: o,
+        )
       end
     end
 
