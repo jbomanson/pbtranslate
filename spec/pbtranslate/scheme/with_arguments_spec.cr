@@ -25,7 +25,7 @@ describe PBTranslate::Scheme::WithArguments do
   end
 
   it "returns a network on a defined #network call" do
-    DummyNetworkScheme.new.network("please").should_not be_nil
+    DummyNetworkScheme.new.network("please").should be_a(DummyNetwork)
   end
 
   it "raises on an undefined #network call" do
