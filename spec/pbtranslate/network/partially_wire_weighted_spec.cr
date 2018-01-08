@@ -74,44 +74,45 @@ private class WireWeightCollectingVisitor(T)
   end
 end
 
-# A rather useless test for checking that the sum of wire weights in a
-# partially wire weighted network is the same as the sum of input weights.
-private def sum_test(random, way)
+private def abstract_test(random, bool_generator : -> Bool)
   array_of_random_width(NETWORK_COUNT, random).each do |value|
     width = Width.from_value(value)
-    w = Array.new(width.value) { random.rand(WEIGHT_RANGE) }
-    n = SCHEME.network(width)
-    y = BitArray.new(n.network_depth.to_i)
-    y.each_index { |i| y[i] = yield }
-    nn = Network::PartiallyWireWeighted.new(network: n, bit_array: y, weights: w.clone)
-    sum =
-      nn.host_reduce(
-        GateWeightAccumulatingVisitor.new.going(way),
-        typeof(w.first).zero,
+    weights = Array.new(width.value) { random.rand(WEIGHT_RANGE) }
+    weightless_network = SCHEME.network(width)
+    bit_array = BitArray.new(weightless_network.network_depth.to_i)
+    bit_array.each_index { |i| bit_array[i] = bool_generator.call }
+    network =
+      Network::PartiallyWireWeighted.new(
+        network: weightless_network,
+        bit_array: bit_array,
+        weights: weights.clone,
       )
-    sum.should eq(w.sum)
+    yield network, weights
+  end
+end
+
+# A rather useless test for checking that the sum of wire weights in a
+# partially wire weighted network is the same as the sum of input weights.
+private def sum_test(random, way, &block : -> Bool)
+  abstract_test(random, block) do |network, weights|
+    network.host_reduce(
+      GateWeightAccumulatingVisitor.new.going(way),
+      typeof(weights.first).zero,
+    ).should eq(weights.sum)
   end
 end
 
 # A test for checking that the sum of wire weights weighted by wire values is
 # the same as the sum of initial weights weighted by initial values.
 # Both the wire weigths and wire values are based on random initial values.
-private def weighted_sum_test(random)
-  array_of_random_width(NETWORK_COUNT, random).each do |value|
-    width = Width.from_value(value)
-    x = Array.new(width.value) { random.rand(VALUE_RANGE) }
-    w = Array.new(width.value) { random.rand(WEIGHT_RANGE) }
-    n = SCHEME.network(width)
-    y = BitArray.new(n.network_depth.to_i)
-    y.each_index { |i| y[i] = yield }
-    nn = Network::PartiallyWireWeighted.new(network: n, bit_array: y, weights: w.clone)
-    a =
-      nn.host_reduce(
-        WireWeightSumComputingVisitor.new.going(FORWARD),
-        {x.clone, typeof(w.first).zero},
-      ).last
-    b = w.zip(x).map { |u, v| u * v }.sum
-    a.should eq(b)
+private def weighted_sum_test(random, &block : -> Bool)
+  abstract_test(random, block) do |network, weights|
+    values = Array.new(weights.size) { random.rand(VALUE_RANGE) }
+    network.host_reduce(
+      WireWeightSumComputingVisitor.new.going(FORWARD),
+      {values.clone, typeof(weights.first).zero},
+    ).last
+     .should eq(weights.zip(values).map { |u, v| u * v }.sum)
   end
 end
 
