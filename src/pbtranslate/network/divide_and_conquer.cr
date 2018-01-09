@@ -19,7 +19,7 @@ struct PBTranslate::Network::DivideAndConquer(P, R, E)
   end
 
   def network_width : Distance
-    @widths.last.value
+    @widths.sum &.value
   end
 
   def host_reduce(visitor, memo)
@@ -50,8 +50,9 @@ struct PBTranslate::Network::DivideAndConquer(P, R, E)
   private def each_wire_slice(way)
     position = way.first(Distance.new(0), network_width)
     way.each_in(@widths) do |width|
+      position += way.first(0, -1) * width.value
       yield position, width
-      position += way.sign * width.value
+      position += way.first(+1, 0) * width.value
     end
   end
 end
