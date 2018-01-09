@@ -79,10 +79,15 @@ private struct LevelTrackingNetwork(N)
   def initialize(@network : N, @width : Distance)
   end
 
-  def host_reduce(visitor v, memo)
-    d = initial_level(v.way)
-    g = LevelTrackingGuide.new(visitor: v, width: @width, initial_level: d)
-    @network.host_reduce(g, memo)
+  def host_reduce(visitor, memo)
+    @network.host_reduce(
+      LevelTrackingGuide.new(
+        visitor: visitor,
+        width: @width,
+        initial_level: initial_level(visitor.way),
+      ),
+      memo,
+    )
   end
 
   private def initial_level(way : Forward)
@@ -90,7 +95,7 @@ private struct LevelTrackingNetwork(N)
   end
 
   private def initial_level(way : Backward)
-    {{ raise "Not yet tested" }}
+    raise "Backward iteration is not supported with #to_scheme_with_gate_level"
   end
 end
 
@@ -134,22 +139,24 @@ private class LevelTrackingGuide(V)
 
   delegate way, to: @visitor
 
+  getter levels : Array(Distance)
+
   # Wraps a _visitor_ in preparation for a visit to a network of given _width_.
-  def initialize(*, @visitor : V = PBTranslate::Visitor::Noop::INSTANCE, width : Int, initial_level d = Distance.zero)
-    @array = Array(Distance).new(width, Distance.new(d))
+  def initialize(*, @visitor : V, width : Int, initial_level d = Distance.zero)
+    @levels = Array(Distance).new(width, Distance.new(d))
   end
 
   # Guides the wrapped visitor through a visit to a _gate_ and provides an
   # additional parameter _level_.
   def visit_gate(gate : Gate(_, InPlace, _), memo, **options)
     input_wires = gate.wires
-    level = @array.values_at(*input_wires).max
+    level = @levels.values_at(*input_wires).max
     level += way.first(0, -1)
     memo = @visitor.visit_gate(gate, memo, **options, level: level)
     level += way.first(+1, 0)
     output_wires = gate.wires
     output_wires.each do |index|
-      @array[index] = level
+      @levels[index] = level
     end
     memo
   end
