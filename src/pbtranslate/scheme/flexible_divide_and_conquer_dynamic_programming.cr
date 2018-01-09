@@ -86,8 +86,9 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
     if w <= 1
       raise ArgumentError.new("Trying to split a width of #{w}")
     end
-    best = Details.new((w + 1) / 2, Area::MAX)
-    best.point.upto(w - 1) do |l|
+    l = (w + 1) / 2
+    best = Details.new(l, evaluate(l, w - l))
+    (l + 1).upto(w - 1) do |l|
       r = w - l
       next unless consider?(l, r)
       s = evaluate(l, r)

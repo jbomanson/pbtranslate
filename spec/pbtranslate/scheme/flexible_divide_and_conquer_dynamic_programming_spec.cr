@@ -28,6 +28,19 @@ describe Scheme::FlexibleDivideAndConquerDynamicProgramming do
   it_hosts_like_a_sorting_network(SCHEME_DEFAULT, SEED, RANGE, ROUNDS)
   it_hosts_like_a_sorting_network(SCHEME_POPCOUNT, SEED, RANGE, ROUNDS)
 
+  0.upto(20).each do |width_int|
+    it "squeezes #{width_int}-networks as popcount_limit increases" do
+      width = Width.from_value(Distance.new(width_int))
+      0.upto(32).map do |popcount_limit|
+        Network.compute_gate_count(
+          create_scheme(&.popcount_limit=(popcount_limit)).network(width)
+        )
+      end.each_cons(2) do |pair|
+        pair.first.should be >= pair.last
+      end
+    end
+  end
+
   BidirectionalHostHelper.it_works_predictably_in_reverse ->{
     SCHEME_DEFAULT.network(Width.from_value(Distance.new(5)))
   }
