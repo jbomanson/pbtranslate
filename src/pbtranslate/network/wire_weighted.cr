@@ -5,6 +5,8 @@ require "../visitor/of_no_yielded_content"
 
 # A network with weights on wires obtained by propagating given initial weights
 # through another network.
+#
+# Works forward only.
 class PBTranslate::Network::WireWeighted(N, W)
   include Network
 
