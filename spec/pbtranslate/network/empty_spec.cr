@@ -10,7 +10,7 @@ private class EmptyScheme
     unless width.value == 0
       raise "Unexpected nonzero width #{width}"
     end
-    Network.empty
+    Network.empty(width.value)
   end
 end
 

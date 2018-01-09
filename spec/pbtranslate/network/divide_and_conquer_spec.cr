@@ -15,7 +15,7 @@ private class MergeSortByDivideAndConquerScheme(M)
     l = Width.from_value((w + 1) / 2)
     r = Width.from_value(w / 2)
     case w
-    when 0, 1 then Network.empty
+    when 0, 1 then Network.empty(w)
     when    2 then base_case(l, r)
     else           recursive_case(l, r)
     end

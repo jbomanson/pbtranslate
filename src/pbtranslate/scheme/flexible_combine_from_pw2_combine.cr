@@ -53,7 +53,7 @@ struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
     def network?(width w : Width)
       one = Width.from_value(Distance.new(1))
       case w.value
-      when 0, 1 then Network.empty
+      when 0, 1 then Network.empty(w.value)
       when    2 then @scheme.network({one, one})
       end
     end
