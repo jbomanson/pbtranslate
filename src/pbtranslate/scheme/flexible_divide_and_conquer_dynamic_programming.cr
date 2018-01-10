@@ -29,6 +29,8 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
     end
   end
 
+  def_scheme_children @combine_scheme, @base_scheme
+
   # A limit on the ratio of sizes of parts that are considered when splitting.
   # Lower values lead to lower computation time at the risk of missing some
   # good ways of arranging network structure.
@@ -41,6 +43,9 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   property popcount_limit = 64
 
   # :nodoc:
+  property cache : Array(Details | Nil)
+
+  # :nodoc:
   record Details, point : Distance, cost : Area
 
   @cache = Array(Details | Nil).new
@@ -50,6 +55,26 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
 
   def network(width : Width)
     (@base_scheme.network? width) || recursive_network(width)
+  end
+
+  def tune_generate(io)
+    io.puts
+    io.puts "def Scheme.tune" +
+            "(scheme : #{self.class.name.gsub(":Module", ".class")}) : Nil"
+    io.puts "  scheme.cache ="
+    io.puts "    ["
+    @cache.each do |details|
+      io.puts(
+        if details
+          "      #{details.class}.new" +
+          "(#{details.point.inspect}, #{details.cost.inspect}),"
+        else
+          "      nil,"
+        end
+      )
+    end
+    io.puts "    ]"
+    io.puts "end"
   end
 
   private def recursive_network(width)

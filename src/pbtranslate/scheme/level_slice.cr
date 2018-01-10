@@ -20,6 +20,7 @@ class PBTranslate::Scheme::LevelSlice(S)
     end
   end
 
+  def_scheme_children @scheme
   delegate_scheme_details_to @scheme
 
   def initialize(@scheme : S, @range_proc : Width, Distance -> Range(Distance, Distance))

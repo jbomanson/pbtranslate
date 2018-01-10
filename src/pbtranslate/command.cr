@@ -166,6 +166,8 @@ class PBTranslate::Command
         translate_with(translator)
       end
     end
+
+    scheme_options.finish_up(scheme)
   end
 
   private def initialize_random_seeds(random_seed)
@@ -301,6 +303,8 @@ class PBTranslate::Command
         puts "depth: #{depth}"
       end
     end
+
+    scheme_options.finish_up(scheme)
   end
 
   private def bool_to_i32(s : String, *, label : String) : Bool
@@ -340,8 +344,9 @@ end
 private class SchemeOptions
   @crop_depth : Int32 | Nil = nil
   @crop_depth_unit : Int32 | Nil = nil
-  @popcount_limit : Int32 = DEFAULT_POPCOUNT_LIMIT
+  @development_tune : Bool = false
   @network_scheme : String | Nil = nil
+  @popcount_limit : Int32 = DEFAULT_POPCOUNT_LIMIT
 
   delegate error, to: @command
   delegate string_to_i32, to: @command
@@ -368,6 +373,12 @@ private class SchemeOptions
     end
 
     opts.on(
+      "--development-tune",
+      "Print information that you do not want to see to standard error.") do
+      @development_tune = true
+    end
+
+    opts.on(
       "--dynamic-programming-effort <e>",
       "Spend at most 2**<d> fold effort in certain dynamic programming tasks" +
       " when building networks." +
@@ -378,43 +389,54 @@ private class SchemeOptions
     end
   end
 
+  def finish_up(scheme) : Nil
+    if @development_tune
+      scheme.tune_generate_recursively(STDERR)
+    end
+  end
+
   def pick_scheme(random : Random)
     network_scheme = @network_scheme
-    case
-    when !network_scheme || "sorting".starts_with? network_scheme
-      dynamic_programming_scheme =
-        Scheme
-          .pw2_merge_odd_even
-          .to_scheme_flexible_combine
-          .to_scheme_flexible_divide_and_conquer_dynamic_programming(
-          Scheme.partial_flexible_sort_hard_coded
+    picked_scheme =
+      case
+      when !network_scheme || "sorting".starts_with? network_scheme
+        dynamic_programming_scheme =
+          Scheme
+            .pw2_merge_odd_even
+            .to_scheme_flexible_combine
+            .to_scheme_flexible_divide_and_conquer_dynamic_programming(
+            Scheme.partial_flexible_sort_hard_coded
+          )
+        if popcount_limit = @popcount_limit
+          dynamic_programming_scheme.popcount_limit = popcount_limit
+        end
+        scheme = dynamic_programming_scheme.to_scheme_with_offset_resolution
+        if crop_depth = @crop_depth
+          scheme
+            .to_scheme_with_gate_level
+            .to_scheme_level_slice &depth_range_proc(crop_depth)
+        else
+          scheme
+        end
+      when "random".starts_with? network_scheme
+        unless crop_depth = @crop_depth
+          error "the --network-scheme random option works only with --crop-depth"
+        end
+        if @crop_depth_unit
+          error "the --network-scheme random option works only with an absolute" +
+                "--crop-depth"
+        end
+        Scheme.flexible_random_from_depth(
+          random: random,
+          depth: Distance.new(crop_depth),
         )
-      if popcount_limit = @popcount_limit
-        dynamic_programming_scheme.popcount_limit = popcount_limit
-      end
-      scheme = dynamic_programming_scheme.to_scheme_with_offset_resolution
-      if crop_depth = @crop_depth
-        scheme
-          .to_scheme_with_gate_level
-          .to_scheme_level_slice &depth_range_proc(crop_depth)
       else
-        scheme
+        error "unknown argument '#{network_scheme}' to --network-scheme"
       end
-    when "random".starts_with? network_scheme
-      unless crop_depth = @crop_depth
-        error "the --network-scheme random option works only with --crop-depth"
-      end
-      if @crop_depth_unit
-        error "the --network-scheme random option works only with an absolute" +
-              "--crop-depth"
-      end
-      Scheme.flexible_random_from_depth(
-        random: random,
-        depth: Distance.new(crop_depth),
-      )
-    else
-      error "unknown argument '#{network_scheme}' to --network-scheme"
+    unless @development_tune
+      picked_scheme.tune_recursively
     end
+    picked_scheme
   end
 
   private def depth_range_proc(crop_depth : Int32)

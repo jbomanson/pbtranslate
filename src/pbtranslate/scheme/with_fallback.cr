@@ -15,6 +15,7 @@ class PBTranslate::Scheme::WithFallback(A, B)
     end
   end
 
+  def_scheme_children @schemes
   delegate_scheme_details_to @schemes[0], @schemes[1]
 
   def initialize(a : A, b : B)

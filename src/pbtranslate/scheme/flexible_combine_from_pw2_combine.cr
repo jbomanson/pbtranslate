@@ -23,6 +23,9 @@ struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
     end
   end
 
+  def_scheme_children @combine_scheme
+  delegate_scheme_details_to @combine_scheme
+
   def initialize(@combine_scheme : S = Pw2MergeOddEven)
   end
 
@@ -45,6 +48,7 @@ struct PBTranslate::Scheme::FlexibleCombineFromPw2Combine(S)
   private struct ForTwo(S)
     include Scheme
 
+    def_scheme_children @scheme
     delegate_scheme_details_to @scheme
 
     def initialize(@scheme : S)

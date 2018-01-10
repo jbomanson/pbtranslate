@@ -20,6 +20,7 @@ class PBTranslate::Scheme::OffsetResolution(S)
     end
   end
 
+  def_scheme_children @scheme
   delegate_scheme_details_to @scheme
 
   def initialize(@scheme : S)

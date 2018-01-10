@@ -47,6 +47,7 @@ end
 private struct LevelTrackingScheme(S)
   include PBTranslate::Scheme
 
+  def_scheme_children @scheme
   delegate_scheme_details_to @scheme
 
   def initialize(@scheme : S)

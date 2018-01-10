@@ -21,6 +21,8 @@ class PBTranslate::Scheme::Pw2DivideAndConquer(M, Q)
     end
   end
 
+  def_scheme_children @combine_scheme, @base_scheme
+
   def initialize(@combine_scheme : M, @base_scheme : Q)
   end
 

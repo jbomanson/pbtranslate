@@ -18,6 +18,8 @@ struct PBTranslate::Scheme::FlexibleFromPw2(S)
     end
   end
 
+  def_scheme_children @scheme
+
   def initialize(@scheme : S)
   end
 

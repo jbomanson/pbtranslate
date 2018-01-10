@@ -16,6 +16,7 @@ class PBTranslate::Scheme::LayerCache(S)
     end
   end
 
+  def_scheme_children @scheme
   delegate_scheme_details_to @scheme
 
   # Creates a scheme of networks that cache the gates of the networks of the
