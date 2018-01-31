@@ -17,6 +17,7 @@ class PBTranslate::Scheme::Pw2MergeOddEven
     # Such a network can be created by calling
     # `Scheme::Pw2DivideAndConquer.new(Scheme.pw2_merge_odd_even)`.
     #
+    # See http://sparkydots.blogspot.fi/2015/05/batchers-odd-even-merging-network.html
     # See https://en.wikipedia.org/wiki/Batcher_odd%E2%80%93even_mergesort
     # See https://gist.github.com/Bekbolatov/c8e42f5fcaa36db38402
     def Scheme.pw2_merge_odd_even : Pw2Combine
