@@ -380,7 +380,7 @@ private class SchemeOptions
 
     opts.on(
       "--dynamic-programming-effort <e>",
-      "Spend at most 2**<d> fold effort in certain dynamic programming tasks" +
+      "Spend at most 2**<e> fold effort in certain dynamic programming tasks" +
       " when building networks." +
       " Sensible values are between 0 and 32." +
       " The default is #{DEFAULT_POPCOUNT_LIMIT}."
