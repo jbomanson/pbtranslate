@@ -14,6 +14,8 @@ private RANDOM_SEED_DEFAULT    = 0
 #
 # This is based on `Crystal::Command`.
 class PBTranslate::Command
+  include Gate::Restriction
+
   USAGE = <<-USAGE
     Usage: pbtranslate [command] [options] [--] [input file]
 
@@ -296,11 +298,11 @@ class PBTranslate::Command
           end
         end
       else
-        n = scheme.network(w)
-        size = Network.compute_gate_count(n)
-        depth = scheme.compute_depth(w)
-        puts "size: #{size}"
-        puts "depth: #{depth}"
+        weights = Hash(String, Area).new
+        weights[Comparator.name] = Area.new(1)
+        weights[Passthrough.name] = Area.new(0)
+        puts "size: #{scheme.network(w).compute_gate_cost(weights)}"
+        puts "depth: #{scheme.compute_depth(w)}"
       end
     end
 

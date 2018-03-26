@@ -93,6 +93,22 @@ class WidthRange
   end
 end
 
+struct VarietyExampleNetwork
+  include Network
+
+  def host_reduce(visitor, memo)
+    wire_0 = Distance.new(0)
+    wire_1 = Distance.new(1)
+    wire_2 = Distance.new(2)
+    memo = visitor.visit_gate(Gate.passthrough_at(wire_0), memo)
+    memo = visitor.visit_gate(Gate.passthrough_at(wire_1), memo)
+    memo = visitor.visit_gate(Gate.passthrough_at(wire_2), memo)
+    memo = visitor.visit_gate(Gate.comparator_between(wire_0, wire_1), memo)
+    memo = visitor.visit_gate(Gate.comparator_between(wire_1, wire_2), memo)
+    memo = visitor.visit_gate(Gate.and_of(wire_1, wire_2), memo)
+  end
+end
+
 module SpecHelper
   include PBTranslate
   extend self

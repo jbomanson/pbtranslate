@@ -1,5 +1,5 @@
 require "./flexible_combine_from_pw2_combine"
-require "../network/compute_gate_count"
+require "../network/compute_gate"
 require "../network/divide_and_conquer"
 require "../scheme"
 
@@ -7,6 +7,7 @@ require "../scheme"
 class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
   include Scheme
   include Scheme::WithArguments(Width::Flexible)
+  include Gate::Restriction
 
   module ::PBTranslate::Scheme
     # Creates a divide and conquer scheme that uses dynamic programming
@@ -28,6 +29,12 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
       FlexibleDivideAndConquerDynamicProgramming.new(self, base_scheme)
     end
   end
+
+  # Hard coded costs for supported gate functions.
+  FUNCTION_NAME_COSTS = {
+    Comparator.name  => Area.new(1),
+    Passthrough.name => Area.new(0),
+  }
 
   def_scheme_children @combine_scheme, @base_scheme
 
@@ -136,11 +143,13 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
 
   private def conquer_cost(w : Distance) : Area
     n = (@base_scheme.network? Width.from_value(w))
-    n ? Network.compute_gate_count(n) : details(w).cost
+    n ? n.compute_gate_cost(FUNCTION_NAME_COSTS) : details(w).cost
   end
 
   private def combine_cost(l : Distance, r : Distance) : Area
-    Network.compute_gate_count(@combine_scheme.network(widths(l, r)))
+    @combine_scheme
+      .network(widths(l, r))
+      .compute_gate_cost(FUNCTION_NAME_COSTS)
   end
 
   private def widths(*args)
