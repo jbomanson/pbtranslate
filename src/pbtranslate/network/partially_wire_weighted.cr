@@ -10,7 +10,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
   include Network
 
   delegate size, to: @network
-  delegate network_depth, network_read_count, network_width, network_write_count, to: @network
+  delegate network_read_count, network_width, network_write_count, to: @network
 
   # Enhances a _network_ with _weights_ propagated through its gates and placed
   # on the output wires of gates on layers _i_ for which `bit_array[i]` is true.
