@@ -74,6 +74,10 @@ struct PBTranslate::Gate(F, S, T)
   def initialize(@wires : T)
   end
 
+  def function : F
+    F.new
+  end
+
   def inspect(io)
     io << F.name[/[^:]+$/]
     io << '('
