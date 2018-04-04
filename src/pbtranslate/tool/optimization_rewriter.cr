@@ -131,7 +131,11 @@ class PBTranslate::Tool::OptimizationRewriter(S) < PBTranslate::ASPIF::Broker
   end
 
   private struct WireWeightedScheme(S)
-    def initialize(@scheme : S)
+    def self.new(scheme)
+      new(scheme.to_scheme_with_gate_level, overload: nil)
+    end
+
+    def initialize(@scheme : S, overload : Nil)
     end
 
     def network(width : Width, *, weights)

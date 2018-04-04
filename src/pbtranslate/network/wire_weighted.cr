@@ -15,6 +15,12 @@ class PBTranslate::Network::WireWeighted(N, W)
   end
 
   # Hosts a visit to the underlying network and to propagated weights.
+  # Returns the depth of this network that is the depth of the wrapped network
+  # plus one.
+  def network_depth
+    @network.network_depth + 1
+  end
+
   #
   # The weights are provided to _visitor_ by calling its _visit_ method with
   # named parameters _weight_ and _wire_.
@@ -29,25 +35,31 @@ class PBTranslate::Network::WireWeighted(N, W)
     include Visitor::DefaultMethods
     include Visitor::OfNoYieldedContent
 
-    def self.guide(network n, weights w, visitor v, memo)
-      Util.restrict(v.way, Forward)
-      p = new(visitor: v, weights: w)
-      p.sweep(n.host_reduce(p, memo))
+    def self.guide(network, weights, visitor, memo)
+      network.gate_option_keys.superset! CompileTimeSet.create(:level)
+      Util.restrict(visitor.way, Forward)
+      propagator = new(visitor: visitor, weights: weights)
+      memo = network.host_reduce(propagator, {depth: Distance.new(0), user_memo: memo})
+      memo = propagator.sweep(memo)
+      memo
     end
 
     protected def initialize(*, @visitor : V, @weights : Array(W))
     end
 
-    def visit_gate(gate : Gate(Comparator, InPlace, _), memo, **options)
-      o = propagate_weights_at(gate.wires)
-      @visitor.visit_gate(gate, memo, **options, input_weights: o)
+    def visit_gate(gate, memo, **options)
+      {
+        depth:     {memo[:depth], options[:level] + 1}.max,
+        user_memo: @visitor.visit_gate(
+          gate,
+          memo[:user_memo],
+          **options,
+          input_weights: propagate_weights_at(gate.wires, gate.function)
+        ),
+      }
     end
 
-    def visit_gate(gate : Gate(Passthrough, _, _), memo, **options)
-      @visitor.visit_gate(gate, memo, **options, input_weights: gate.wires.map { W.zero })
-    end
-
-    private def propagate_weights_at(wires)
+    private def propagate_weights_at(wires, gate_function : Comparator)
       weights = @weights
       wire_weights = wires.map { |wire| weights[wire] }
       least = wire_weights.min
@@ -55,12 +67,22 @@ class PBTranslate::Network::WireWeighted(N, W)
       wire_weights.map { |weight| weight - least }
     end
 
+    private def propagate_weights_at(wires, gate_function : Passthrough)
+      wires.map { W.zero }
+    end
+
     protected def sweep(memo)
+      level = memo[:depth]
+      user_memo = memo[:user_memo]
       @weights.each_with_index do |weight, index|
-        wire = Distance.new(index)
-        memo = @visitor.visit_gate(Gate.passthrough_at(wire), memo, input_weights: {weight})
+        user_memo = @visitor.visit_gate(
+          Gate.passthrough_at(Distance.new(index)),
+          user_memo,
+          level: level,
+          input_weights: {weight},
+        )
       end
-      memo
+      user_memo
     end
   end
 end
