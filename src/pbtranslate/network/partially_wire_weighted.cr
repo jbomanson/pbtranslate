@@ -84,7 +84,7 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
       @layered_weights[i]
     end
 
-    private def march_weights(sink)
+    private def march_weights(sink) : Nil
       scratch = @scratch
       scratch.each_with_index do |weight, index|
         root = root_of(index)
@@ -92,6 +92,8 @@ class PBTranslate::Network::PartiallyWireWeighted(C, W)
         scratch[index] = root_weight
         sink[index] = weight - root_weight
       end
+      # Reset connected components to be singleton sets.
+      @parents.map_with_index! { |parent, index| index }
     end
 
     # Follows parent links up until a root node is found.

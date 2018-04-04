@@ -158,6 +158,46 @@ private def corner_case_weight_test_helper(random, width_value, bit_value, last_
   {weights, visitor.grid}
 end
 
+# A test for checking that PartiallyWireWeighted generalizes WireWeighted such
+# that when weights are placed on all layers, both yield identical networks
+# with weights.
+private def generalizes_non_partial_wire_weighted_network_test(random, width_value)
+  width = Width.from_value(width_value)
+  weights = Array.new(width_value) { random.rand(WEIGHT_RANGE) }
+  network = SCHEME.network(width)
+  context "given network weights #{weights} and #{network.gates_with_options.to_a}" do
+    partially_wire_weighted_network =
+      Network::PartiallyWireWeighted.new(
+        network: network,
+        bit_array: BitArray.new(network.network_depth.to_i, true),
+        weights: weights.clone,
+      )
+    wire_weighted_network =
+      Network::WireWeighted.new(
+        network: network,
+        weights: weights.clone,
+      )
+    networks = {partially_wire_weighted_network, wire_weighted_network}
+    gates_with_options = networks.map(&.gates_with_options.to_a)
+    # Test that Comparator gates match.
+    comparators =
+      gates_with_options.map(&.map(&.first).select(&.function.==(Gate::Restriction::Comparator)))
+    comparators.first.should eq(comparators.last)
+    # Test that weights are identical.
+    wires_with_levels_and_weights =
+      gates_with_options.map &.flat_map do |(gate, options)|
+        gate_weights =
+          options[:input_weights]? || options[:output_weights]?.not_nil!
+        gate.wires.zip(gate_weights).map do |wire, weight|
+          {wire, options[:level], weight}
+        end.to_a
+      end.sort!
+    wires_with_levels_and_weights.first.should eq(
+      wires_with_levels_and_weights.last
+    )
+  end
+end
+
 describe Network::PartiallyWireWeighted do
   random = Random.new(SEED)
   bidirectional_test(random) { random.next_bool }
@@ -296,6 +336,13 @@ describe Network::PartiallyWireWeighted do
         t = single_wire_weights[1..-2]
         t.should eq(t.map { 0 })
       end
+    end
+  end
+
+  it "generalizes Network::WireWeighted" do
+    random = Random.new(SEED)
+    array_of_random_width(NETWORK_COUNT, random, min: 1).each do |width_value|
+      generalizes_non_partial_wire_weighted_network_test(random, width_value)
     end
   end
 end
