@@ -1,9 +1,16 @@
-PENDING
--------
+0.2.0 (2019-02-11)
+------------------
 
-* Changed the naming of `Scheme` types to be more descriptive.
-* Changed the `Scheme` API to rely on chainable methods and not constructors.
-  This simplifies documentation greatly.
+* Added compile time performance tuning of translations based on static
+  profiling information
+
+* Added scheme configuration options to commands _measure_ and _inspect_
+
+* Fixed a bug that erroneously included internal placeholder gates in costs
+
+* Fixed to be compatible with crystal 0.27.2
+
+* Refactored lots of things
 
 0.1.0 (2017-05-03)
 ------------------
