@@ -12,7 +12,7 @@ ac = CompileTimeSet.create(:a, :c)
 bc = CompileTimeSet.create(:b, :c)
 abc = CompileTimeSet.create(:a, :b, :c)
 
-private PROGRAM_FORMAT = <<-EOF
+program_format = <<-EOF
   require "./src/pbtranslate/compile_time_set"
 
   include PBTranslate
@@ -106,7 +106,7 @@ describe PBTranslate::CompileTimeSet do
   end
 
   it "catches disjoint! violations at compile time" do
-    output = eval(PROGRAM_FORMAT % "a.disjoint! abc")
+    output = eval(program_format % "a.disjoint! abc")
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#disjoint!\E/)
     output.should match(/\QExpected {a} and {a, b, c} to be disjoint\E/)
   end
@@ -116,7 +116,7 @@ describe PBTranslate::CompileTimeSet do
   end
 
   it "catches empty! violations at compile time" do
-    output = eval(PROGRAM_FORMAT % "a.empty!")
+    output = eval(program_format % "a.empty!")
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#empty!\E/)
     output.should match(/\QExpected {a} to be empty\E/)
   end
@@ -140,7 +140,7 @@ describe PBTranslate::CompileTimeSet do
   end
 
   it "catches superset! violations at compile time" do
-    output = eval(PROGRAM_FORMAT % "a.superset! b")
+    output = eval(program_format % "a.superset! b")
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#superset!\E/)
     output.should match(/\QExpected {a} to be a superset of {b}\E/)
   end
@@ -157,7 +157,7 @@ describe PBTranslate::CompileTimeSet do
   end
 
   it "catches subset! violations at compile time" do
-    output = eval(PROGRAM_FORMAT % "a.subset! b")
+    output = eval(program_format % "a.subset! b")
     output.should match(/\QCompileTimeSet(NamedTuple(a: In))#subset!\E/)
     output.should match(/\QExpected {a} to be a subset of {b}\E/)
   end

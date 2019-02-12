@@ -2,12 +2,12 @@ require "../../spec_helper"
 
 include PBTranslate
 
-private SEED = SpecHelper.file_specific_seed
+seed = SpecHelper.file_specific_seed
 scheme = SpecHelper.pw2_sort_odd_even
 
 describe Visitor::ArrayLogic do
   it "sorts booleans in descending order with merge sorting networks" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       a = Array.new(width) { random.next_bool }

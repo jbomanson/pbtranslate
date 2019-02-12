@@ -3,18 +3,20 @@ require "../../spec_helper"
 
 include SpecHelper
 
-private SEED          = SpecHelper.file_specific_seed
-private NETWORK_COUNT = 10
+private module Private
+  SEED          = SpecHelper.file_specific_seed
+  NETWORK_COUNT = 10
+end
 
 oe_scheme =
   Scheme.pw2_merge_odd_even
-        .to_scheme_pw2_divide_and_conquer
-        .to_scheme_with_offset_resolution
+    .to_scheme_pw2_divide_and_conquer
+    .to_scheme_with_offset_resolution
 
 direct_scheme =
   Scheme.pw2_merge_direct
-        .to_scheme_pw2_divide_and_conquer
-        .to_scheme_with_offset_resolution
+    .to_scheme_pw2_divide_and_conquer
+    .to_scheme_with_offset_resolution
 
 # Randomly partitions a range of numbers into three parts so that the middle
 # one is nonempty. Returns the two points that separate the parts.
@@ -34,13 +36,13 @@ private def network_with_random_split(random, sub_scheme, width)
 end
 
 private def for_some_networks_of_random_width(random, sub_scheme)
-  array_of_random_width(NETWORK_COUNT, random, min: 1).each do |width|
+  array_of_random_width(Private::NETWORK_COUNT, random, min: 1).each do |width|
     yield network_with_random_split(random, sub_scheme, width)
   end
 end
 
 private def test_limits_with_sub_scheme(sub_scheme)
-  random = Random.new(SEED)
+  random = Random.new(Private::SEED)
   for_some_networks_of_random_width(random, sub_scheme) do |network, width|
     visitor = WidthCheckingVisitor.new(width)
     network.host(visitor)
@@ -48,7 +50,7 @@ private def test_limits_with_sub_scheme(sub_scheme)
 end
 
 private def test_sorting_with_sub_scheme(sub_scheme, visitor_factory)
-  random = Random.new(SEED)
+  random = Random.new(Private::SEED)
   for_some_networks_of_random_width(random, sub_scheme) do |network, width|
     a = Array.new(width) { yield random }
     b = a.clone
@@ -78,7 +80,7 @@ describe Network::WidthSlice do
 
   BidirectionalHostHelper.it_works_predictably_in_reverse ->{
     network_with_random_split(
-      Random.new(SEED),
+      Random.new(Private::SEED),
       oe_scheme,
       Distance.new(15),
     ).first

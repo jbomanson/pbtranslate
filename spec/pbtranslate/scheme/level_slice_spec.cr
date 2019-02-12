@@ -4,7 +4,7 @@ require "../../spec_helper"
 include PBTranslate
 
 scheme = SpecHelper.pw2_sort_odd_even.to_scheme_with_gate_level
-private SEED = SpecHelper.file_specific_seed
+seed = SpecHelper.file_specific_seed
 
 private struct RecordingVisitor
   include Visitor
@@ -21,7 +21,7 @@ end
 
 describe Scheme::LevelSlice do
   it "works correctly when partitioning a network in two" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       depth = scheme.network(Width.from_log2(width_log2)).network_depth

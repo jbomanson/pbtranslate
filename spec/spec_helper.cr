@@ -5,8 +5,14 @@ require "../src/pbtranslate"
 include PBTranslate
 
 WIDTH_LOG2_MAX = Distance.new(10)
-private WIDTH_MAX      = Distance.new(1) << WIDTH_LOG2_MAX
-private SEED           = 482382392
+
+# A file private module for constants.
+# A module is used here because, as of crystal 0.27.2, top level private
+# constants are not file private.
+private module Private
+  WIDTH_MAX = Distance.new(1) << WIDTH_LOG2_MAX
+  SEED      = 482382392
+end
 
 # An object that counts the number of times its visit forward and backward.
 class VisitCallCounter
@@ -114,7 +120,7 @@ module SpecHelper
   extend self
 
   def file_specific_seed(file = __FILE__)
-    SEED ^ Digest::MD5.hexdigest(file)[0...16].to_u64(base: 16)
+    Private::SEED ^ Digest::MD5.hexdigest(file)[0...16].to_u64(base: 16)
   end
 
   def sort(a : Array(Bool))
@@ -128,7 +134,7 @@ module SpecHelper
   # Returns an array of up to *size* distinct `Distance` values that starts with
   # `min + 0`, `min + 1`, `min + 2` and then continues with random values from
   # *min* to to *max* whose logarithms are uniformly distributed.
-  def array_of_random_width(size, random, *, min = 0, max = WIDTH_MAX)
+  def array_of_random_width(size, random, *, min = 0, max = Private::WIDTH_MAX)
     unless min < max
       raise ArgumentError.new("Expected min < max, got #{min}, #{max}")
     end

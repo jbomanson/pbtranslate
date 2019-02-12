@@ -16,7 +16,7 @@ private class MergeSortByDivideAndConquerScheme(M)
     r = Width.from_value(w / 2)
     case w
     when 0, 1 then Network.empty(w)
-    when    2 then base_case(l, r)
+    when 2    then base_case(l, r)
     else           recursive_case(l, r)
     end
   end
@@ -36,14 +36,14 @@ end
 
 range = WidthPw2Range.new(Distance.new(0)..WIDTH_LOG2_MAX)
 rounds = 5
-private SEED = SpecHelper.file_specific_seed
+seed = SpecHelper.file_specific_seed
 scheme =
   MergeSortByDivideAndConquerScheme.new(
     Scheme.pw2_merge_odd_even.to_scheme_flexible_combine
   ).to_scheme_with_offset_resolution
 
 describe Network::DivideAndConquer do
-  it_acts_like_a_sorting_network(scheme, SEED, range, rounds)
+  it_acts_like_a_sorting_network(scheme, seed, range, rounds)
 
   BidirectionalHostHelper.it_works_predictably_in_reverse ->{
     scheme.network(Width.from_log2(Distance.new(3)))

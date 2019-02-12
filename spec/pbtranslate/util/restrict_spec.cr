@@ -3,7 +3,7 @@ require "../../eval_spec_helper_spec"
 
 include PBTranslate::Util
 
-private RESTRICT_NOT_NILABLE_UNION_NEGATIVE = <<-EOF
+restrict_not_nilable_union_negative = <<-EOF
   require "./src/pbtranslate/util/restrict"
 
   include PBTranslate::Util
@@ -19,13 +19,13 @@ describe "PBTranslate::Util.restrict_not_nilable_union" do
   end
 
   it "catches nilable union types at compile time" do
-    SpecHelper.eval(RESTRICT_NOT_NILABLE_UNION_NEGATIVE).should match(
+    SpecHelper.eval(restrict_not_nilable_union_negative).should match(
       /\QExpected anything but a nilable union type, got (Int32 | Nil)\E/
     )
   end
 end
 
-private RESTRICT_TUPLE_UNIFORM_NEGATIVE = <<-EOF
+restrict_tuple_uniform_negative = <<-EOF
   require "./src/pbtranslate/util/restrict"
 
   include PBTranslate::Util
@@ -39,7 +39,7 @@ describe "PBTranslate::Util.restrict_tuple_uniform" do
   end
 
   it "catches non uniform tuple types at compile time" do
-    SpecHelper.eval(RESTRICT_TUPLE_UNIFORM_NEGATIVE).should match(
+    SpecHelper.eval(restrict_tuple_uniform_negative).should match(
       /\QExpected a tuple type repeating a single type, got\E/
     )
   end

@@ -16,9 +16,9 @@ end
 
 range = WidthRange.new(Distance.new(0)..Distance.new(0))
 rounds = 1
-private SEED = SpecHelper.file_specific_seed
+seed = SpecHelper.file_specific_seed
 scheme = EmptyScheme.new.to_scheme_with_offset_resolution
 
 describe "Network.empty" do
-  it_hosts_like_a_sorting_network(scheme, SEED, range, rounds)
+  it_hosts_like_a_sorting_network(scheme, seed, range, rounds)
 end

@@ -3,18 +3,20 @@ require "../../spec_helper"
 
 include SpecHelper
 
-private NETWORK_COUNT = 10
-private WEIGHT_RANGE  = 0..1000
-private VALUE_RANGE   = 0..1
+private module Private
+  NETWORK_COUNT = 10
+  WEIGHT_RANGE  = 0..1000
+  VALUE_RANGE   = 0..1
 
-private SCHEME =
-  SpecHelper
-    .pw2_sort_odd_even
-    .to_scheme_flexible
-    .to_scheme_with_gate_level
-    .to_scheme_layer_cache
+  SCHEME =
+    SpecHelper
+      .pw2_sort_odd_even
+      .to_scheme_flexible
+      .to_scheme_with_gate_level
+      .to_scheme_layer_cache
+end
 
-private SEED = SpecHelper.file_specific_seed
+seed = SpecHelper.file_specific_seed
 
 # A visitor that accumulates the total sum of the *output_weights* fields of
 # gates.
@@ -76,10 +78,10 @@ private class WireWeightCollectingVisitor(T)
 end
 
 private def abstract_test(random, bool_generator : -> Bool)
-  array_of_random_width(NETWORK_COUNT, random).each do |value|
+  array_of_random_width(Private::NETWORK_COUNT, random).each do |value|
     width = Width.from_value(value)
-    weights = Array.new(width.value) { random.rand(WEIGHT_RANGE) }
-    weightless_network = SCHEME.network(width)
+    weights = Array.new(width.value) { random.rand(Private::WEIGHT_RANGE) }
+    weightless_network = Private::SCHEME.network(width)
     bit_array = BitArray.new(weightless_network.network_depth.to_i)
     bit_array.each_index { |i| bit_array[i] = bool_generator.call }
     network =
@@ -116,12 +118,12 @@ end
 # Both the wire weigths and wire values are based on random initial values.
 private def weighted_sum_test(random, &block : -> Bool)
   abstract_test(random, block) do |network, weights|
-    values = Array.new(weights.size) { random.rand(VALUE_RANGE) }
+    values = Array.new(weights.size) { random.rand(Private::VALUE_RANGE) }
     network.host_reduce(
       WireWeightSumComputingVisitor.new.going(FORWARD),
       {values.clone, typeof(weights.first).zero},
     ).last
-     .should eq(weights.zip(values).map { |u, v| u * v }.sum)
+      .should eq(weights.zip(values).map { |u, v| u * v }.sum)
   end
 end
 
@@ -146,9 +148,9 @@ end
 
 private def corner_case_weight_test_helper(random, width_value, bit_value, last_bit_value)
   width = Width.from_value(width_value)
-  weights = Array.new(width_value) { random.rand(WEIGHT_RANGE) }
+  weights = Array.new(width_value) { random.rand(Private::WEIGHT_RANGE) }
   visitor = WireWeightCollectingVisitor(typeof(weights.first)).new(width_value)
-  n = SCHEME.network(width)
+  n = Private::SCHEME.network(width)
   bit_array = BitArray.new(n.network_depth.to_i, bit_value)
   unless bit_array.empty?
     bit_array[-1] = last_bit_value
@@ -163,8 +165,8 @@ end
 # with weights.
 private def generalizes_non_partial_wire_weighted_network_test(random, width_value)
   width = Width.from_value(width_value)
-  weights = Array.new(width_value) { random.rand(WEIGHT_RANGE) }
-  network = SCHEME.network(width)
+  weights = Array.new(width_value) { random.rand(Private::WEIGHT_RANGE) }
+  network = Private::SCHEME.network(width)
   context "given network weights #{weights} and #{network.gates_with_options.to_a}" do
     partially_wire_weighted_network =
       Network::PartiallyWireWeighted.new(
@@ -199,36 +201,36 @@ private def generalizes_non_partial_wire_weighted_network_test(random, width_val
 end
 
 describe Network::PartiallyWireWeighted do
-  random = Random.new(SEED)
+  random = Random.new(seed)
   bidirectional_test(random) { random.next_bool }
 
   it "preserves sums of weights placed on all layers when going forward" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     sum_test(random, FORWARD) { true }
   end
 
   it "preserves sums of weights placed on all layers when going backward" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     sum_test(random, BACKWARD) { true }
   end
 
   it "preserves sums of weights placed on random layers when going forward" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     sum_test(random, FORWARD) { random.next_bool }
   end
 
   it "preserves sums of weights placed on random layers when going backward" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     sum_test(random, BACKWARD) { random.next_bool }
   end
 
   it "preserves sums of wire values and weights placed on all layers when going forward" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     weighted_sum_test(random) { true }
   end
 
   it "preserves sums of wire values and weights placed on random layers when going forward" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     weighted_sum_test(random) { random.next_bool }
   end
 
@@ -312,8 +314,8 @@ describe Network::PartiallyWireWeighted do
   end
 
   it "propagates nothing when given a false bit array" do
-    random = Random.new(SEED)
-    array_of_random_width(NETWORK_COUNT, random).each do |width_value|
+    random = Random.new(seed)
+    array_of_random_width(Private::NETWORK_COUNT, random).each do |width_value|
       weights, grid = corner_case_weight_test_helper(random, width_value, false, false)
       grid.map(&.first).should eq(weights)
       grid.each do |single_wire_weights|
@@ -324,8 +326,8 @@ describe Network::PartiallyWireWeighted do
   end
 
   it "propagates in one step over everything when given a bit array with a single true bit at the end" do
-    random = Random.new(SEED)
-    array_of_random_width(NETWORK_COUNT, random, min: 1).each do |width_value|
+    random = Random.new(seed)
+    array_of_random_width(Private::NETWORK_COUNT, random, min: 1).each do |width_value|
       weights, grid = corner_case_weight_test_helper(random, width_value, false, true)
       least = weights.min
       if grid.size >= 2
@@ -340,8 +342,8 @@ describe Network::PartiallyWireWeighted do
   end
 
   it "generalizes Network::WireWeighted" do
-    random = Random.new(SEED)
-    array_of_random_width(NETWORK_COUNT, random, min: 1).each do |width_value|
+    random = Random.new(seed)
+    array_of_random_width(Private::NETWORK_COUNT, random, min: 1).each do |width_value|
       generalizes_non_partial_wire_weighted_network_test(random, width_value)
     end
   end

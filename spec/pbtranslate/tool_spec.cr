@@ -2,25 +2,27 @@ require "../spec_helper"
 
 include PBTranslate
 
-private INSTANCE_PATH  = "spec/instance/300.aspif"
-private FILTER_PROGRAM = %x(spec/script/find-lpconvert.sh).chomp
+private module Private
+  INSTANCE_PATH  = "spec/instance/300.aspif"
+  FILTER_PROGRAM = %x(spec/script/find-lpconvert.sh).chomp
 
-private INSTANCE = File.read(INSTANCE_PATH)
+  INSTANCE = File.read(Private::INSTANCE_PATH)
+end
 
 private def describe_translator_class(translator_class, *args)
   describe translator_class do
-    it "produces output accepted by #{FILTER_PROGRAM}" do
-      Process.run(FILTER_PROGRAM, output: Process::Redirect::Close) do |process|
-        translator_class.new(*args, INSTANCE, process.input).parse
+    it "produces output accepted by #{Private::FILTER_PROGRAM}" do
+      Process.run(Private::FILTER_PROGRAM, output: Process::Redirect::Close) do |process|
+        translator_class.new(*args, Private::INSTANCE, process.input).parse
         process.wait
       end.exit_code.should eq(0)
     end
   end
 end
 
-describe "FILTER_PROGRAM" do
+describe "Private::FILTER_PROGRAM" do
   it "is found on the system" do
-    FILTER_PROGRAM.should_not eq("")
+    Private::FILTER_PROGRAM.should_not eq("")
   end
 end
 

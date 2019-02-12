@@ -33,7 +33,7 @@ private struct NetworkWithOffsets
   end
 end
 
-private NETWORK_WITH_AMBIGUOUS_OPTIONS = <<-EOF
+network_with_ambiguous_options = <<-EOF
   require "./src/pbtranslate/network"
   require "./src/pbtranslate/number_types"
 
@@ -72,7 +72,7 @@ describe "PBTranslate::Network#gate_with_options_for_typeof" do
   end
 
   it "catches ambiguous options at compile time" do
-    output = SpecHelper.eval(NETWORK_WITH_AMBIGUOUS_OPTIONS)
+    output = SpecHelper.eval(network_with_ambiguous_options)
     output.should match(/\QNetworkWithAmbiguousOptions\E/)
     output.should match(/\QNamedTuple() | NamedTuple(level: UInt32)\E/)
     output.should match(/\QExpected anything but a nilable union type, got\E/)

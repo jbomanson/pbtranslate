@@ -6,7 +6,7 @@ include Gate::Restriction
 
 allowed_mean_square_error = 0.01
 
-private SEED = SpecHelper.file_specific_seed
+seed = SpecHelper.file_specific_seed
 
 private def pick_depth(w : Width)
   Distance.new(10) * w.log2ceil
@@ -14,7 +14,7 @@ end
 
 describe Network::Random do
   it "returns consistent write counts" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       w = Width.from_log2(width_log2)
       n = Network::Random.new(random: random, width: w, depth: pick_depth(w))
@@ -27,7 +27,7 @@ describe Network::Random do
   end
 
   it "represents some networks that at least almost sort" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       w = Width.from_log2(width_log2)
       a = Array.new(w.value) { random.rand }
@@ -43,7 +43,7 @@ describe Network::Random do
   end
 
   BidirectionalHostHelper.it_works_predictably_in_reverse ->{
-    random = Random.new(SEED)
+    random = Random.new(seed)
     width = Width.from_value(Distance.new(15))
     Network::Random.new(random: random, width: width, depth: pick_depth(width))
   }

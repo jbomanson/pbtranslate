@@ -5,7 +5,7 @@ require "../../spec_helper"
 
 include PBTranslate
 
-private SEED = SpecHelper.file_specific_seed
+seed = SpecHelper.file_specific_seed
 
 private class ArrayConeSwap(T)
   include Gate::Restriction
@@ -78,7 +78,7 @@ end
 
 describe Network::Cone do
   it "works with universally unwanted outputs and merge sorting networks" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, false)
@@ -88,7 +88,7 @@ describe Network::Cone do
   end
 
   it "works with universally wanted outputs and merge sorting networks" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     (Distance.new(0)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
       wanted = BitArray.new(width, true)
@@ -98,7 +98,7 @@ describe Network::Cone do
   end
 
   it "works with single outputs and merge sorting networks" do
-    random = Random.new(SEED)
+    random = Random.new(seed)
     (Distance.new(1)..WIDTH_LOG2_MAX).each do |width_log2|
       width = 1 << width_log2
 
@@ -118,7 +118,7 @@ describe Network::Cone do
   end
 
   BidirectionalHostHelper.it_works_predictably_in_reverse ->{
-    random = Random.new(SEED)
+    random = Random.new(seed)
     width_log2 = Distance.new(2)
     width = 1 << width_log2
     wanted_one = BitArray.new(width)
