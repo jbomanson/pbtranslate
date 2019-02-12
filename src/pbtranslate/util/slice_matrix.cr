@@ -44,11 +44,11 @@ struct PBTranslate::Util::SliceMatrix(T)
   end
 
   # Returns the row slice at _index_.
-  protected def unsafe_at(index : Int) : Slice(T)
+  protected def unsafe_fetch(index : Int) : Slice(T)
     row(index)
   end
 
-  # The same as `unsafe_at`.
+  # The same as `unsafe_fetch`.
   private def row(index) : Slice(T)
     rows(index, 1)
   end

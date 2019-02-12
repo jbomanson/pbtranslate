@@ -107,7 +107,7 @@ class PBTranslate::Scheme::FlexibleDivideAndConquerDynamicProgramming(M, Q)
 
   private def cache_upto(w)
     c = @cache
-    c.at(w) do
+    c.fetch(w) do
       c.concat(Iterator.of(nil).first(w - c.size + 1))
       nil
     end
