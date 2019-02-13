@@ -1,7 +1,8 @@
 require "../error"
-require "../util"
 
 module PBTranslate::Util
+  extend self
+
   # Returns a sample instance of a type for use in typeof expressions.
   #
   # An error is raised if this method is called.

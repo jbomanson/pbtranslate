@@ -1,6 +1,6 @@
-require "../util"
-
 module PBTranslate::Util
+  extend self
+
   # A no-op method that takes a _value_ of _type_.
   #
   # This is useful for restricting a value to the intersection of chosen types.
